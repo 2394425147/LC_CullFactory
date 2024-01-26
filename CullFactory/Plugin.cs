@@ -13,7 +13,7 @@ namespace CullFactory
 
         private const string Guid    = "com.fumiko.CullFactory";
         private const string Name    = "CullFactory";
-        private const string Version = "0.2.0";
+        private const string Version = "0.3.0";
 
         private void Awake()
         {
@@ -24,12 +24,6 @@ namespace CullFactory
             harmony.PatchAll(typeof(LevelGenerationExtender));
 
             Logger.LogInfo($"Plugin {Name} is loaded!");
-        }
-
-        public static void LogError(string s)
-        {
-            Instance.Logger.LogError(s);
-
         }
 
         public static void Log(string s)
