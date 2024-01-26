@@ -26,8 +26,7 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private void OnEnable()
     {
-        if (Monitors.Count != 0)
-            return;
+        Monitors.Clear();
 
         foreach (var cameraRenderer in FindObjectsByType<ManualCameraRenderer>(FindObjectsSortMode.None))
         {
