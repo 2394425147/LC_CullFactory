@@ -1,16 +1,23 @@
-﻿using CullFactory.Extenders;
+﻿using System.Collections.Generic;
+using CullFactory.Extenders;
 using UnityEngine;
 
 namespace CullFactory.Behaviours;
 
+/// <summary>
+/// DynamicCuller instances are tied to each moon
+/// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private const float CullDistance = 2048;
+    private const float CullDistance = 45 * 45;
 
-    private ManualCameraRenderer _monitor;
+    private static readonly List<ManualCameraRenderer> Monitors = new();
 
     private void OnEnable()
     {
+        if (Monitors.Count != 0)
+            return;
+
         foreach (var cameraRenderer in FindObjectsByType<ManualCameraRenderer>(FindObjectsSortMode.None))
         {
             var isMonitorCamera = cameraRenderer.mapCamera != null;
@@ -18,8 +25,7 @@ public sealed class DynamicCuller : MonoBehaviour
             if (!isMonitorCamera)
                 continue;
 
-            _monitor = cameraRenderer;
-            break;
+            Monitors.Add(cameraRenderer);
         }
     }
 
@@ -35,8 +41,13 @@ public sealed class DynamicCuller : MonoBehaviour
 
             var shouldBeVisible = Vector3.SqrMagnitude(position - localPlayer.transform.position) <= CullDistance;
 
-            if (localPlayer != _monitor.targetedPlayer)
-                shouldBeVisible |= Vector3.SqrMagnitude(position - _monitor.targetedPlayer.transform.position) <= CullDistance;
+            foreach (var monitor in Monitors)
+            {
+                if (!monitor.mapCamera.enabled)
+                    continue;
+
+                shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= CullDistance;
+            }
 
             meshContainer.SetVisible(shouldBeVisible);
         }

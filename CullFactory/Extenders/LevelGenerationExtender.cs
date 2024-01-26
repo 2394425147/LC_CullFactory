@@ -12,30 +12,17 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(RoundManager))]
 public sealed class LevelGenerationExtender
 {
-    private static bool _cullerAdded;
-
     public static readonly List<TileVisibility> Tiles = new();
-    private static         Random               _lastRandom;
 
+    // Using string instead of nameof here since waitForMainEntranceTeleportToSpawn is a private method
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(RoundManager.FinishGeneratingNewLevelClientRpc))]
+    [HarmonyPatch("waitForMainEntranceTeleportToSpawn")]
     private static void OnLevelGenerated()
     {
-        if (_lastRandom == RoundManager.Instance.LevelRandom)
-            return;
-
-        _lastRandom = RoundManager.Instance.LevelRandom;
-
-        if (!_cullerAdded)
-        {
-            StartOfRound.Instance.gameObject.gameObject.AddComponent<DynamicCuller>();
-            _cullerAdded = true;
-        }
-
-        foreach (var tile in Object.FindObjectsOfType<Tile>())
-        {
+        foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
             Tiles.Add(new TileVisibility(tile, tile.GetComponentsInChildren<MeshRenderer>()));
-        }
+
+        RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
     }
 }
 
