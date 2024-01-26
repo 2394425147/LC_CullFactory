@@ -19,6 +19,8 @@ public sealed class LevelGenerationExtender
     [HarmonyPatch("waitForMainEntranceTeleportToSpawn")]
     private static void OnLevelGenerated()
     {
+        Tiles.Clear();
+
         foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
             Tiles.Add(new TileVisibility(tile, tile.GetComponentsInChildren<MeshRenderer>()));
 
