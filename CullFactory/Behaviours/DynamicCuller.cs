@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CullFactory.Extenders;
+using DunGen;
 using UnityEngine;
 
 namespace CullFactory.Behaviours;
@@ -9,10 +12,15 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private const float CullDistance    = 36;
-    private const float SqrCullDistance = CullDistance * CullDistance;
+    private static float CullDistance    => Plugin.Configuration.CullDistance.Value;
+    private static float SqrCullDistance => CullDistance * CullDistance;
 
-    private static readonly List<ManualCameraRenderer> Monitors = new();
+    private static readonly List<ManualCameraRenderer>                 Monitors              = new();
+    private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
+
+    private static Vector3 _playerPosition;
+    private static Tile    _lastFoundPlayerTile;
+    private static float   _depthCullingUpdateTime;
 
     private void OnEnable()
     {
@@ -32,25 +40,100 @@ public sealed class DynamicCuller : MonoBehaviour
 
     public void Update()
     {
+        if (StartOfRound.Instance.allPlayersDead)
+            return;
+
+        VisibleTilesThisFrame.Clear();
+
         var localPlayer = GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
                               ? GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript
                               : GameNetworkManager.Instance.localPlayerController;
 
-        foreach (var meshContainer in LevelGenerationExtender.Tiles)
+        _playerPosition = localPlayer.transform.position;
+
+        if (Plugin.Configuration.UseAdjacentRoomTesting.Value &&
+            Time.time - _depthCullingUpdateTime > 1 / Plugin.Configuration.AdjacentRoomUpdateFrequency.Value)
         {
-            var position = meshContainer.parentTile.transform.position;
+            _depthCullingUpdateTime = Time.time;
 
-            var shouldBeVisible = Vector3.SqrMagnitude(position - localPlayer.transform.position) <= SqrCullDistance;
-
-            foreach (var monitor in Monitors)
+            _lastFoundPlayerTile = null;
+            foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
             {
-                if (!monitor.mapCamera.enabled)
+                if (!tile.Bounds.Contains(_playerPosition))
                     continue;
 
-                shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= SqrCullDistance;
+                _lastFoundPlayerTile = tile;
+                break;
             }
-
-            meshContainer.SetVisible(shouldBeVisible);
         }
+
+        if (_lastFoundPlayerTile != null)
+            OccludeByTileBranching(_lastFoundPlayerTile);
+
+        if (Plugin.Configuration.UseMultithreading.Value)
+            OccludeByDistanceParallel();
+        else
+            OccludeByDistance();
+
+        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
+            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
+    }
+
+    private static void OccludeByTileBranching(Tile origin)
+    {
+        var queue = new Queue<(Tile tile, int iteration)>();
+
+        queue.Enqueue((origin, 0));
+
+        while (queue.Count > 0)
+        {
+            var tile = queue.Dequeue();
+
+            if (tile.iteration == Plugin.Configuration.MaxBranchingDepth.Value)
+                break;
+
+            if (VisibleTilesThisFrame.ContainsKey(tile.tile))
+                continue;
+
+            VisibleTilesThisFrame.TryAdd(tile.tile, LevelGenerationExtender.MeshContainers[tile.tile]);
+
+            foreach (var child in tile.tile.UsedDoorways)
+                queue.Enqueue((child.ConnectedDoorway.Tile, tile.iteration + 1));
+        }
+    }
+
+    private static void OccludeByDistanceParallel()
+    {
+        Parallel.ForEach(LevelGenerationExtender.MeshContainers.Values, TestVisibility);
+    }
+
+    private static void OccludeByDistance()
+    {
+        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
+            TestVisibility(container);
+    }
+
+    private static void TestVisibility(TileVisibility container)
+    {
+        if (VisibleTilesThisFrame.ContainsKey(container.parentTile)) return;
+
+        var position = container.parentTile.transform.position;
+
+        var shouldBeVisible = false;
+
+        if (_lastFoundPlayerTile == null)
+            shouldBeVisible = Vector3.SqrMagnitude(position - _playerPosition) <= SqrCullDistance;
+
+        foreach (var monitor in Monitors)
+        {
+            if (shouldBeVisible) break;
+
+            if (!monitor.mapCamera.enabled) continue;
+
+            shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= SqrCullDistance;
+        }
+
+        if (shouldBeVisible)
+            VisibleTilesThisFrame.TryAdd(container.parentTile, container);
     }
 }

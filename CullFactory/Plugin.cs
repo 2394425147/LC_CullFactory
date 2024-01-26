@@ -9,13 +9,16 @@ namespace CullFactory
     {
         public static Plugin Instance { get; private set; }
 
+        public static Config Configuration { get; private set; }
+
         private const string Guid    = "com.fumiko.CullFactory";
         private const string Name    = "CullFactory";
         private const string Version = "0.0.2";
 
         private void Awake()
         {
-            Instance = this;
+            Instance      = this;
+            Configuration = new Config(Config);
 
             var harmony = new Harmony(Guid);
             harmony.PatchAll(typeof(LevelGenerationExtender));

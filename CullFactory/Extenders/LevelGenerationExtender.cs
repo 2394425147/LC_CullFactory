@@ -10,17 +10,17 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(RoundManager))]
 public sealed class LevelGenerationExtender
 {
-    public static readonly List<TileVisibility> Tiles = new();
+    public static readonly Dictionary<Tile, TileVisibility> MeshContainers = new();
 
     // Using string instead of nameof here since waitForMainEntranceTeleportToSpawn is a private method
     [HarmonyPostfix]
     [HarmonyPatch("waitForMainEntranceTeleportToSpawn")]
     private static void OnLevelGenerated()
     {
-        Tiles.Clear();
+        MeshContainers.Clear();
 
         foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
-            Tiles.Add(new TileVisibility(tile, tile.GetComponentsInChildren<MeshRenderer>()));
+            MeshContainers.Add(tile, new TileVisibility(tile, tile.GetComponentsInChildren<MeshRenderer>()));
 
         RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
     }
