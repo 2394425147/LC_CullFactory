@@ -16,6 +16,7 @@ public sealed class DynamicCuller : MonoBehaviour
     private static float SqrCullDistance => CullDistance * CullDistance;
 
     private static readonly List<ManualCameraRenderer>                 Monitors              = new();
+    private static          List<ManualCameraRenderer>                 EnabledMonitors       = new();
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
 
     private static Vector3 _playerPosition;
@@ -69,6 +70,8 @@ public sealed class DynamicCuller : MonoBehaviour
 
         if (_lastFoundPlayerTile != null)
             OccludeByTileBranching(_lastFoundPlayerTile);
+
+        EnabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
 
         if (Plugin.Configuration.UseMultithreading.Value)
             OccludeByDistanceParallel();
@@ -124,11 +127,10 @@ public sealed class DynamicCuller : MonoBehaviour
         if (_lastFoundPlayerTile == null)
             shouldBeVisible = Vector3.SqrMagnitude(position - _playerPosition) <= SqrCullDistance;
 
-        foreach (var monitor in Monitors)
+        foreach (var monitor in EnabledMonitors)
         {
-            if (shouldBeVisible) break;
-
-            if (!monitor.mapCamera.enabled) continue;
+            if (shouldBeVisible)
+                break;
 
             shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= SqrCullDistance;
         }
