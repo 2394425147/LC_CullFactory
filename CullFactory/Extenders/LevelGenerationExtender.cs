@@ -38,7 +38,8 @@ public class TileVisibility
         this.parentTile = parentTile;
         _meshRenderers  = Array.FindAll(meshRenderers, renderer => renderer.enabled);
 
-        Plugin.Log($"Found tile {parentTile.name} with {meshRenderers.Length} mesh renderers");
+        if (Plugin.Configuration.Logging.Value)
+            Plugin.Log($"Found tile {parentTile.name} with {meshRenderers.Length} mesh renderers");
     }
 
     public void SetVisible(bool value)
@@ -46,7 +47,8 @@ public class TileVisibility
         if (_previouslyVisible == value)
             return;
 
-        Plugin.Log(value ? $"Showing {parentTile.name}" : $"Culling {parentTile.name}");
+        if (Plugin.Configuration.Logging.Value)
+            Plugin.Log(value ? $"Showing {parentTile.name}" : $"Culling {parentTile.name}");
 
         foreach (var meshRenderer in _meshRenderers)
             meshRenderer.enabled = value;
