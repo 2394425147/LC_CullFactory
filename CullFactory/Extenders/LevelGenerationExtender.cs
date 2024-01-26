@@ -4,8 +4,6 @@ using CullFactory.Behaviours;
 using DunGen;
 using HarmonyLib;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = System.Random;
 
 namespace CullFactory.Extenders;
 
@@ -39,12 +37,16 @@ public class TileVisibility
     {
         this.parentTile = parentTile;
         _meshRenderers  = Array.FindAll(meshRenderers, renderer => renderer.enabled);
+
+        Plugin.Log($"Found tile {parentTile.name} with {meshRenderers.Length} mesh renderers");
     }
 
     public void SetVisible(bool value)
     {
         if (_previouslyVisible == value)
             return;
+
+        Plugin.Log(value ? $"Showing {parentTile.name}" : $"Culling {parentTile.name}");
 
         foreach (var meshRenderer in _meshRenderers)
             meshRenderer.enabled = value;

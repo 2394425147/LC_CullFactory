@@ -9,7 +9,8 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private const float CullDistance = 45 * 45;
+    private const float CullDistance    = 36;
+    private const float SqrCullDistance = CullDistance * CullDistance;
 
     private static readonly List<ManualCameraRenderer> Monitors = new();
 
@@ -39,14 +40,14 @@ public sealed class DynamicCuller : MonoBehaviour
         {
             var position = meshContainer.parentTile.transform.position;
 
-            var shouldBeVisible = Vector3.SqrMagnitude(position - localPlayer.transform.position) <= CullDistance;
+            var shouldBeVisible = Vector3.SqrMagnitude(position - localPlayer.transform.position) <= SqrCullDistance;
 
             foreach (var monitor in Monitors)
             {
                 if (!monitor.mapCamera.enabled)
                     continue;
 
-                shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= CullDistance;
+                shouldBeVisible |= Vector3.SqrMagnitude(position - monitor.targetedPlayer.transform.position) <= SqrCullDistance;
             }
 
             meshContainer.SetVisible(shouldBeVisible);
