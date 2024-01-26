@@ -47,7 +47,7 @@ public sealed class Config
 
         UseMultithreading = config.Bind("Distance culling",
                                         "Use multithreading",
-                                        true,
+                                        false,
                                         "Allocate a thread per room when checking distance to all enabled cameras.\n" +
                                         "May improve performance on computers with multiple cores.");
     }

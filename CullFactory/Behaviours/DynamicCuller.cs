@@ -16,8 +16,9 @@ public sealed class DynamicCuller : MonoBehaviour
     private static float SqrCullDistance => CullDistance * CullDistance;
 
     private static readonly List<ManualCameraRenderer>                 Monitors              = new();
-    private static          List<ManualCameraRenderer>                 EnabledMonitors       = new();
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
+
+    private static List<ManualCameraRenderer> _enabledMonitors = new();
 
     private static Vector3 _playerPosition;
     private static Tile    _lastFoundPlayerTile;
@@ -71,7 +72,7 @@ public sealed class DynamicCuller : MonoBehaviour
         if (_lastFoundPlayerTile != null)
             OccludeByTileBranching(_lastFoundPlayerTile);
 
-        EnabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
+        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
 
         if (Plugin.Configuration.UseMultithreading.Value)
             OccludeByDistanceParallel();
@@ -84,9 +85,9 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static void OccludeByTileBranching(Tile origin)
     {
-        var queue = new Queue<(Tile tile, int iteration)>();
+        var queue = new Queue<TileDepthTester>();
 
-        queue.Enqueue((origin, 0));
+        queue.Enqueue(new TileDepthTester(origin, 0));
 
         while (queue.Count > 0)
         {
@@ -101,7 +102,7 @@ public sealed class DynamicCuller : MonoBehaviour
             VisibleTilesThisFrame.TryAdd(tile.tile, LevelGenerationExtender.MeshContainers[tile.tile]);
 
             foreach (var child in tile.tile.UsedDoorways)
-                queue.Enqueue((child.ConnectedDoorway.Tile, tile.iteration + 1));
+                queue.Enqueue(new TileDepthTester(child.ConnectedDoorway.Tile, tile.iteration + 1));
         }
     }
 
@@ -127,7 +128,7 @@ public sealed class DynamicCuller : MonoBehaviour
         if (_lastFoundPlayerTile == null)
             shouldBeVisible = Vector3.SqrMagnitude(position - _playerPosition) <= SqrCullDistance;
 
-        foreach (var monitor in EnabledMonitors)
+        foreach (var monitor in _enabledMonitors)
         {
             if (shouldBeVisible)
                 break;
@@ -137,5 +138,17 @@ public sealed class DynamicCuller : MonoBehaviour
 
         if (shouldBeVisible)
             VisibleTilesThisFrame.TryAdd(container.parentTile, container);
+    }
+}
+
+internal struct TileDepthTester
+{
+    public readonly Tile tile;
+    public readonly int  iteration;
+
+    public TileDepthTester(Tile tile, int iteration)
+    {
+        this.tile      = tile;
+        this.iteration = iteration;
     }
 }

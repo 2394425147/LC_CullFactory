@@ -1,9 +1,9 @@
 {
   "name": "CullFactory",
   "author": "fumiko",
-  "version_number": "0.1.1",
+  "version_number": "0.1.2",
   "website_url": "https://github.com/2394425147/LC_CullFactory",
-  "description": "Stops rendering faraway factory rooms",
+  "description": "Stops rendering faraway factory rooms - Helps with performance!",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]
