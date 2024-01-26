@@ -21,7 +21,7 @@ public sealed class DynamicCuller : MonoBehaviour
     private static List<ManualCameraRenderer> _enabledMonitors = new();
 
     private static Vector3 _playerPosition;
-    private static Tile    _lastFoundPlayerTile;
+    private static Tile    _playerTile;
     private static float   _depthCullingUpdateTime;
 
     private void OnEnable()
@@ -50,36 +50,44 @@ public sealed class DynamicCuller : MonoBehaviour
                               ? GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript
                               : GameNetworkManager.Instance.localPlayerController;
 
-        _playerPosition = localPlayer.transform.position;
+        _playerPosition  = localPlayer.transform.position;
+        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
 
+        var isAnyPlayerInsideFactory = localPlayer.isInsideFactory ||
+                                       _enabledMonitors.FindIndex(monitor => monitor.targetedPlayer.isInsideFactory) != -1;
+
+        if (isAnyPlayerInsideFactory)
+            EstablishVisibleTiles();
+
+        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
+            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
+    }
+
+    private static void EstablishVisibleTiles()
+    {
         if (Plugin.Configuration.UseAdjacentRoomTesting.Value &&
             Time.time - _depthCullingUpdateTime > 1 / Plugin.Configuration.AdjacentRoomUpdateFrequency.Value)
         {
             _depthCullingUpdateTime = Time.time;
 
-            _lastFoundPlayerTile = null;
+            _playerTile = null;
             foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
             {
                 if (!tile.Bounds.Contains(_playerPosition))
                     continue;
 
-                _lastFoundPlayerTile = tile;
+                _playerTile = tile;
                 break;
             }
         }
 
-        if (_lastFoundPlayerTile != null)
-            OccludeByTileBranching(_lastFoundPlayerTile);
-
-        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
+        if (_playerTile != null)
+            OccludeByTileBranching(_playerTile);
 
         if (Plugin.Configuration.UseMultithreading.Value)
             OccludeByDistanceParallel();
         else
             OccludeByDistance();
-
-        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
-            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
     }
 
     private static void OccludeByTileBranching(Tile origin)
@@ -124,7 +132,7 @@ public sealed class DynamicCuller : MonoBehaviour
 
         var shouldBeVisible = false;
 
-        if (_lastFoundPlayerTile == null)
+        if (_playerTile == null)
             shouldBeVisible = Vector3.SqrMagnitude(position - _playerPosition) <= SqrCullDistance;
 
         foreach (var monitor in _enabledMonitors)
