@@ -1,4 +1,6 @@
-**Note:** This mod is experimental as its performance gains haven't been verified yet. Feel free to give it a try!
+![banner.png](Documentation/banner.png)
+
+**Note:** Performance gains may vary between devices. Feel free to give it a try!
 
 ## Overview
 
