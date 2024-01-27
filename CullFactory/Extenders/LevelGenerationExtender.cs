@@ -20,7 +20,15 @@ public sealed class LevelGenerationExtender
         MeshContainers.Clear();
 
         foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
+        {
+            if (tile.UsedDoorways.FindIndex(doorway => doorway == null) != -1)
+            {
+                Plugin.LogError($"Tile {tile.name} has a doorway that connects nowhere, skipping");
+                continue;
+            }
+
             MeshContainers.Add(tile, new TileVisibility(tile));
+        }
 
         RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
     }
@@ -28,7 +36,7 @@ public sealed class LevelGenerationExtender
 
 public class TileVisibility
 {
-    public readonly  Tile           parentTile;
+    public readonly Tile parentTile;
 
     private readonly MeshRenderer[] _meshRenderers;
     private readonly Light[]        _lights;
@@ -42,8 +50,7 @@ public class TileVisibility
         _meshRenderers = Array.FindAll(parentTile.GetComponentsInChildren<MeshRenderer>(), renderer => renderer.enabled);
         _lights        = Array.FindAll(parentTile.GetComponentsInChildren<Light>(),        renderer => renderer.enabled);
 
-        if (Plugin.Configuration.Logging.Value)
-            Plugin.Log($"Found tile {parentTile.name} with {_meshRenderers.Length} mesh renderers and {_lights.Length} lights");
+        Plugin.Log($"Found tile {parentTile.name} with {_meshRenderers.Length} mesh renderers and {_lights.Length} lights");
     }
 
     public void SetVisible(bool value)
@@ -51,8 +58,7 @@ public class TileVisibility
         if (_previouslyVisible == value)
             return;
 
-        if (Plugin.Configuration.Logging.Value)
-            Plugin.Log(value ? $"Showing {parentTile.name}" : $"Culling {parentTile.name}");
+        Plugin.Log(value ? $"Showing {parentTile.name}" : $"Culling {parentTile.name}");
 
         foreach (var meshRenderer in _meshRenderers)
             meshRenderer.enabled = value;

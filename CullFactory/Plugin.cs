@@ -28,7 +28,15 @@ namespace CullFactory
 
         public static void Log(string s)
         {
+            if (!Configuration.Logging.Value)
+                return;
+
             Instance.Logger.LogInfo(s);
+        }
+
+        public static void LogError(string s)
+        {
+            Instance.Logger.LogError(s);
         }
     }
 }

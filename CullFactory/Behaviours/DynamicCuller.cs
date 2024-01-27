@@ -17,12 +17,13 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static readonly List<ManualCameraRenderer>                 Monitors              = new();
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
+    private static readonly Queue<TileDepthTester>                     DepthTesterQueue      = new();
 
     private static List<ManualCameraRenderer> _enabledMonitors = new();
 
     private static Vector3 _playerPosition;
-    private static Tile    _playerTile;
-    private static float   _depthCullingUpdateTime;
+    private static float   _lastUpdateTime;
+    private static bool    _depthTested;
 
     private void OnEnable()
     {
@@ -44,7 +45,10 @@ public sealed class DynamicCuller : MonoBehaviour
         if (StartOfRound.Instance.allPlayersDead)
             return;
 
-        VisibleTilesThisFrame.Clear();
+        if (Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
+            return;
+
+        _lastUpdateTime = Time.time;
 
         var localPlayer = GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
                               ? GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript
@@ -65,24 +69,21 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static void EstablishVisibleTiles()
     {
-        if (Plugin.Configuration.UseAdjacentRoomTesting.Value &&
-            Time.time - _depthCullingUpdateTime > 1 / Plugin.Configuration.AdjacentRoomUpdateFrequency.Value)
-        {
-            _depthCullingUpdateTime = Time.time;
+        VisibleTilesThisFrame.Clear();
 
-            _playerTile = null;
+        if (Plugin.Configuration.UseAdjacentRoomTesting.Value)
+        {
             foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
             {
                 if (!tile.Bounds.Contains(_playerPosition))
                     continue;
 
-                _playerTile = tile;
+                OccludeByTileBranching(tile);
                 break;
             }
         }
 
-        if (_playerTile != null)
-            OccludeByTileBranching(_playerTile);
+        _depthTested = VisibleTilesThisFrame.Count != 0;
 
         if (Plugin.Configuration.UseMultithreading.Value)
             OccludeByDistanceParallel();
@@ -92,24 +93,29 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static void OccludeByTileBranching(Tile origin)
     {
-        var queue = new Queue<TileDepthTester>();
+        DepthTesterQueue.Clear();
+        DepthTesterQueue.Enqueue(new TileDepthTester(origin, 0));
 
-        queue.Enqueue(new TileDepthTester(origin, 0));
-
-        while (queue.Count > 0)
+        while (DepthTesterQueue.Count > 0)
         {
-            var tile = queue.Dequeue();
-
-            if (tile.iteration == Plugin.Configuration.MaxBranchingDepth.Value)
-                break;
-
-            if (VisibleTilesThisFrame.ContainsKey(tile.tile))
-                continue;
+            var tile = DepthTesterQueue.Dequeue();
 
             VisibleTilesThisFrame.TryAdd(tile.tile, LevelGenerationExtender.MeshContainers[tile.tile]);
 
-            foreach (var child in tile.tile.UsedDoorways)
-                queue.Enqueue(new TileDepthTester(child.ConnectedDoorway.Tile, tile.iteration + 1));
+            if (tile.iteration == Plugin.Configuration.MaxBranchingDepth.Value - 1)
+                continue;
+
+            foreach (var doorway in tile.tile.UsedDoorways)
+            {
+                var neighborTile = doorway.ConnectedDoorway.Tile;
+
+                // This is possible due to traversing to a tile that has null doorways
+                if (VisibleTilesThisFrame.ContainsKey(neighborTile) ||
+                    !LevelGenerationExtender.MeshContainers.ContainsKey(neighborTile))
+                    continue;
+
+                DepthTesterQueue.Enqueue(new TileDepthTester(neighborTile, tile.iteration + 1));
+            }
         }
     }
 
@@ -132,7 +138,7 @@ public sealed class DynamicCuller : MonoBehaviour
 
         var shouldBeVisible = false;
 
-        if (_playerTile == null)
+        if (!_depthTested)
             shouldBeVisible = Vector3.SqrMagnitude(position - _playerPosition) <= SqrCullDistance;
 
         foreach (var monitor in _enabledMonitors)

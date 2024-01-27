@@ -7,48 +7,47 @@ namespace CullFactory;
 /// </summary>
 public sealed class Config
 {
-    public ConfigEntry<bool>  Logging                     { get; private set; }
-    public ConfigEntry<bool>  UseAdjacentRoomTesting      { get; private set; }
-    public ConfigEntry<int>   MaxBranchingDepth           { get; private set; }
-    public ConfigEntry<float> AdjacentRoomUpdateFrequency { get; private set; }
+    public ConfigEntry<bool>  Logging                { get; private set; }
+    public ConfigEntry<float> UpdateFrequency        { get; private set; }
+    public ConfigEntry<bool>  UseAdjacentRoomTesting { get; private set; }
+    public ConfigEntry<int>   MaxBranchingDepth      { get; private set; }
+    public ConfigEntry<float> CullDistance           { get; private set; }
+    public ConfigEntry<bool>  UseMultithreading      { get; private set; }
 
-    public ConfigEntry<float> CullDistance      { get; private set; }
-    public ConfigEntry<bool>  UseMultithreading { get; private set; }
-
-    public Config(ConfigFile config)
+    public Config(ConfigFile configFile)
     {
-        Logging = config.Bind("Logging",
-                              "Show culling logs",
-                              false,
-                              "View culled objects in the console.");
+        Logging = configFile.Bind("General",
+                                  "Show culling logs",
+                                  false,
+                                  "View culled objects in the console.");
 
-        UseAdjacentRoomTesting = config.Bind("Depth culling",
-                                             "Use depth culling",
-                                             true,
-                                             "Rooms that aren't adjacent to your own position will be culled.\n" +
-                                             "The recommended testing method. Disable only if you are experiencing performance issues.");
+        UpdateFrequency = configFile.Bind("General",
+                                          "Update frequency",
+                                          5f,
+                                          "Higher values make culling more responsive at the cost of performance.\n" +
+                                          "Update interval: 1 / value (seconds)");
 
-        MaxBranchingDepth = config.Bind("Depth culling",
-                                        "Max branching depth",
-                                        3,
-                                        "How many doors can be traversed before a room is culled.");
+        UseAdjacentRoomTesting = configFile.Bind("Depth culling",
+                                                 "Use depth culling",
+                                                 true,
+                                                 "Rooms that aren't adjacent to your own position will be culled.\n" +
+                                                 "The recommended testing method. Disable only if you are experiencing performance issues.");
 
-        AdjacentRoomUpdateFrequency = config.Bind("Depth culling",
-                                                  "Update frequency",
-                                                  5f,
-                                                  "Higher values make depth culling more accurate at the cost of performance.\n" +
-                                                  "Update interval: 1 / value (seconds)");
+        MaxBranchingDepth = configFile.Bind("Depth culling",
+                                            "Max branching depth",
+                                            3,
+                                            "How many doors can be traversed before a room is culled.");
 
-        CullDistance = config.Bind("Distance culling",
-                                   "Cull distance",
-                                   40f,
-                                   "Rooms that are this far from the player will be culled.\n" +
-                                   "Used for monitoring other players and when adjacent room testing isn't available.");
+        CullDistance = configFile.Bind("Distance culling",
+                                       "Cull distance",
+                                       40f,
+                                       "Rooms that are this far from the player will be culled.\n" +
+                                       "Used for monitoring other players and when adjacent room testing isn't available.");
 
-        UseMultithreading = config.Bind("Distance culling",
-                                        "Use multithreading",
-                                        false,
-                                        "Allocate a thread per room when checking distance to all enabled cameras.\n" +
-                                        "May improve performance on computers with multiple cores.");
+        UseMultithreading = configFile.Bind("Distance culling",
+                                            "Use multithreading",
+                                            false,
+                                            "Allocate a thread per room when checking distance to all enabled cameras.\n" +
+                                            "May improve performance on computers with multiple cores.");
     }
 }
