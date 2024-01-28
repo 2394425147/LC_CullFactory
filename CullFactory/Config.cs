@@ -12,7 +12,6 @@ public sealed class Config
     public ConfigEntry<bool>  UseAdjacentRoomTesting { get; private set; }
     public ConfigEntry<int>   MaxBranchingDepth      { get; private set; }
     public ConfigEntry<float> CullDistance           { get; private set; }
-    public ConfigEntry<bool>  UseMultithreading      { get; private set; }
 
     public Config(ConfigFile configFile)
     {
@@ -41,13 +40,8 @@ public sealed class Config
         CullDistance = configFile.Bind("Distance culling",
                                        "Cull distance",
                                        40f,
+                                       "The camera's far plane distance.\n"                        +
                                        "Rooms that are this far from the player will be culled.\n" +
-                                       "Used for monitoring other players and when adjacent room testing isn't available.");
-
-        UseMultithreading = configFile.Bind("Distance culling",
-                                            "Use multithreading",
-                                            false,
-                                            "Allocate a thread per room when checking distance to all enabled cameras.\n" +
-                                            "May improve performance on computers with multiple cores.");
+                                       "Vanilla value: 400");
     }
 }

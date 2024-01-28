@@ -1,3 +1,14 @@
+# 0.5.0
+
+## Known issues
+
+- Culling also happens when you're outside
+
+## Changed
+
+- Distance-based culling now modifies the camera's far plane, allowing parts of a tile to be culled
+- Depth-based culling now applies to all players
+
 # 0.4.1
 
 ## Added
