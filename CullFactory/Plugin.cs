@@ -13,7 +13,7 @@ namespace CullFactory
 
         private const string Guid    = "com.fumiko.CullFactory";
         private const string Name    = "CullFactory";
-        private const string Version = "0.4.2";
+        private const string Version = "0.5.0";
 
         private void Awake()
         {
