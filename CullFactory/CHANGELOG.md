@@ -1,3 +1,9 @@
+# 0.6.1
+
+## Removed
+
+- Lights no longer gets removed from volumetric lighting
+
 # 0.6.0
 
 ## Added
