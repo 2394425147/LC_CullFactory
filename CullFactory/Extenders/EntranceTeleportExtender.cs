@@ -1,14 +1,52 @@
-﻿using CullFactory.Behaviours;
+﻿using System.Collections.Generic;
+using CullFactory.Behaviours;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CullFactory.Extenders;
 
 [HarmonyPatch(typeof(EntranceTeleport))]
-public sealed class EntranceTeleportExtender
+public static class EntranceTeleportExtender
 {
+    private static readonly List<Transform> ObjectsInsideFactory = new();
+
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayer))]
-    private static void OnTeleport()
+    [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayerClientRpc))]
+    private static void OnTeleport(ref int playerId)
+    {
+        var player = StartOfRound.Instance.allPlayerScripts[playerId];
+
+        if (player.isInsideFactory)
+        {
+            if (!player.IsLocalPlayer)
+                ObjectsInsideFactory.Add(player.transform);
+
+            foreach (var item in player.ItemSlots)
+            {
+                if (item.GetType() != typeof(RadarBoosterItem))
+                    continue;
+
+                ObjectsInsideFactory.Add(item.transform);
+            }
+        }
+        else
+        {
+            if (!player.IsLocalPlayer)
+                ObjectsInsideFactory.Remove(player.transform);
+
+            foreach (var item in player.ItemSlots)
+            {
+                if (item.GetType() != typeof(RadarBoosterItem))
+                    continue;
+
+                ObjectsInsideFactory.Remove(item.transform);
+            }
+        }
+
+        UpdateFarPlane();
+    }
+
+    private static void UpdateFarPlane()
     {
         if (DynamicCuller.useFactoryFarPlane == DynamicCuller.FocusedPlayer.isInsideFactory)
             return;
@@ -20,4 +58,7 @@ public sealed class EntranceTeleportExtender
 
         Plugin.Log($"Changing far plane distance to {DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane}");
     }
+
+    public static bool IsInsideFactory(Transform transform) =>
+        ObjectsInsideFactory.Contains(transform);
 }

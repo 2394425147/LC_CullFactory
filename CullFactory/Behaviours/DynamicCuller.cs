@@ -51,15 +51,15 @@ public sealed class DynamicCuller : MonoBehaviour
 
         foreach (var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None))
         {
-            if (Monitors.FindIndex(monitor => monitor.mapCamera == camera) != -1 ||
-                camera.farClipPlane                                        < Plugin.Configuration.CullDistance.Value)
+            var isMonitorCamera = Monitors.FindIndex(monitor => monitor.mapCamera == camera) != -1;
+
+            if (isMonitorCamera ||
+                Math.Abs(camera.farClipPlane - VanillaClipDistance) > float.Epsilon * 2)
                 continue;
 
-            camera.farClipPlane = Mathf.Min(camera.farClipPlane, Plugin.Configuration.CullDistance.Value);
-            Plugin.Log($"Set culling distance of \"{camera.name}\" to {Plugin.Configuration.CullDistance.Value}");
+            camera.farClipPlane = Mathf.Min(camera.farClipPlane, Plugin.Configuration.SurfaceCullDistance.Value);
+            Plugin.Log($"Set culling distance of \"{camera.name}\" to {Plugin.Configuration.SurfaceCullDistance.Value}");
         }
-
-        FocusedPlayer.gameplayCamera.farClipPlane = Plugin.Configuration.SurfaceCullDistance.Value;
     }
 
     public void Update()
@@ -77,7 +77,7 @@ public sealed class DynamicCuller : MonoBehaviour
 
         foreach (var monitor in _enabledMonitors)
         {
-            if (!monitor.targetedPlayer.isInsideFactory)
+            if (!EntranceTeleportExtender.IsInsideFactory(monitor.radarTargets[monitor.targetTransformIndex].transform))
                 continue;
 
             CullOrigins.Add(monitor.targetedPlayer.transform.position);
