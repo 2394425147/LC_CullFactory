@@ -1,8 +1,17 @@
 # 0.5.1
 
+## Added
+
+- Control for far plane distance when player is on the surface
+- Volumetric lighting is disabled in factories
+
 ## Changed
 
 - Far plane clips further when player is outside
+
+## Fixed
+
+- Culling stops working when any monitored player is outside
 
 # 0.5.0
 
