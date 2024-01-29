@@ -4,6 +4,7 @@ using CullFactory.Behaviours;
 using DunGen;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Extenders;
 
@@ -49,6 +50,9 @@ public class TileVisibility
 
         _meshRenderers = Array.FindAll(parentTile.GetComponentsInChildren<MeshRenderer>(), renderer => renderer.enabled);
         _lights        = Array.FindAll(parentTile.GetComponentsInChildren<Light>(),        renderer => renderer.enabled);
+
+        foreach (var lighting in parentTile.GetComponentsInChildren<HDAdditionalLightData>())
+            lighting.affectsVolumetric = false;
 
         Plugin.Log($"Found tile {parentTile.name} with {_meshRenderers.Length} mesh renderers and {_lights.Length} lights");
     }

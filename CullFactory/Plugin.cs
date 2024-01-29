@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using CullFactory.Extenders;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CullFactory
 {
@@ -13,7 +14,7 @@ namespace CullFactory
 
         private const string Guid    = "com.fumiko.CullFactory";
         private const string Name    = "CullFactory";
-        private const string Version = "0.5.0";
+        private const string Version = "0.5.1";
 
         private void Awake()
         {
@@ -22,6 +23,9 @@ namespace CullFactory
 
             var harmony = new Harmony(Guid);
             harmony.PatchAll(typeof(LevelGenerationExtender));
+            harmony.PatchAll(typeof(EntranceTeleportExtender));
+
+            QualitySettings.shadowResolution = ShadowResolution.Low;
 
             Log($"Plugin {Name} is loaded!");
         }

@@ -1,3 +1,9 @@
+# 0.5.1
+
+## Changed
+
+- Far plane clips further when player is outside
+
 # 0.5.0
 
 ## Known issues

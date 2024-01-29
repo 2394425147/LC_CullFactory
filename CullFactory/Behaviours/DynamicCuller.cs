@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CullFactory.Extenders;
 using DunGen;
+using GameNetcodeStuff;
 using UnityEngine;
 
 namespace CullFactory.Behaviours;
@@ -20,6 +21,12 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static List<ManualCameraRenderer> _enabledMonitors = new();
     private static float                      _lastUpdateTime;
+    public static  bool                       useFactoryFarPlane;
+
+    public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
+                                                          ? GameNetworkManager.Instance.localPlayerController
+                                                                              .spectatedPlayerScript
+                                                          : GameNetworkManager.Instance.localPlayerController;
 
     private void OnEnable()
     {
@@ -37,7 +44,7 @@ public sealed class DynamicCuller : MonoBehaviour
             Plugin.Log($"Found monitor camera \"{cameraRenderer.name}\"");
         }
 
-        if (Math.Abs(Plugin.Configuration.CullDistance.Value - VanillaClipDistance) <= float.Epsilon * 2)
+        if (Math.Abs(Plugin.Configuration.SurfaceCullDistance.Value - VanillaClipDistance) <= float.Epsilon * 2)
             return;
 
         foreach (var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None))
@@ -49,30 +56,30 @@ public sealed class DynamicCuller : MonoBehaviour
             camera.farClipPlane = Mathf.Min(camera.farClipPlane, Plugin.Configuration.CullDistance.Value);
             Plugin.Log($"Set culling distance of \"{camera.name}\" to {Plugin.Configuration.CullDistance.Value}");
         }
+
+        FocusedPlayer.gameplayCamera.farClipPlane = Plugin.Configuration.SurfaceCullDistance.Value;
     }
 
     public void Update()
     {
         if (!Plugin.Configuration.UseAdjacentRoomTesting.Value ||
-            StartOfRound.Instance.allPlayersDead              ||
+            StartOfRound.Instance.allPlayersDead               ||
             Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
             return;
 
         _lastUpdateTime = Time.time;
 
-        var localPlayer = GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
-                              ? GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript
-                              : GameNetworkManager.Instance.localPlayerController;
-
         _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
 
         CullOrigins.Clear();
-        CullOrigins.Add(localPlayer.transform.position);
+
+        if (FocusedPlayer.isInsideFactory)
+            CullOrigins.Add(FocusedPlayer.transform.position);
 
         foreach (var monitor in _enabledMonitors)
         {
             if (!monitor.targetedPlayer.isInsideFactory)
-                return;
+                continue;
 
             CullOrigins.Add(monitor.targetedPlayer.transform.position);
         }
