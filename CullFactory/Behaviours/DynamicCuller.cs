@@ -5,6 +5,7 @@ using CullFactory.Extenders;
 using DunGen;
 using GameNetcodeStuff;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CullFactory.Behaviours;
 
@@ -21,12 +22,13 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static List<ManualCameraRenderer> _enabledMonitors = new();
     private static float                      _lastUpdateTime;
+    private static Vector3                    _lastKnownPlayerPosition;
     public static  bool                       useFactoryFarPlane;
 
     public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
-                                                          ? GameNetworkManager.Instance.localPlayerController
-                                                                              .spectatedPlayerScript
-                                                          : GameNetworkManager.Instance.localPlayerController;
+                                                         ? GameNetworkManager.Instance.localPlayerController
+                                                                             .spectatedPlayerScript
+                                                         : GameNetworkManager.Instance.localPlayerController;
 
     private void OnEnable()
     {
@@ -73,9 +75,6 @@ public sealed class DynamicCuller : MonoBehaviour
 
         CullOrigins.Clear();
 
-        if (FocusedPlayer.isInsideFactory)
-            CullOrigins.Add(FocusedPlayer.transform.position);
-
         foreach (var monitor in _enabledMonitors)
         {
             if (!monitor.targetedPlayer.isInsideFactory)
@@ -84,7 +83,7 @@ public sealed class DynamicCuller : MonoBehaviour
             CullOrigins.Add(monitor.targetedPlayer.transform.position);
         }
 
-        if (CullOrigins.Count > 0)
+        if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
             IncludeVisibleTiles();
 
         foreach (var container in LevelGenerationExtender.MeshContainers.Values)
@@ -93,11 +92,26 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static void IncludeVisibleTiles()
     {
+        var localPlayerTested = false;
+
         VisibleTilesThisFrame.Clear();
 
         foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
         {
             var anyOriginCaptured = CullOrigins.RemoveAll(pos => tile.Bounds.Contains(pos)) > 0;
+
+            if (FocusedPlayer.isInsideFactory && !localPlayerTested)
+            {
+                if (tile.Bounds.Contains(FocusedPlayer.transform.position))
+                {
+                    _lastKnownPlayerPosition = FocusedPlayer.transform.position;
+                    anyOriginCaptured        = localPlayerTested = true;
+                }
+                else if (tile.Bounds.Contains(_lastKnownPlayerPosition))
+                {
+                    anyOriginCaptured = localPlayerTested = true;
+                }
+            }
 
             if (!anyOriginCaptured)
                 continue;
