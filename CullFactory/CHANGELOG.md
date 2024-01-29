@@ -1,3 +1,9 @@
+# 0.5.3
+
+## Fixed
+
+- Culling distance options works the other way around
+
 # 0.5.2
 
 ## Fixed

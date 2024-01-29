@@ -7,7 +7,7 @@ namespace CullFactory.Extenders;
 public sealed class EntranceTeleportExtender
 {
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayerServerRpc))]
+    [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayer))]
     private static void OnTeleport()
     {
         if (DynamicCuller.useFactoryFarPlane == DynamicCuller.FocusedPlayer.isInsideFactory)
