@@ -92,7 +92,8 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private static void IncludeVisibleTiles()
     {
-        var localPlayerTested = false;
+        var  localPlayerRoomFound = false;
+        Tile fallbackPlayerOrigin = null;
 
         VisibleTilesThisFrame.Clear();
 
@@ -100,16 +101,16 @@ public sealed class DynamicCuller : MonoBehaviour
         {
             var anyOriginCaptured = CullOrigins.RemoveAll(pos => tile.Bounds.Contains(pos)) > 0;
 
-            if (FocusedPlayer.isInsideFactory && !localPlayerTested)
+            if (FocusedPlayer.isInsideFactory && !localPlayerRoomFound)
             {
-                if (tile.Bounds.Contains(FocusedPlayer.transform.position))
+                if (tile.Bounds.Contains(FocusedPlayer.gameplayCamera.transform.position))
                 {
-                    _lastKnownPlayerPosition = FocusedPlayer.transform.position;
-                    anyOriginCaptured        = localPlayerTested = true;
+                    _lastKnownPlayerPosition = FocusedPlayer.gameplayCamera.transform.position;
+                    anyOriginCaptured        = localPlayerRoomFound = true;
                 }
                 else if (tile.Bounds.Contains(_lastKnownPlayerPosition))
                 {
-                    anyOriginCaptured = localPlayerTested = true;
+                    fallbackPlayerOrigin = tile;
                 }
             }
 
@@ -118,6 +119,9 @@ public sealed class DynamicCuller : MonoBehaviour
 
             IncludeNearbyTiles(tile);
         }
+
+        if (!localPlayerRoomFound)
+            IncludeNearbyTiles(fallbackPlayerOrigin);
     }
 
     private static void IncludeNearbyTiles(Tile origin)

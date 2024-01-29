@@ -1,3 +1,10 @@
+# 0.6.0
+
+## Added
+
+- Remembers player's last valid position when out of bounds
+- Culling for radar boosters
+
 # 0.5.3
 
 ## Fixed

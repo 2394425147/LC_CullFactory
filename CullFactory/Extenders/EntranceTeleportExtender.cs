@@ -16,17 +16,21 @@ public static class EntranceTeleportExtender
     {
         var player = StartOfRound.Instance.allPlayerScripts[playerObj];
 
-        if (player.isInsideFactory)
+        var goingInside = !player.isInsideFactory;
+
+        if (goingInside)
         {
             if (!player.IsLocalPlayer)
                 ObjectsInsideFactory.Add(player.transform);
 
             foreach (var item in player.ItemSlots)
             {
-                if (item.GetType() != typeof(RadarBoosterItem))
+                if (item           == null ||
+                    item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
                 ObjectsInsideFactory.Add(item.transform);
+                Plugin.Log($"Tracking {item.name}");
             }
         }
         else
@@ -41,6 +45,7 @@ public static class EntranceTeleportExtender
                     continue;
 
                 ObjectsInsideFactory.Remove(item.transform);
+                Plugin.Log($"Stopped tracking {item.name}");
             }
         }
 
@@ -50,10 +55,12 @@ public static class EntranceTeleportExtender
 
     private static void UpdateFarPlane()
     {
-        if (DynamicCuller.useFactoryFarPlane == DynamicCuller.FocusedPlayer.isInsideFactory)
+        var goingInside = !DynamicCuller.FocusedPlayer.isInsideFactory;
+
+        if (DynamicCuller.useFactoryFarPlane == !goingInside)
             return;
 
-        DynamicCuller.useFactoryFarPlane = DynamicCuller.FocusedPlayer.isInsideFactory;
+        DynamicCuller.useFactoryFarPlane = !goingInside;
         DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane = DynamicCuller.useFactoryFarPlane
                                                                       ? Plugin.Configuration.CullDistance.Value
                                                                       : Plugin.Configuration.SurfaceCullDistance.Value;
