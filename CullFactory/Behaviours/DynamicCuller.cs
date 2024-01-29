@@ -103,7 +103,6 @@ public sealed class DynamicCuller : MonoBehaviour
                 continue;
 
             IncludeNearbyTiles(tile);
-            break;
         }
     }
 
