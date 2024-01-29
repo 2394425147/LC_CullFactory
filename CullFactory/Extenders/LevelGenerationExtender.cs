@@ -17,8 +17,6 @@ public sealed class LevelGenerationExtender
     [HarmonyPatch("waitForMainEntranceTeleportToSpawn")]
     private static void OnLevelGenerated()
     {
-        Plugin.LogError($"{StartOfRound.Instance.localPlayerController.gameplayCamera.farClipPlane}");
-
         MeshContainers.Clear();
 
         foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
