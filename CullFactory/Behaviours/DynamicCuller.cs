@@ -5,7 +5,6 @@ using CullFactory.Extenders;
 using DunGen;
 using GameNetcodeStuff;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CullFactory.Behaviours;
 
@@ -77,10 +76,11 @@ public sealed class DynamicCuller : MonoBehaviour
 
         foreach (var monitor in _enabledMonitors)
         {
-            if (!EntranceTeleportExtender.IsInsideFactory(monitor.radarTargets[monitor.targetTransformIndex].transform))
+            var targetTransform = monitor.radarTargets[monitor.targetTransformIndex].transform;
+            if (!EntranceTeleportExtender.IsInsideFactory(targetTransform))
                 continue;
 
-            CullOrigins.Add(monitor.targetedPlayer.transform.position);
+            CullOrigins.Add(targetTransform.position);
         }
 
         if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
