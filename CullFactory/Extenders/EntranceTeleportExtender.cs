@@ -12,9 +12,9 @@ public static class EntranceTeleportExtender
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayerClientRpc))]
-    private static void OnTeleport(ref int playerId)
+    private static void OnTeleport(ref int playerObj)
     {
-        var player = StartOfRound.Instance.allPlayerScripts[playerId];
+        var player = StartOfRound.Instance.allPlayerScripts[playerObj];
 
         if (player.isInsideFactory)
         {
@@ -36,14 +36,16 @@ public static class EntranceTeleportExtender
 
             foreach (var item in player.ItemSlots)
             {
-                if (item.GetType() != typeof(RadarBoosterItem))
+                if (item           == null ||
+                    item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
                 ObjectsInsideFactory.Remove(item.transform);
             }
         }
 
-        UpdateFarPlane();
+        if (player.IsLocalPlayer)
+            UpdateFarPlane();
     }
 
     private static void UpdateFarPlane()
