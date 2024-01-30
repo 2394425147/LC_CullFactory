@@ -19,9 +19,10 @@ public class RadarTargetExtender : MonoBehaviour
         //Expensive calculations ahead
         cachedradartarget = TargetIndex;
         TransformAndName Target = StartOfRound.Instance.mapScreen.radarTargets[TargetIndex];
-        if (Target.transform != null) //Safety measures
-        {
-            if (!Target.isNonPlayer) //If target is Player
+        //Safety measures
+        if (Target.transform != null)
+        {   //If target is Player
+            if (!Target.isNonPlayer) 
             {
                 PlayerControllerB Player = Target.transform.gameObject.GetComponentInChildren<PlayerControllerB>();
                 Log($"IsInside {Player.isInsideFactory}");
@@ -34,10 +35,12 @@ public class RadarTargetExtender : MonoBehaviour
                     return true;
                 }
             }
-            else //If target is Radar
+            //If target is Radar
+            else 
             {
                 RadarBoosterItem Radar = Target.transform.gameObject.GetComponentInChildren<RadarBoosterItem>();
-                if (Radar.isInFactory) //If Radar is in factory (Doesn't work with EnhancedRadarBooster mod sadly ;-;)
+                //If Radar is in factory (Doesn't work with EnhancedRadarBooster mod sadly ;-;)
+                if (Radar.isInFactory) 
                 {
                     //Result gets cached, target being culled
                     Log($"Added Booster {Target.name} as depth culling target");
@@ -46,6 +49,7 @@ public class RadarTargetExtender : MonoBehaviour
                 }
             }
         }
+        //Target doesn't need to be culled, results are cached
         cachedneedsculling = false;
         return false;
     }
@@ -53,5 +57,15 @@ public class RadarTargetExtender : MonoBehaviour
     [HarmonyPatch(typeof(PlayerControllerB), "TeleportPlayer")]
     [HarmonyPostfix]
     public static void OnTeleport(PlayerControllerB __instance)
-    { NeedsCulling(cachedradartarget, true); } //Force update culling on target if someone teleports in/out of building
+    {
+        //Force update culling on target if someone teleports in/out of building
+        __instance.StartCoroutine(WaitBeforeCheck()); 
+    }
+
+    public static IEnumerator WaitBeforeCheck()
+    {
+        //Waiting 250ms after player teleport event for InFacility property to update
+        yield return new WaitForSeconds(0.25f); 
+        NeedsCulling(cachedradartarget, true); 
+    }
 }
