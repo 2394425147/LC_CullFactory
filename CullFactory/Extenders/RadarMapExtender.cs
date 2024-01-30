@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using CullFactory.Behaviours;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
@@ -9,7 +7,7 @@ using static CullFactory.Plugin;
 
 namespace CullFactory.Extenders;
 
-public class RadarMapExtender
+public class RadarMapExtender : MonoBehaviour
 {
     public static int cachedradartarget { get; private set; }
     public static bool cachedneedsculling { get; private set; }
@@ -23,6 +21,7 @@ public class RadarMapExtender
             if (!Target.isNonPlayer)
             {
                 PlayerControllerB Player = Target.transform.gameObject.GetComponentInChildren<PlayerControllerB>();
+                Log($"IsInside {Player.isInsideFactory}");
                 if (Player.playerClientId != GameNetworkManager.Instance.localPlayerController.playerClientId &&
                     Player.isInsideFactory)
                 {
@@ -45,8 +44,18 @@ public class RadarMapExtender
         cachedneedsculling = false;
         return false;
     }
+
     [HarmonyPatch(typeof(PlayerControllerB), "TeleportPlayer")]
     [HarmonyPostfix]
-    public static void OnTeleport()
-    { NeedsCulling(cachedradartarget, true); }
+    public static void OnTeleport(PlayerControllerB __instance)
+    {
+        NeedsCulling(cachedradartarget, true);
+       // __instance.StartCoroutine(checkculling());
+    }
+    
+   /*public static IEnumerator checkculling()
+    {
+        yield return new WaitForSeconds(0.5f); //Waiting before checking
+        NeedsCulling(cachedradartarget, true); //Forcing function to recheck current target
+    }*/
 }
