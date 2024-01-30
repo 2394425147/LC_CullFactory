@@ -78,8 +78,10 @@ public sealed class DynamicCuller : MonoBehaviour
         {
             var targetTransform = monitor.radarTargets[monitor.targetTransformIndex].transform;
             /*if (!EntranceTeleportExtender.IsInsideFactory(targetTransform))
-                continue;*/
-            if (RadarMapExtender.NeedsCulling(monitor.targetTransformIndex)) 
+                continue;*/ //Old method
+            
+            //This handles both non local Players and Radars being in facility
+            if (RadarTargetExtender.NeedsCulling(monitor.targetTransformIndex)) 
             { CullOrigins.Add(targetTransform.position); }
         }
 
