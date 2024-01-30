@@ -77,10 +77,10 @@ public sealed class DynamicCuller : MonoBehaviour
         foreach (var monitor in _enabledMonitors)
         {
             var targetTransform = monitor.radarTargets[monitor.targetTransformIndex].transform;
-            if (!EntranceTeleportExtender.IsInsideFactory(targetTransform))
-                continue;
-
-            CullOrigins.Add(targetTransform.position);
+            /*if (!EntranceTeleportExtender.IsInsideFactory(targetTransform))
+                continue;*/
+            if (RadarMapExtender.NeedsCulling(monitor.targetTransformIndex)) 
+            { CullOrigins.Add(targetTransform.position); }
         }
 
         if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)

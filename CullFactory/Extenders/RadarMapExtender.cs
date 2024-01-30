@@ -2,32 +2,51 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using CullFactory.Behaviours;
+using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
 using static CullFactory.Plugin;
+
 namespace CullFactory.Extenders;
+
 public class RadarMapExtender
 {
-    [HarmonyPatch(typeof(ManualCameraRenderer), "updateMapTarget")]
-    [HarmonyPostfix]
-    private static void OnTargetSwitch(ref int setRadarTargetIndex, ManualCameraRenderer __instance)
+    public static int cachedradartarget { get; private set; }
+    public static bool cachedneedsculling { get; private set; }
+    public static bool NeedsCulling(int TargetIndex, bool force = false)
     {
-       // __instance.radarTargets[1].isNonPlayer
-       if (!__instance.radarTargets[__instance.targetTransformIndex].isNonPlayer)
-       {
-           Log(__instance.radarTargets[__instance.targetTransformIndex].transform.gameObject.ToString());
-       }
-       else
-       {
-           Log(__instance.radarTargets[__instance.targetTransformIndex].transform.gameObject.ToString());
-       }
+        if (TargetIndex == cachedradartarget && !force) { return cachedneedsculling; }
+        cachedradartarget = TargetIndex;
+        TransformAndName Target = StartOfRound.Instance.mapScreen.radarTargets[TargetIndex];
+        if (Target.transform != null) 
+        {
+            if (!Target.isNonPlayer)
+            {
+                PlayerControllerB Player = Target.transform.gameObject.GetComponentInChildren<PlayerControllerB>();
+                if (Player.playerClientId != GameNetworkManager.Instance.localPlayerController.playerClientId &&
+                    Player.isInsideFactory)
+                {
+                    Log($"Added Player {Target.name} as depth culling target");
+                    cachedneedsculling = true;
+                    return true;
+                }
+            }
+            else
+            {
+                RadarBoosterItem Radar = Target.transform.gameObject.GetComponentInChildren<RadarBoosterItem>();
+                if (Radar.isInFactory)
+                {
+                    Log($"Added Booster {Target.name} as depth culling target");
+                    cachedneedsculling = true;
+                    return true;
+                }
+            }
+        }
+        cachedneedsculling = false;
+        return false;
     }
-    [HarmonyPatch(typeof(ManualCameraRenderer), "Update")]
+    [HarmonyPatch(typeof(PlayerControllerB), "TeleportPlayer")]
     [HarmonyPostfix]
-    private static void OnUpdate(ManualCameraRenderer __instance)
-    {
-        // __instance.radarTargets[1].isNonPlayer
-        //this.radarTargets[this.targetTransformIndex].transform
-        //Log(__instance.radarTargets[__instance.targetTransformIndex].transform.ToString());
-    }
+    public static void OnTeleport()
+    { NeedsCulling(cachedradartarget, true); }
 }
