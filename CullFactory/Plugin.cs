@@ -24,6 +24,7 @@ namespace CullFactory
             var harmony = new Harmony(Guid);
             harmony.PatchAll(typeof(LevelGenerationExtender));
             harmony.PatchAll(typeof(EntranceTeleportExtender));
+            harmony.PatchAll(typeof(RadarMapExtender));
 
             QualitySettings.shadowResolution = ShadowResolution.Low;
 
