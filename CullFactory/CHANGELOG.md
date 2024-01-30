@@ -1,3 +1,9 @@
+# 0.6.2
+
+## Fixed
+
+- Fallback tile being used when none is available
+
 # 0.6.1
 
 ## Removed

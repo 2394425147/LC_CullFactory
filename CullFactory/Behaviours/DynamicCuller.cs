@@ -120,7 +120,7 @@ public sealed class DynamicCuller : MonoBehaviour
             IncludeNearbyTiles(tile);
         }
 
-        if (!localPlayerRoomFound)
+        if (!localPlayerRoomFound && fallbackPlayerOrigin != null)
             IncludeNearbyTiles(fallbackPlayerOrigin);
     }
 
