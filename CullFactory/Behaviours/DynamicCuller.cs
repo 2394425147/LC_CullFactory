@@ -13,7 +13,9 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private const float VanillaClipDistance = 400;
+    public static DynamicCuller Instance { get; private set; }
+
+    private const float         VanillaClipDistance = 400;
 
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
     private static readonly List<ManualCameraRenderer>                 Monitors              = new();
@@ -31,6 +33,11 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private void OnEnable()
     {
+        if (Instance != null)
+            Destroy(Instance);
+
+        Instance = this;
+
         Monitors.Clear();
 
         foreach (var cameraRenderer in FindObjectsByType<ManualCameraRenderer>(FindObjectsSortMode.None))
@@ -159,6 +166,11 @@ public sealed class DynamicCuller : MonoBehaviour
                 depthTesterQueue.Enqueue(new TileDepthTester(neighborTile, tile.iteration + 1));
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 }
 

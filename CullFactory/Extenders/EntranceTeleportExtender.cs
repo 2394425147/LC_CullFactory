@@ -65,6 +65,10 @@ public static class EntranceTeleportExtender
                                                                       ? Plugin.Configuration.CullDistance.Value
                                                                       : Plugin.Configuration.SurfaceCullDistance.Value;
 
+        // Force an update
+        if (DynamicCuller.useFactoryFarPlane)
+            DynamicCuller.Instance.Update();
+
         Plugin.Log($"Changing far plane distance to {DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane}");
     }
 
