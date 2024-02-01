@@ -8,7 +8,8 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(EntranceTeleport))]
 public static class EntranceTeleportExtender
 {
-    private static readonly List<Transform> ObjectsInsideFactory = new();
+    // Players' tracking transform is hierarchically different from that of a radar booster
+    private static readonly Dictionary<GameObject, Transform> ObjectsInsideFactory = new();
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayerClientRpc))]
@@ -21,7 +22,7 @@ public static class EntranceTeleportExtender
         if (goingInside)
         {
             if (!player.IsLocalPlayer)
-                ObjectsInsideFactory.Add(player.transform);
+                ObjectsInsideFactory.Add(player.gameObject, player.gameplayCamera.transform);
 
             foreach (var item in player.ItemSlots)
             {
@@ -29,14 +30,14 @@ public static class EntranceTeleportExtender
                     item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
-                ObjectsInsideFactory.Add(item.transform);
+                ObjectsInsideFactory.Add(item.gameObject, item.transform);
                 Plugin.Log($"Tracking {item.name}");
             }
         }
         else
         {
             if (!player.IsLocalPlayer)
-                ObjectsInsideFactory.Remove(player.transform);
+                ObjectsInsideFactory.Remove(player.gameObject);
 
             foreach (var item in player.ItemSlots)
             {
@@ -44,7 +45,7 @@ public static class EntranceTeleportExtender
                     item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
-                ObjectsInsideFactory.Remove(item.transform);
+                ObjectsInsideFactory.Remove(item.gameObject);
                 Plugin.Log($"Stopped tracking {item.name}");
             }
         }
@@ -72,6 +73,6 @@ public static class EntranceTeleportExtender
         Plugin.Log($"Changing far plane distance to {DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane}");
     }
 
-    public static bool IsInsideFactory(Transform transform) =>
-        ObjectsInsideFactory.Contains(transform);
+    public static bool IsInsideFactory(GameObject gameObject, out Transform transform) =>
+        ObjectsInsideFactory.TryGetValue(gameObject, out transform);
 }
