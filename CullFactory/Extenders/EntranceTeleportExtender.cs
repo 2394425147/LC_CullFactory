@@ -22,7 +22,7 @@ public static class EntranceTeleportExtender
         if (goingInside)
         {
             if (!player.IsLocalPlayer)
-                ObjectsInsideFactory.Add(player.gameObject, player.gameplayCamera.transform);
+                ObjectsInsideFactory[player.gameObject] = player.gameplayCamera.transform;
 
             foreach (var item in player.ItemSlots)
             {
@@ -30,7 +30,7 @@ public static class EntranceTeleportExtender
                     item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
-                ObjectsInsideFactory.Add(item.gameObject, item.transform);
+                ObjectsInsideFactory[item.gameObject] = item.transform;
                 Plugin.Log($"Tracking {item.name}");
             }
         }
