@@ -25,7 +25,7 @@
         <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\AmazingAssets.TerrainToMesh.dll</HintPath>
       </Reference>
       <Reference Include="Assembly-CSharp">
-        <HintPath>Libraries\Assembly-CSharp.dll</HintPath>
+        <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Assembly-CSharp-firstpass">
         <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
@@ -462,6 +462,7 @@
       <None Update="CHANGELOG.md">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Remove="Libraries\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -470,5 +471,10 @@
 
     <ItemGroup>
       <Compile Remove="Models\TileVisibility.cs" />
+      <Compile Remove="Libraries\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Libraries\**" />
     </ItemGroup>
 </Project>
