@@ -96,11 +96,6 @@ public sealed class DynamicCuller : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        Instance = null;
-    }
-
     private static void IncludeVisibleTiles()
     {
         var localPlayerRoomFound = false;
@@ -170,6 +165,14 @@ public sealed class DynamicCuller : MonoBehaviour
                 depthTesterQueue.Enqueue(new TileDepthTester(neighborTile, tile.iteration + 1));
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+
+        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
+            container.SetVisible(true);
     }
 }
 
