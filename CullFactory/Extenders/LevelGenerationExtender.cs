@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CullFactory.Behaviours;
+using CullFactory.Data;
 using DunGen;
 using HarmonyLib;
 using UnityEngine;
@@ -29,6 +30,8 @@ public sealed class LevelGenerationExtender
 
             MeshContainers.Add(tile, new TileVisibility(tile));
         }
+
+        DungeonCullingInfo.OnLevelGenerated();
 
         RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
     }
