@@ -10,11 +10,14 @@ public static class DungeonCullingInfo
     private const float OutsideTileRadius = 1f;
     private const float SqrOutsideTileRadius = OutsideTileRadius * OutsideTileRadius;
 
+    public static Dictionary<Doorway, Portal> AllPortals = [];
     public static Tile[] AllTiles { get; private set; }
     public static Dictionary<Tile, TileContents> AllTileContents { get; private set; }
 
     public static void OnLevelGenerated()
     {
+        CreatePortals();
+
         AllTiles = [.. RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles];
 
         AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
@@ -22,6 +25,17 @@ public static class DungeonCullingInfo
             AllTileContents[tile] = new TileContents(tile);
 
         RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
+    }
+
+    private static void CreatePortals()
+    {
+        AllPortals.Clear();
+
+        foreach (var doorConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
+        {
+            AllPortals[doorConnection.A] = new Portal(doorConnection.A);
+            AllPortals[doorConnection.B] = new Portal(doorConnection.B);
+        }
     }
 
     public static Tile GetTile(this Vector3 point)
