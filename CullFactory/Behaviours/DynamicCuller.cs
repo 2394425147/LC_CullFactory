@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CullFactory.Extenders;
 using CullFactory.Models;
+using CullFactory.Utilities;
 using DunGen;
 using GameNetcodeStuff;
 using UnityEngine;
@@ -16,11 +17,11 @@ public sealed class DynamicCuller : MonoBehaviour
 {
     public static DynamicCuller Instance { get; private set; }
 
-    private const float         VanillaClipDistance = 400;
+    private const float VanillaClipDistance = 400;
 
-    private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
-    private static readonly List<ManualCameraRenderer>                 Monitors              = new();
-    private static readonly List<Vector3>                              CullOrigins           = new();
+    private static readonly ConcurrentDictionary<Tile, TileContents> VisibleTilesThisFrame = new();
+    private static readonly List<ManualCameraRenderer>               Monitors              = new();
+    private static readonly List<Vector3>                            CullOrigins           = new();
 
     private static List<ManualCameraRenderer> _enabledMonitors = new();
     private static float                      _lastUpdateTime;
@@ -94,45 +95,44 @@ public sealed class DynamicCuller : MonoBehaviour
         if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
             IncludeVisibleTiles();
 
-        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
-            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
+        // TODO: Work out tiles that need to be culled
     }
 
     private static void IncludeVisibleTiles()
     {
         var  localPlayerRoomFound = false;
-        Tile fallbackPlayerOrigin = null;
+        TileContents fallbackPlayerOrigin = null;
 
         VisibleTilesThisFrame.Clear();
 
-        foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
+        foreach (var contents in DungeonUtilities.AllTiles)
         {
-            var anyOriginCaptured = CullOrigins.RemoveAll(pos => tile.Bounds.Contains(pos)) > 0;
+            var anyOriginCaptured = CullOrigins.RemoveAll(pos => contents.tile.Bounds.Contains(pos)) > 0;
 
             if (FocusedPlayer.isInsideFactory && !localPlayerRoomFound)
             {
-                if (tile.Bounds.Contains(FocusedPlayer.gameplayCamera.transform.position))
+                if (contents.tile.Bounds.Contains(FocusedPlayer.gameplayCamera.transform.position))
                 {
                     _lastKnownPlayerPosition = FocusedPlayer.gameplayCamera.transform.position;
                     anyOriginCaptured        = localPlayerRoomFound = true;
                 }
-                else if (tile.Bounds.Contains(_lastKnownPlayerPosition))
+                else if (contents.tile.Bounds.Contains(_lastKnownPlayerPosition))
                 {
-                    fallbackPlayerOrigin = tile;
+                    fallbackPlayerOrigin = contents;
                 }
             }
 
             if (!anyOriginCaptured)
                 continue;
 
-            IncludeNearbyTiles(tile);
+            IncludeNearbyTiles(contents);
         }
 
         if (!localPlayerRoomFound && fallbackPlayerOrigin != null)
             IncludeNearbyTiles(fallbackPlayerOrigin);
     }
 
-    private static void IncludeNearbyTiles(Tile origin)
+    private static void IncludeNearbyTiles(TileContents origin)
     {
         var depthTesterQueue = new Queue<TileDepthTester>();
         var traversedTiles   = new HashSet<Tile>();
@@ -149,7 +149,7 @@ public sealed class DynamicCuller : MonoBehaviour
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            VisibleTilesThisFrame.TryAdd(tile.tile, LevelGenerationExtender.MeshContainers[tile.tile]);
+            VisibleTilesThisFrame.TryAdd(tile.tile, DungeonUtilities.MeshContainers[tile.tile]);
             traversedTiles.Add(tile.tile);
 
             if (tile.iteration == Plugin.Configuration.MaxBranchingDepth.Value - 1)
@@ -180,7 +180,7 @@ internal struct TileDepthTester
     public readonly Tile tile;
     public readonly int  iteration;
 
-    public TileDepthTester(Tile tile, int iteration)
+    public TileDepthTester(TileContents tile, int iteration)
     {
         this.tile      = tile;
         this.iteration = iteration;

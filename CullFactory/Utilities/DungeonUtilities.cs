@@ -47,4 +47,42 @@ public static class DungeonUtilities
 
         return closestTile;
     }
+
+    private static readonly Dictionary<Vector3, Proximity> Proximities = new();
+
+    public static List<TileContents> GetTiles(this List<Vector3> points)
+    {
+        var result = new List<TileContents>(points.Count);
+
+        Proximities.Clear();
+        foreach (var contents in AllTiles)
+        {
+            foreach (var point in points)
+            {
+                if (contents.tile.Bounds.Contains(point))
+                {
+                    result.Add(contents);
+                    continue;
+                }
+
+                var sqrTileDistance = contents.tile.Bounds.SqrDistance(point);
+
+                var firstScan = !Proximities.TryGetValue(point, out var res);
+
+                switch (firstScan)
+                {
+                    case false when sqrTileDistance > res.sqrDistance:
+                        continue;
+                    case true:
+                        Proximities.Add(point, new Proximity(sqrTileDistance, contents));
+                        break;
+                    default:
+                        Proximities[point] = new Proximity(sqrTileDistance, contents);
+                        break;
+                }
+            }
+        }
+
+        return result;
+    }
 }

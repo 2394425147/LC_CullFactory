@@ -7,6 +7,7 @@
         <Version>1.0.0</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -465,5 +466,9 @@
 
     <ItemGroup>
       <Folder Include="Documentation\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Models\TileVisibility.cs" />
     </ItemGroup>
 </Project>

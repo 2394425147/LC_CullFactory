@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using CullFactory.Extenders;
+using CullFactory.Utilities;
 using HarmonyLib;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace CullFactory
             Configuration = new Config(Config);
 
             var harmony = new Harmony(Guid);
-            harmony.PatchAll(typeof(LevelGenerationExtender));
+            harmony.PatchAll(typeof(DungeonUtilities));
             harmony.PatchAll(typeof(EntranceTeleportExtender));
 
             QualitySettings.shadowResolution = ShadowResolution.Low;
