@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using CullFactory.Behaviours;
 using CullFactory.Extenders;
 using HarmonyLib;
 using UnityEngine;
@@ -40,5 +41,22 @@ public class Plugin : BaseUnityPlugin
     public static void LogError(string s)
     {
         Instance.Logger.LogError(s);
+    }
+
+    public static void CreateCullingHandler()
+    {
+        var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
+        Destroy(dungeonObject.GetComponent<DynamicCuller>());
+        Destroy(dungeonObject.GetComponent<PortalOcclusionCuller>());
+
+        switch (Configuration.Culler.Value)
+        {
+            case CullingType.PortalOcclusionCulling:
+                dungeonObject.AddComponent<PortalOcclusionCuller>();
+                break;
+            case CullingType.DepthCulling:
+                dungeonObject.AddComponent<DynamicCuller>();
+                break;
+        }
     }
 }

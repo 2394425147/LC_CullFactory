@@ -33,7 +33,7 @@ public sealed class LevelGenerationExtender
 
         DungeonCullingInfo.OnLevelGenerated();
 
-        RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
+        Plugin.CreateCullingHandler();
     }
 }
 

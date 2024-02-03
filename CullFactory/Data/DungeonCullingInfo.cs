@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using CullFactory.Behaviours;
 using DunGen;
 using UnityEngine;
@@ -23,8 +23,6 @@ public static class DungeonCullingInfo
         AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
         foreach (var tile in AllTiles)
             AllTileContents[tile] = new TileContents(tile);
-
-        RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject.AddComponent<DynamicCuller>();
     }
 
     private static void CreatePortals()

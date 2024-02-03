@@ -14,6 +14,14 @@ public sealed class Config
                                   false,
                                   "View culled objects in the console.");
 
+        Culler = configFile.Bind("General",
+                                 "Culling type",
+                                 CullingType.PortalOcclusionCulling,
+                                 "The culling type to use.\n" +
+                                 "Portal occlusion culling tests what rooms are visible to the camera based on the size of the passages between them.\n" +
+                                 "Depth culling hides rooms based on the number of rooms separating them from the camera.");
+        Culler.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
+
         UpdateFrequency = configFile.Bind("General",
                                           "Update frequency",
                                           5f,
@@ -47,6 +55,7 @@ public sealed class Config
     }
 
     public ConfigEntry<bool> Logging { get; private set; }
+    public ConfigEntry<CullingType> Culler { get; private set; }
     public ConfigEntry<float> UpdateFrequency { get; private set; }
     public ConfigEntry<bool> UseAdjacentRoomTesting { get; private set; }
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
