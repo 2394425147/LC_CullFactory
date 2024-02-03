@@ -24,7 +24,7 @@
         <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\AmazingAssets.TerrainToMesh.dll</HintPath>
       </Reference>
       <Reference Include="Assembly-CSharp">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath>Libraries\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Assembly-CSharp-firstpass">
         <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>

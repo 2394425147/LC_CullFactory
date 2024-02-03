@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CullFactory.Extenders;
+using CullFactory.Models;
 using DunGen;
 using GameNetcodeStuff;
 using UnityEngine;
