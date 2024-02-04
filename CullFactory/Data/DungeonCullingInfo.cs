@@ -57,4 +57,73 @@ public static class DungeonCullingInfo
 
         return closestTile;
     }
+
+    const int MaxStackCapacity = 10;
+    static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
+    static readonly int[] IndexStack = new int[MaxStackCapacity];
+    static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
+
+    public delegate void LineOfSightCallback(Tile[] tileStack, int stackIndex);
+
+    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, Plane[] frustum, LineOfSightCallback callback)
+    {
+        TileStack[0] = originTile;
+        IndexStack[0] = 0;
+        FrustumStack[0] = frustum;
+        int stackIndex = 0;
+
+        callback(TileStack, stackIndex);
+
+        while (stackIndex >= 0 && stackIndex < MaxStackCapacity)
+        {
+            var tile = TileStack[stackIndex];
+            var index = IndexStack[stackIndex]++;
+
+            if (index >= tile.UsedDoorways.Count)
+            {
+                stackIndex--;
+                continue;
+            }
+
+            var doorway = tile.UsedDoorways[index];
+
+            if (stackIndex > 0 && (object)doorway.ConnectedDoorway.Tile == TileStack[stackIndex - 1])
+                continue;
+
+            var portal = AllPortals[doorway];
+
+            bool outsideFrustum = false;
+            for (int i = 0; i <= stackIndex; i++)
+            {
+                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.Bounds))
+                {
+                    outsideFrustum = true;
+                    break;
+                }
+            }
+            if (outsideFrustum)
+                continue;
+
+            stackIndex++;
+            TileStack[stackIndex] = doorway.ConnectedDoorway.Tile;
+            IndexStack[stackIndex] = 0;
+
+            if (FrustumStack[stackIndex] is null)
+                FrustumStack[stackIndex] = portal.GetFrustumPlanes(origin);
+            else
+                portal.GetFrustumPlanes(origin, FrustumStack[stackIndex]);
+
+            callback(TileStack, stackIndex);
+        }
+    }
+
+    public static void CallForEachLineOfSight(Camera camera, Tile originTile, LineOfSightCallback callback)
+    {
+        CallForEachLineOfSight(camera.transform.position, originTile, GeometryUtility.CalculateFrustumPlanes(camera), callback);
+    }
+
+    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
+    {
+        CallForEachLineOfSight(origin, originTile, new Plane[0], callback);
+    }
 }
