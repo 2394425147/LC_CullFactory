@@ -26,7 +26,7 @@ public static class EntranceTeleportExtender
 
             foreach (var item in player.ItemSlots)
             {
-                if (item           == null ||
+                if (item == null ||
                     item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
@@ -41,7 +41,7 @@ public static class EntranceTeleportExtender
 
             foreach (var item in player.ItemSlots)
             {
-                if (item           == null ||
+                if (item == null ||
                     item.GetType() != typeof(RadarBoosterItem))
                     continue;
 
@@ -73,6 +73,8 @@ public static class EntranceTeleportExtender
         Plugin.Log($"Changing far plane distance to {DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane}");
     }
 
-    public static bool IsInsideFactory(GameObject gameObject, out Transform transform) =>
-        ObjectsInsideFactory.TryGetValue(gameObject, out transform);
+    public static bool IsInsideFactory(GameObject gameObject, out Transform transform)
+    {
+        return ObjectsInsideFactory.TryGetValue(gameObject, out transform);
+    }
 }

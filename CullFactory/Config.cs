@@ -3,17 +3,10 @@
 namespace CullFactory;
 
 /// <summary>
-/// Typed wrapper around the <see cref="BepInEx.Configuration.ConfigFile"/> class
+///     Typed wrapper around the <see cref="BepInEx.Configuration.ConfigFile" /> class
 /// </summary>
 public sealed class Config
 {
-    public ConfigEntry<bool>  Logging                { get; private set; }
-    public ConfigEntry<float> UpdateFrequency        { get; private set; }
-    public ConfigEntry<bool>  UseAdjacentRoomTesting { get; private set; }
-    public ConfigEntry<int>   MaxBranchingDepth      { get; private set; }
-    public ConfigEntry<float> CullDistance           { get; private set; }
-    public ConfigEntry<float> SurfaceCullDistance    { get; private set; }
-
     public Config(ConfigFile configFile)
     {
         Logging = configFile.Bind("General",
@@ -41,15 +34,22 @@ public sealed class Config
         CullDistance = configFile.Bind("Distance culling",
                                        "Cull distance",
                                        40f,
-                                       "The camera's far plane distance.\n"                          +
+                                       "The camera's far plane distance.\n" +
                                        "Objects that are this far from the player will be culled.\n" +
                                        "Vanilla value: 400");
 
         SurfaceCullDistance = configFile.Bind("Distance culling",
                                               "Surface cull distance",
                                               200f,
-                                              "The camera's far plane distance when **on the surface**.\n"  +
+                                              "The camera's far plane distance when **on the surface**.\n" +
                                               "Objects that are this far from the player will be culled.\n" +
                                               "Vanilla value: 400");
     }
+
+    public ConfigEntry<bool> Logging { get; private set; }
+    public ConfigEntry<float> UpdateFrequency { get; private set; }
+    public ConfigEntry<bool> UseAdjacentRoomTesting { get; private set; }
+    public ConfigEntry<int> MaxBranchingDepth { get; private set; }
+    public ConfigEntry<float> CullDistance { get; private set; }
+    public ConfigEntry<float> SurfaceCullDistance { get; private set; }
 }

@@ -72,7 +72,6 @@
 
 - Tiles with null doorways halting the culling process
 
-
 # 0.3.0
 
 ## Added

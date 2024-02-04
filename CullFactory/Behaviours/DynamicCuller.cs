@@ -9,27 +9,55 @@ using UnityEngine;
 namespace CullFactory.Behaviours;
 
 /// <summary>
-/// DynamicCuller instances are tied to each moon
+///     DynamicCuller instances are tied to each moon
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    public static DynamicCuller Instance { get; private set; }
-
-    private const float         VanillaClipDistance = 400;
+    private const float VanillaClipDistance = 400;
 
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
-    private static readonly List<ManualCameraRenderer>                 Monitors              = new();
-    private static readonly List<Vector3>                              CullOrigins           = new();
+    private static readonly List<ManualCameraRenderer> Monitors = new();
+    private static readonly List<Vector3> CullOrigins = new();
 
     private static List<ManualCameraRenderer> _enabledMonitors = new();
-    private static float                      _lastUpdateTime;
-    private static Vector3                    _lastKnownPlayerPosition;
-    public static  bool                       useFactoryFarPlane;
+    private static float _lastUpdateTime;
+    private static Vector3 _lastKnownPlayerPosition;
+    public static bool useFactoryFarPlane;
+    public static DynamicCuller Instance { get; private set; }
 
     public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
                                                          ? GameNetworkManager.Instance.localPlayerController
                                                                              .spectatedPlayerScript
                                                          : GameNetworkManager.Instance.localPlayerController;
+
+    public void Update()
+    {
+        if (!Plugin.Configuration.UseAdjacentRoomTesting.Value ||
+            StartOfRound.Instance.allPlayersDead ||
+            Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
+            return;
+
+        _lastUpdateTime = Time.time;
+
+        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
+
+        CullOrigins.Clear();
+
+        foreach (var monitor in _enabledMonitors)
+        {
+            var targetGameObject = monitor.radarTargets[monitor.targetTransformIndex].transform.gameObject;
+            if (!EntranceTeleportExtender.IsInsideFactory(targetGameObject, out var targetTransform))
+                continue;
+
+            CullOrigins.Add(targetTransform.position);
+        }
+
+        if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
+            IncludeVisibleTiles();
+
+        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
+            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
+    }
 
     private void OnEnable()
     {
@@ -68,38 +96,14 @@ public sealed class DynamicCuller : MonoBehaviour
         }
     }
 
-    public void Update()
+    private void OnDestroy()
     {
-        if (!Plugin.Configuration.UseAdjacentRoomTesting.Value ||
-            StartOfRound.Instance.allPlayersDead               ||
-            Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
-            return;
-
-        _lastUpdateTime = Time.time;
-
-        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
-
-        CullOrigins.Clear();
-
-        foreach (var monitor in _enabledMonitors)
-        {
-            var targetGameObject = monitor.radarTargets[monitor.targetTransformIndex].transform.gameObject;
-            if (!EntranceTeleportExtender.IsInsideFactory(targetGameObject, out var targetTransform))
-                continue;
-
-            CullOrigins.Add(targetTransform.position);
-        }
-
-        if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
-            IncludeVisibleTiles();
-
-        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
-            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
+        Instance = null;
     }
 
     private static void IncludeVisibleTiles()
     {
-        var  localPlayerRoomFound = false;
+        var localPlayerRoomFound = false;
         Tile fallbackPlayerOrigin = null;
 
         VisibleTilesThisFrame.Clear();
@@ -113,7 +117,7 @@ public sealed class DynamicCuller : MonoBehaviour
                 if (tile.Bounds.Contains(FocusedPlayer.gameplayCamera.transform.position))
                 {
                     _lastKnownPlayerPosition = FocusedPlayer.gameplayCamera.transform.position;
-                    anyOriginCaptured        = localPlayerRoomFound = true;
+                    anyOriginCaptured = localPlayerRoomFound = true;
                 }
                 else if (tile.Bounds.Contains(_lastKnownPlayerPosition))
                 {
@@ -134,7 +138,7 @@ public sealed class DynamicCuller : MonoBehaviour
     private static void IncludeNearbyTiles(Tile origin)
     {
         var depthTesterQueue = new Queue<TileDepthTester>();
-        var traversedTiles   = new HashSet<Tile>();
+        var traversedTiles = new HashSet<Tile>();
 
         depthTesterQueue.Clear();
         depthTesterQueue.Enqueue(new TileDepthTester(origin, 0));
@@ -167,21 +171,16 @@ public sealed class DynamicCuller : MonoBehaviour
             }
         }
     }
-
-    private void OnDestroy()
-    {
-        Instance = null;
-    }
 }
 
 internal struct TileDepthTester
 {
     public readonly Tile tile;
-    public readonly int  iteration;
+    public readonly int iteration;
 
     public TileDepthTester(Tile tile, int iteration)
     {
-        this.tile      = tile;
+        this.tile = tile;
         this.iteration = iteration;
     }
 }

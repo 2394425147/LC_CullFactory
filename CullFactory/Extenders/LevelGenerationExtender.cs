@@ -36,10 +36,10 @@ public sealed class LevelGenerationExtender
 
 public class TileVisibility
 {
-    public readonly Tile parentTile;
+    private readonly Light[] _lights;
 
     private readonly MeshRenderer[] _meshRenderers;
-    private readonly Light[]        _lights;
+    public readonly Tile parentTile;
 
     private bool _previouslyVisible = true;
 
@@ -48,7 +48,7 @@ public class TileVisibility
         this.parentTile = parentTile;
 
         _meshRenderers = Array.FindAll(parentTile.GetComponentsInChildren<MeshRenderer>(), renderer => renderer.enabled);
-        _lights        = Array.FindAll(parentTile.GetComponentsInChildren<Light>(),        renderer => renderer.enabled);
+        _lights = Array.FindAll(parentTile.GetComponentsInChildren<Light>(), renderer => renderer.enabled);
 
         Plugin.Log($"Found tile {parentTile.name} with {_meshRenderers.Length} mesh renderers and {_lights.Length} lights");
     }
