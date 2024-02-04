@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CullFactory.Behaviours;
 using HarmonyLib;
 using UnityEngine;
 
@@ -49,28 +48,6 @@ public static class EntranceTeleportExtender
                 Plugin.Log($"Stopped tracking {item.name}");
             }
         }
-
-        if (player.IsLocalPlayer)
-            UpdateFarPlane();
-    }
-
-    private static void UpdateFarPlane()
-    {
-        var goingInside = !DynamicCuller.FocusedPlayer.isInsideFactory;
-
-        if (DynamicCuller.useFactoryFarPlane == !goingInside)
-            return;
-
-        DynamicCuller.useFactoryFarPlane = !goingInside;
-        DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane = DynamicCuller.useFactoryFarPlane
-                                                                      ? Plugin.Configuration.CullDistance.Value
-                                                                      : Plugin.Configuration.SurfaceCullDistance.Value;
-
-        // Force an update
-        if (DynamicCuller.useFactoryFarPlane)
-            DynamicCuller.Instance.Update();
-
-        Plugin.Log($"Changing far plane distance to {DynamicCuller.FocusedPlayer.gameplayCamera.farClipPlane}");
     }
 
     public static bool IsInsideFactory(GameObject gameObject, out Transform transform) =>

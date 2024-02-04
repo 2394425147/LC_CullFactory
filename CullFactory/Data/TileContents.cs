@@ -1,18 +1,18 @@
-﻿using DunGen;
+﻿using System;
+using DunGen;
 using UnityEngine;
 
-namespace CullFactory.Models;
+namespace CullFactory.Data;
 
+[Serializable]
 public sealed class TileContents
 {
     public readonly Tile tile;
 
     private readonly Renderer[] _renderers;
-    private readonly Light[]    _lights;
+    private readonly Light[] _lights;
 
     private bool _enabled = true;
-
-    public static TileContents FromTile(in Tile tile) => new(tile);
 
     public void SetActive(in bool value)
     {
@@ -28,12 +28,12 @@ public sealed class TileContents
             light.enabled = value;
     }
 
-    private TileContents(in Tile tile)
+    public TileContents(in Tile tile)
     {
         this.tile = tile;
 
         _renderers = tile.GetComponentsInChildren<Renderer>();
-        _lights    = tile.GetComponentsInChildren<Light>();
+        _lights = tile.GetComponentsInChildren<Light>();
 
         Plugin.Log($"Found tile {tile.name} with {_renderers.Length} mesh renderers and {_lights.Length} lights");
     }
