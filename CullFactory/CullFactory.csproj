@@ -21,460 +21,460 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="AmazingAssets.TerrainToMesh">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\AmazingAssets.TerrainToMesh.dll</HintPath>
-      </Reference>
-      <Reference Include="Assembly-CSharp">
-        <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
-      </Reference>
-      <Reference Include="Assembly-CSharp-firstpass">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      </Reference>
-      <Reference Include="ClientNetworkTransform">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\ClientNetworkTransform.dll</HintPath>
-      </Reference>
-      <Reference Include="DissonanceVoip">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
-      </Reference>
-      <Reference Include="Facepunch Transport for Netcode for GameObjects">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch Transport for Netcode for GameObjects.dll</HintPath>
-      </Reference>
-      <Reference Include="Facepunch.Steamworks.Win64">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
-      </Reference>
-      <Reference Include="Mono.Security">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Mono.Security.dll</HintPath>
-      </Reference>
-      <Reference Include="netstandard">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
-      </Reference>
-      <Reference Include="Newtonsoft.Json">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Newtonsoft.Json.dll</HintPath>
-      </Reference>
-      <Reference Include="System.ComponentModel.Composition">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Configuration">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Configuration.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Data.DataSetExtensions">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
-      </Reference>
-      <Reference Include="System.EnterpriseServices">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.EnterpriseServices.dll</HintPath>
-      </Reference>
-      <Reference Include="System.IO.Compression">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.IO.Compression.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Net.Http">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Net.Http.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Security">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Security.dll</HintPath>
-      </Reference>
-      <Reference Include="System.ServiceModel.Internals">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Transactions">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Transactions.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.AI.Navigation">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.AI.Navigation.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Animation.Rigging">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Animation.Rigging.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Animation.Rigging.DocCodeExamples">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Animation.Rigging.DocCodeExamples.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Burst">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Burst.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Burst.Unsafe">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Collections">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Collections.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Collections.LowLevel.ILSupport">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.InputSystem">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.InputSystem.ForUI">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.ForUI.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Jobs">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Jobs.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Mathematics">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Mathematics.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.Common">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.Common.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.MetricTypes">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.MetricTypes.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetStats">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStats.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Component">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Component.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Configuration">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Configuration.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Implementation">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Implementation.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetStatsReporting">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsReporting.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetworkProfiler.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetworkProfiler.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Multiplayer.Tools.NetworkSolutionInterface">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetworkSolutionInterface.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Netcode.Components">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Components.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Netcode.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Networking.Transport">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Networking.Transport.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ProBuilder">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ProBuilder.Csg">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Csg.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ProBuilder.KdTree">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.KdTree.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ProBuilder.Poly2Tri">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Poly2Tri.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ProBuilder.Stl">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Stl.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Profiling.Core">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Profiling.Core.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.RenderPipelines.Core.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Authentication">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Authentication.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Analytics">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Analytics.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Configuration">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Configuration.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Device">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Device.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Environments">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Environments.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Environments.Internal">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Environments.Internal.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Internal">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Internal.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Networking">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Networking.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Registration">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Registration.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Scheduler">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Scheduler.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Telemetry">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Telemetry.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Core.Threading">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Threading.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.QoS">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.QoS.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Services.Relay">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Relay.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.TextMeshPro">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Timeline">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Timeline.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.VisualEffectGraph.Runtime">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.VisualEffectGraph.Runtime.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AccessibilityModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AIModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AndroidJNIModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AnimationModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ARModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ARModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AssetBundleModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AudioModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ClothModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ClusterInputModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ClusterRendererModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ContentLoadModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ContentLoadModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.CoreModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.CrashReportingModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.DirectorModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.DSPGraphModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.GameCenterModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.GIModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.GridModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GridModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.HotReloadModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ImageConversionModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.IMGUIModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.InputLegacyModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.InputModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.JSONSerializeModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.LocalizationModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.NVIDIAModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ParticleSystemModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.PerformanceReportingModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.Physics2DModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.PhysicsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ProfilerModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.PropertiesModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PropertiesModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ScreenCaptureModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SharedInternalsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SpriteMaskModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SpriteShapeModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.StreamingModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SubstanceModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SubsystemsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TerrainModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TerrainPhysicsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TextCoreFontEngineModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TextCoreTextEngineModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TextRenderingModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TilemapModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TLSModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UI">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UI.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UIElementsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UIModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UmbraModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityAnalyticsModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityConnectModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityCurlModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityTestProtocolModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VehiclesModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VFXModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VideoModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VirtualTexturingModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VRModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VRModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.WindModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.WindModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.XRModule">
-        <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.XRModule.dll</HintPath>
-      </Reference>
+        <Reference Include="AmazingAssets.TerrainToMesh">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\AmazingAssets.TerrainToMesh.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
+        <Reference Include="ClientNetworkTransform">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\ClientNetworkTransform.dll</HintPath>
+        </Reference>
+        <Reference Include="DissonanceVoip">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
+        </Reference>
+        <Reference Include="Facepunch Transport for Netcode for GameObjects">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch Transport for Netcode for GameObjects.dll</HintPath>
+        </Reference>
+        <Reference Include="Facepunch.Steamworks.Win64">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
+        </Reference>
+        <Reference Include="Mono.Security">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Mono.Security.dll</HintPath>
+        </Reference>
+        <Reference Include="netstandard">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="System.ComponentModel.Composition">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Configuration">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Configuration.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Data.DataSetExtensions">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
+        </Reference>
+        <Reference Include="System.EnterpriseServices">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.EnterpriseServices.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IO.Compression">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.IO.Compression.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Net.Http">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Net.Http.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Security">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Security.dll</HintPath>
+        </Reference>
+        <Reference Include="System.ServiceModel.Internals">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Transactions">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\System.Transactions.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.AI.Navigation">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.AI.Navigation.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Animation.Rigging">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Animation.Rigging.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Animation.Rigging.DocCodeExamples">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Animation.Rigging.DocCodeExamples.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Burst">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Burst.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Burst.Unsafe">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Collections">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Collections.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Collections.LowLevel.ILSupport">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.InputSystem">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.InputSystem.ForUI">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.ForUI.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Jobs">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Jobs.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Mathematics">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Mathematics.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.Common">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.MetricTypes">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.MetricTypes.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetStats">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStats.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Component">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Component.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Configuration">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Configuration.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetStatsMonitor.Implementation">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsMonitor.Implementation.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetStatsReporting">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetStatsReporting.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetworkProfiler.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetworkProfiler.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Multiplayer.Tools.NetworkSolutionInterface">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Multiplayer.Tools.NetworkSolutionInterface.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Netcode.Components">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Components.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Netcode.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Networking.Transport">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Networking.Transport.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.ProBuilder">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.ProBuilder.Csg">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Csg.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.ProBuilder.KdTree">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.KdTree.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.ProBuilder.Poly2Tri">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.ProBuilder.Stl">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.ProBuilder.Stl.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Profiling.Core">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Profiling.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.Core.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Authentication">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Authentication.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Analytics">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Analytics.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Configuration">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Configuration.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Device">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Device.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Environments">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Environments.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Environments.Internal">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Environments.Internal.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Internal">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Internal.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Networking">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Networking.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Registration">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Registration.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Scheduler">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Scheduler.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Telemetry">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Telemetry.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Core.Threading">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Core.Threading.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.QoS">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.QoS.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Services.Relay">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Services.Relay.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Timeline">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Timeline.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.VisualEffectGraph.Runtime">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.VisualEffectGraph.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AccessibilityModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AIModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AndroidJNIModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AnimationModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ARModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ARModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AudioModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ClothModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ClusterInputModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ClusterRendererModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ContentLoadModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ContentLoadModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CrashReportingModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.DirectorModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.DSPGraphModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.GameCenterModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.GIModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.GridModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.HotReloadModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.JSONSerializeModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.LocalizationModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.NVIDIAModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ParticleSystemModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PerformanceReportingModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.Physics2DModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ProfilerModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PropertiesModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PropertiesModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ScreenCaptureModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.SharedInternalsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.SpriteMaskModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.SpriteShapeModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.StreamingModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.SubstanceModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.SubsystemsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TerrainModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TerrainPhysicsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextCoreFontEngineModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextCoreTextEngineModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TilemapModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TLSModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIElementsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UmbraModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityAnalyticsModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityConnectModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityCurlModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityTestProtocolModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.VehiclesModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.VFXModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.VideoModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.VirtualTexturingModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.VRModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.WindModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.XRModule">
+            <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="icon.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="manifest.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="README.md">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Documentation\banner.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="CHANGELOG.md">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Remove="Libraries\**" />
+        <None Update="icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="manifest.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="README.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Documentation\banner.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="CHANGELOG.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Remove="Libraries\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Documentation\" />
+        <Folder Include="Documentation\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Models\TileVisibility.cs" />
-      <Compile Remove="Libraries\**" />
+        <Compile Remove="Models\TileVisibility.cs"/>
+        <Compile Remove="Libraries\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="Libraries\**" />
+        <EmbeddedResource Remove="Libraries\**"/>
     </ItemGroup>
 </Project>

@@ -4,44 +4,42 @@ using CullFactory.Utilities;
 using HarmonyLib;
 using UnityEngine;
 
-namespace CullFactory
+namespace CullFactory;
+
+[BepInPlugin(Guid, Name, Version)]
+public class Plugin : BaseUnityPlugin
 {
-    [BepInPlugin(Guid, Name, Version)]
-    public class Plugin : BaseUnityPlugin
+    private const string Guid = "com.fumiko.CullFactory";
+    private const string Name = "CullFactory";
+    private const string Version = "0.6.2";
+    public static Plugin Instance { get; private set; }
+
+    public static Config Configuration { get; private set; }
+
+    private void Awake()
     {
-        public static Plugin Instance { get; private set; }
+        Instance = this;
+        Configuration = new Config(Config);
 
-        public static Config Configuration { get; private set; }
+        var harmony = new Harmony(Guid);
+        harmony.PatchAll(typeof(DungeonUtilities));
+        harmony.PatchAll(typeof(EntranceTeleportExtender));
 
-        private const string Guid    = "com.fumiko.CullFactory";
-        private const string Name    = "CullFactory";
-        private const string Version = "0.6.2";
+        QualitySettings.shadowResolution = ShadowResolution.Low;
 
-        private void Awake()
-        {
-            Instance      = this;
-            Configuration = new Config(Config);
+        Log($"Plugin {Name} is loaded!");
+    }
 
-            var harmony = new Harmony(Guid);
-            harmony.PatchAll(typeof(DungeonUtilities));
-            harmony.PatchAll(typeof(EntranceTeleportExtender));
+    public static void Log(string s)
+    {
+        if (!Configuration.Logging.Value)
+            return;
 
-            QualitySettings.shadowResolution = ShadowResolution.Low;
+        Instance.Logger.LogInfo(s);
+    }
 
-            Log($"Plugin {Name} is loaded!");
-        }
-
-        public static void Log(string s)
-        {
-            if (!Configuration.Logging.Value)
-                return;
-
-            Instance.Logger.LogInfo(s);
-        }
-
-        public static void LogError(string s)
-        {
-            Instance.Logger.LogError(s);
-        }
+    public static void LogError(string s)
+    {
+        Instance.Logger.LogError(s);
     }
 }

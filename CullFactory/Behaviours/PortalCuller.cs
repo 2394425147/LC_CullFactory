@@ -7,15 +7,14 @@ using UnityEngine;
 namespace CullFactory.Behaviours;
 
 /// <summary>
-/// DynamicCuller instances are tied to each moon
+///     DynamicCuller instances are tied to each moon
 /// </summary>
 public sealed class PortalCuller : MonoBehaviour
 {
-    public static PortalCuller Instance { get; private set; }
-
     private static readonly HashSet<TileContents> VisibleTiles = new();
 
     private static float _lastUpdateTime;
+    public static PortalCuller Instance { get; private set; }
 
     public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
                                                          ? GameNetworkManager.Instance.localPlayerController
@@ -23,14 +22,6 @@ public sealed class PortalCuller : MonoBehaviour
                                                          : GameNetworkManager.Instance.localPlayerController;
 
     public static Camera FocusedCamera => StartOfRound.Instance.activeCamera;
-
-    private void OnEnable()
-    {
-        if (Instance != null)
-            Destroy(Instance);
-
-        Instance = this;
-    }
 
     public void Update()
     {
@@ -50,16 +41,24 @@ public sealed class PortalCuller : MonoBehaviour
             tile.SetActive(VisibleTiles.Contains(tile));
     }
 
+    private void OnEnable()
+    {
+        if (Instance != null)
+            Destroy(Instance);
+
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
     private static void IncludeVisibleTiles()
     {
         VisibleTiles.Clear();
 
         var currentTile = FocusedCamera.transform.position.GetTile();
         VisibleTiles.Add(currentTile.GetContents());
-    }
-
-    private void OnDestroy()
-    {
-        Instance = null;
     }
 }
