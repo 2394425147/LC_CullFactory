@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using CullFactory.Data;
 using CullFactory.Utilities;
-using GameNetcodeStuff;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours;
 
@@ -11,35 +11,7 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class PortalCuller : MonoBehaviour
 {
-    private static readonly HashSet<TileContents> VisibleTiles = new();
-
-    private static float _lastUpdateTime;
     public static PortalCuller Instance { get; private set; }
-
-    public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
-                                                         ? GameNetworkManager.Instance.localPlayerController
-                                                                             .spectatedPlayerScript
-                                                         : GameNetworkManager.Instance.localPlayerController;
-
-    public static Camera FocusedCamera => StartOfRound.Instance.activeCamera;
-
-    public void Update()
-    {
-        if (!Plugin.Configuration.UseAdjacentRoomTesting.Value ||
-            StartOfRound.Instance.allPlayersDead ||
-            Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
-            return;
-
-        _lastUpdateTime = Time.time;
-
-        VisibleTiles.Clear();
-
-        if (FocusedPlayer.isInsideFactory)
-            IncludeVisibleTiles();
-
-        foreach (var tile in DungeonUtilities.AllTiles)
-            tile.SetActive(VisibleTiles.Contains(tile));
-    }
 
     private void OnEnable()
     {
@@ -47,18 +19,59 @@ public sealed class PortalCuller : MonoBehaviour
             Destroy(Instance);
 
         Instance = this;
+        RenderPipelineManager.beginCameraRendering += OnCameraRender;
+    }
+
+    private static readonly HashSet<TileContents> TilesToCull = new();
+    private static readonly Queue<FrustumAtDoor> FrustumQueue = new();
+
+    private void OnCameraRender(ScriptableRenderContext context, Camera camera)
+    {
+        TilesToCull.Clear();
+        FrustumQueue.Clear();
+
+        CullForCamera(camera);
+
+        foreach (var tile in DungeonUtilities.AllTiles)
+            tile.SetActive(TilesToCull.Contains(tile));
+    }
+
+    private static void CullForCamera(Camera camera)
+    {
+        var origin = camera.transform.position.GetTile();
+
+        if (origin == null)
+            return;
+
+        TilesToCull.Add(origin.GetContents());
+
+        var fullFrustum = GeometryUtility.CalculateFrustumPlanes(camera);
+
+        foreach (var doorway in origin.UsedDoorways)
+        {
+            if (doorway.TryTrimFrustum(camera, fullFrustum, out var frustumAtDoor))
+                FrustumQueue.Enqueue(frustumAtDoor);
+        }
+
+        while (FrustumQueue.Count > 0)
+        {
+            var frustumAtCurrentDoor = FrustumQueue.Dequeue();
+            TilesToCull.Add(frustumAtCurrentDoor.door.tile.GetContents());
+
+            foreach (var doorway in frustumAtCurrentDoor.door.connectedDoorway.tile.UsedDoorways)
+            {
+                if (doorway == frustumAtCurrentDoor.door.connectedDoorway)
+                    continue;
+
+                if (doorway.TryTrimFrustum(camera, frustumAtCurrentDoor.frustum, out var frustumAtDoor))
+                    FrustumQueue.Enqueue(frustumAtDoor);
+            }
+        }
     }
 
     private void OnDestroy()
     {
         Instance = null;
-    }
-
-    private static void IncludeVisibleTiles()
-    {
-        VisibleTiles.Clear();
-
-        var currentTile = FocusedCamera.transform.position.GetTile();
-        VisibleTiles.Add(currentTile.GetContents());
+        RenderPipelineManager.beginCameraRendering -= OnCameraRender;
     }
 }
