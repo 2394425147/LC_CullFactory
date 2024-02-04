@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CullFactory.Data;
 
 [Serializable]
-public sealed class TileContents
+public class TileContents
 {
     private readonly Light[] _lights;
 

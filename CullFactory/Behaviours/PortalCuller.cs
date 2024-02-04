@@ -25,7 +25,7 @@ public sealed class PortalCuller : MonoBehaviour
     private static readonly HashSet<TileContents> TilesToCull = new();
     private static readonly Queue<FrustumAtDoor> FrustumQueue = new();
 
-    private void OnCameraRender(ScriptableRenderContext context, Camera camera)
+    private static void OnCameraRender(ScriptableRenderContext context, Camera camera)
     {
         TilesToCull.Clear();
         FrustumQueue.Clear();
