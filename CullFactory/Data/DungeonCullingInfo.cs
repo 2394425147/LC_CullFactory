@@ -116,7 +116,7 @@ public static class DungeonCullingInfo
 
             var doorway = tile.UsedDoorways[index];
 
-            if (stackIndex > 0 && (object)doorway.ConnectedDoorway.Tile == TileStack[stackIndex - 1])
+            if (stackIndex > 0 && doorway.ConnectedDoorway.Tile == TileStack[stackIndex - 1])
                 continue;
 
             var portal = AllPortals[doorway];
