@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CullFactory.Behaviours;
 using DunGen;
 using UnityEngine;
 
@@ -20,9 +19,39 @@ public static class DungeonCullingInfo
 
         AllTiles = [.. RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles];
 
+        CollectAllTileContents();
+    }
+
+    private static void CollectContentsIntoTile(Component parent, TileContentsBuilder builder)
+    {
+        builder.renderers.AddRange(parent.GetComponentsInChildren<Renderer>());
+        builder.lights.AddRange(parent.GetComponentsInChildren<Light>());
+
+        var syncedObjectSpawners = parent.GetComponentsInChildren<SpawnSyncedObject>();
+        foreach (var spawner in syncedObjectSpawners)
+        {
+            builder.renderers.AddRange(spawner.GetComponentsInChildren<Renderer>());
+            builder.lights.AddRange(spawner.GetComponentsInChildren<Light>());
+        }
+    }
+
+    private static void CollectAllTileContents()
+    {
         AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
         foreach (var tile in AllTiles)
-            AllTileContents[tile] = new TileContents(tile);
+        {
+            var builder = new TileContentsBuilder(tile);
+            CollectContentsIntoTile(tile, builder);
+
+            foreach (var doorway in tile.UsedDoorways)
+            {
+                if (doorway.doorComponent == null)
+                    continue;
+                CollectContentsIntoTile(doorway.doorComponent, builder);
+            }
+
+            AllTileContents[tile] = builder.Build();
+        }
     }
 
     private static void CreatePortals()
