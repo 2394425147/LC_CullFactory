@@ -44,8 +44,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         HideTileContents(_visibleTiles);
         _visibleTiles.Clear();
 
-        var localPlayer = StartOfRound.Instance.localPlayerController;
-        var camera = localPlayer.gameplayCamera;
+        var camera = StartOfRound.Instance.activeCamera;
         var currentTile = camera.transform.position.GetTile();
 
         if (currentTile != null)
