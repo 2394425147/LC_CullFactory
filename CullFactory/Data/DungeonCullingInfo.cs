@@ -178,7 +178,7 @@ public static class DungeonCullingInfo
 
         callback(TileStack, stackIndex);
 
-        while (stackIndex >= 0 && stackIndex < MaxStackCapacity)
+        while (stackIndex >= 0)
         {
             var tile = TileStack[stackIndex];
             var index = IndexStack[stackIndex]++;
@@ -209,6 +209,12 @@ public static class DungeonCullingInfo
                 continue;
 
             stackIndex++;
+            if (stackIndex >= MaxStackCapacity)
+            {
+                Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}");
+                break;
+            }
+
             TileStack[stackIndex] = doorway.ConnectedDoorway.Tile;
             IndexStack[stackIndex] = 0;
 
