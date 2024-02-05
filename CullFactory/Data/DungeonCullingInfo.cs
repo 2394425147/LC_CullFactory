@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DunGen;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -9,6 +10,8 @@ public static class DungeonCullingInfo
 {
     private const float OutsideTileRadius = 1f;
     private const float SqrOutsideTileRadius = OutsideTileRadius * OutsideTileRadius;
+
+    private const float AdjacentTileIntrusionDistance = 0.2f;
 
     public static Dictionary<Doorway, Portal> AllPortals = [];
     public static Tile[] AllTiles { get; private set; }
@@ -25,14 +28,14 @@ public static class DungeonCullingInfo
 
     private static void CollectContentsIntoTile(Component parent, TileContentsBuilder builder)
     {
-        builder.renderers.AddRange(parent.GetComponentsInChildren<Renderer>());
-        builder.lights.AddRange(parent.GetComponentsInChildren<Light>());
+        builder.renderers.UnionWith(parent.GetComponentsInChildren<Renderer>());
+        builder.lights.UnionWith(parent.GetComponentsInChildren<Light>());
 
         var syncedObjectSpawners = parent.GetComponentsInChildren<SpawnSyncedObject>();
         foreach (var spawner in syncedObjectSpawners)
         {
-            builder.renderers.AddRange(spawner.GetComponentsInChildren<Renderer>());
-            builder.lights.AddRange(spawner.GetComponentsInChildren<Light>());
+            builder.renderers.UnionWith(spawner.GetComponentsInChildren<Renderer>());
+            builder.lights.UnionWith(spawner.GetComponentsInChildren<Light>());
         }
     }
 
@@ -63,6 +66,19 @@ public static class DungeonCullingInfo
             }
 
             tileContentsBuilders[tile] = builder;
+        }
+
+        // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
+        // but floor decals in the factory interior can as well.
+        foreach (var tile in AllTiles)
+        {
+            var builder = tileContentsBuilders[tile];
+
+            var overlappingTileBounds = tile.Bounds;
+            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance);
+
+            foreach (var adjacentTile in tile.GetAdjactedTiles())
+                builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers.Where(renderer => renderer.bounds.Intersects(overlappingTileBounds)));
         }
 
         // Collect all external lights that may influence the tiles that we know of:
@@ -99,7 +115,7 @@ public static class DungeonCullingInfo
                 // occludes the light leaving it, we must ensure that room is rendered to
                 // occlude that light.
                 if (hasShadows)
-                    tileContentsBuilder.externalLightOccluders.AddRange(tileContentsBuilders[lightTile].renderers);
+                    tileContentsBuilder.externalLightOccluders.UnionWith(tileContentsBuilders[lightTile].renderers);
             }
 
             // If the light has shadows, use our portals to determine where it can reach.
@@ -121,7 +137,7 @@ public static class DungeonCullingInfo
 
                 // Store any tiles that may occlude the light on its path to the current tile.
                 for (var i = 1; i < index; i++)
-                    lastTileContentsBuilder.externalLightOccluders.AddRange(tileContentsBuilders[tiles[i]].renderers);
+                    lastTileContentsBuilder.externalLightOccluders.UnionWith(tileContentsBuilders[tiles[i]].renderers);
 
                 // If the light can't pass through walls, then it hasn't been added to the
                 // list of external lights affecting this tile yet. Add it now.

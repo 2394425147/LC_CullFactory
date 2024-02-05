@@ -23,11 +23,11 @@ public sealed class TileContents(Tile tile, Renderer[] renderers, Light[] lights
 public sealed class TileContentsBuilder(Tile tile)
 {
     public readonly Tile tile = tile;
-    public readonly List<Renderer> renderers = [];
-    public readonly List<Light> lights = [];
+    public readonly HashSet<Renderer> renderers = [];
+    public readonly HashSet<Light> lights = [];
 
-    public readonly List<Light> externalLights = [];
-    public readonly List<Renderer> externalLightOccluders = [];
+    public readonly HashSet<Light> externalLights = [];
+    public readonly HashSet<Renderer> externalLightOccluders = [];
 
     public TileContents Build()
     {
