@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace CullFactory.Extenders;
 
+[HarmonyPatch(typeof(RoundManager))]
 public sealed class LevelGenerationExtender
 {
     public static readonly Dictionary<Tile, TileVisibility> MeshContainers = new();
@@ -16,7 +17,7 @@ public sealed class LevelGenerationExtender
     public static Dictionary<SpawnSyncedObject, GameObject> TileSyncedObjects = [];
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.waitForMainEntranceTeleportToSpawn))]
+    [HarmonyPatch(nameof(RoundManager.waitForMainEntranceTeleportToSpawn))]
     private static void OnLevelGenerated()
     {
         MeshContainers.Clear();
@@ -38,7 +39,7 @@ public sealed class LevelGenerationExtender
     }
 
     [HarmonyTranspiler]
-    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnSyncedProps))]
+    [HarmonyPatch(nameof(RoundManager.SpawnSyncedProps))]
     private static IEnumerable<CodeInstruction> SpawnSyncedPropsTranspiler(IEnumerable<CodeInstruction> instructions)
     {
         var instructionsList = new List<CodeInstruction>(instructions);
