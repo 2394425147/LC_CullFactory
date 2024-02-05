@@ -32,8 +32,7 @@ public sealed class DynamicCuller : MonoBehaviour
 
     public void Update()
     {
-        if (!Plugin.Configuration.UseAdjacentRoomTesting.Value ||
-            StartOfRound.Instance.allPlayersDead ||
+        if (StartOfRound.Instance.allPlayersDead ||
             Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
             return;
 

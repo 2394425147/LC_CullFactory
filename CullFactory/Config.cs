@@ -28,12 +28,6 @@ public sealed class Config
                                           "Higher values make culling more responsive at the cost of performance.\n" +
                                           "Update interval: 1 / value (seconds)");
 
-        UseAdjacentRoomTesting = configFile.Bind("Depth culling",
-                                                 "Use depth culling",
-                                                 true,
-                                                 "Rooms that aren't adjacent to your own position will be culled.\n" +
-                                                 "The recommended testing method. Disable only if you are experiencing performance issues.");
-
         MaxBranchingDepth = configFile.Bind("Depth culling",
                                             "Max branching depth",
                                             4,
@@ -57,7 +51,6 @@ public sealed class Config
     public ConfigEntry<bool> Logging { get; private set; }
     public ConfigEntry<CullingType> Culler { get; private set; }
     public ConfigEntry<float> UpdateFrequency { get; private set; }
-    public ConfigEntry<bool> UseAdjacentRoomTesting { get; private set; }
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public ConfigEntry<float> CullDistance { get; private set; }
     public ConfigEntry<float> SurfaceCullDistance { get; private set; }
