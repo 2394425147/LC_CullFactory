@@ -2,6 +2,7 @@
 using CullFactory.Data;
 using CullFactory.Utilities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours;
@@ -11,7 +12,7 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class PortalCuller : MonoBehaviour
 {
-    public static PortalCuller Instance { get; private set; }
+    private static PortalCuller Instance { get; set; }
 
     private void OnEnable()
     {
@@ -27,6 +28,9 @@ public sealed class PortalCuller : MonoBehaviour
 
     private static void OnCameraRender(ScriptableRenderContext context, Camera camera)
     {
+        if (!Keyboard.current.tabKey.isPressed)
+            return;
+
         TilesToCull.Clear();
         FrustumQueue.Clear();
 

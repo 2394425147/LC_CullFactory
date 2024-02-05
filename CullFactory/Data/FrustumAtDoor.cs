@@ -8,9 +8,9 @@ public struct FrustumAtDoor
     public readonly Doorway door;
     public readonly Plane[] frustum;
 
-    public FrustumAtDoor(Doorway door, Plane[] frustum)
+    public FrustumAtDoor(Doorway door)
     {
         this.door = door;
-        this.frustum = frustum;
+        frustum = new Plane[4];
     }
 }
