@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using CullFactory.Behaviours;
 using CullFactory.Extenders;
 using HarmonyLib;
@@ -24,6 +24,7 @@ public class Plugin : BaseUnityPlugin
         var harmony = new Harmony(Guid);
         harmony.PatchAll(typeof(LevelGenerationExtender));
         harmony.PatchAll(typeof(EntranceTeleportExtender));
+        harmony.PatchAll(typeof(MapSeedOverride));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
 

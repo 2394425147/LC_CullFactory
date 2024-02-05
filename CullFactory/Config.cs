@@ -47,6 +47,13 @@ public sealed class Config
                                               "The camera's far plane distance when **on the surface**.\n" +
                                               "Objects that are this far from the player will be culled.\n" +
                                               "Vanilla value: 400");
+
+        OverrideMapSeed = configFile.Bind("Debug",
+                                          "Override map seed",
+                                          "",
+                                          "INTENDED FOR BENCHMARKING ONLY. Leave this empty if you are playing normally.\n" +
+                                          "This forces the map seed to be whatever is entered here, so that benchmarking" +
+                                          "numbers can remain as consistent as possible between runs.");
     }
 
     public ConfigEntry<bool> Logging { get; private set; }
@@ -55,4 +62,5 @@ public sealed class Config
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public ConfigEntry<float> CullDistance { get; private set; }
     public ConfigEntry<float> SurfaceCullDistance { get; private set; }
+    public ConfigEntry<string> OverrideMapSeed { get; private set; }
 }
