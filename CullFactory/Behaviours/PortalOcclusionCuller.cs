@@ -1,6 +1,7 @@
 ﻿using CullFactory.Data;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours;
   
@@ -21,6 +22,14 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
     {
         foreach (var tile in tileContents)
         {
+            foreach (var light in tile.externalLights)
+                light.enabled = false;
+            foreach (var renderer in tile.externalLightOccluders)
+                renderer.forceRenderingOff = true;
+        }
+
+        foreach (var tile in tileContents)
+        {
             foreach (var renderer in tile.renderers)
                 renderer.forceRenderingOff = true;
             foreach (var light in tile.lights)
@@ -32,8 +41,21 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
     {
         foreach (var tile in tileContents)
         {
-            foreach (var renderer in tile.renderers)
+            foreach (var light in tile.externalLights)
+                light.enabled = true;
+            foreach (var renderer in tile.externalLightOccluders)
+            {
                 renderer.forceRenderingOff = false;
+                renderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+            }
+        }
+        foreach (var tile in tileContents)
+        {
+            foreach (var renderer in tile.renderers)
+            {
+                renderer.forceRenderingOff = false;
+                renderer.shadowCastingMode = ShadowCastingMode.On;
+            }
             foreach (var light in tile.lights)
                 light.enabled = true;
         }

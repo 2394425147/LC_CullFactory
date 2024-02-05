@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DunGen;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Data;
 
@@ -38,6 +39,10 @@ public static class DungeonCullingInfo
     private static void CollectAllTileContents()
     {
         AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
+
+        var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
+        var allLights = new List<Light>();
+
         foreach (var tile in AllTiles)
         {
             var builder = new TileContentsBuilder(tile);
@@ -50,8 +55,78 @@ public static class DungeonCullingInfo
                 CollectContentsIntoTile(doorway.doorComponent, builder);
             }
 
-            AllTileContents[tile] = builder.Build();
+            allLights.AddRange(builder.lights);
+
+            tileContentsBuilders[tile] = builder;
         }
+
+        // Collect all external lights that may influence the tiles that we know of:
+        foreach (var light in allLights)
+        {
+            var lightTile = light.transform.position.GetTile();
+            if (lightTile == null)
+            {
+                Plugin.Log($"Light '{light.name}' was outside of the dungeon.");
+                continue;
+            }
+
+            var lightRangeSquared = light.range * light.range;
+
+            var hasShadows = light.shadows != LightShadows.None;
+            var lightPassesThroughWalls = light.GetComponent<HDAdditionalLightData>() is HDAdditionalLightData hdLight && hdLight.shadowDimmer < 1;
+
+            foreach (var tile in AllTiles)
+            {
+                var tileContentsBuilder = tileContentsBuilders[tile];
+                var bounds = tile.Bounds;
+                var lightDistanceSquared = bounds.SqrDistance(light.transform.position);
+                if (lightDistanceSquared > lightRangeSquared)
+                    continue;
+
+                // If the light has no shadows or if the shadows don't fully occlude light,
+                // it can pass through walls. Add it to the list of external lights affecting
+                // all tiles in its range.
+                if (!hasShadows || lightPassesThroughWalls)
+                    tileContentsBuilder.externalLights.Add(light);
+
+                // If the light casts shadows but still passes through walls, then it will
+                // be enabled when this tile is visible. However, since the room it is in
+                // occludes the light leaving it, we must ensure that room is rendered to
+                // occlude that light.
+                if (hasShadows)
+                    tileContentsBuilder.externalLightOccluders.AddRange(tileContentsBuilders[lightTile].renderers);
+            }
+
+            // If the light has shadows, use our portals to determine where it can reach.
+            if (!hasShadows)
+                continue;
+
+            CallForEachLineOfSight(light.transform.position, lightTile, (tiles, index) =>
+            {
+                if (index < 1)
+                    return;
+
+                var lastTile = tiles[index];
+                var lastTileContentsBuilder = tileContentsBuilders[lastTile];
+
+                var bounds = lastTile.Bounds;
+                var lightDistanceSquared = bounds.SqrDistance(light.transform.position);
+                if (lightDistanceSquared > lightRangeSquared)
+                    return;
+
+                // Store any tiles that may occlude the light on its path to the current tile.
+                for (var i = 1; i < index; i++)
+                    lastTileContentsBuilder.externalLightOccluders.AddRange(tileContentsBuilders[tiles[i]].renderers);
+
+                // If the light can't pass through walls, then it hasn't been added to the
+                // list of external lights affecting this tile yet. Add it now.
+                if (!lightPassesThroughWalls)
+                    lastTileContentsBuilder.externalLights.Add(light);
+            });
+        }
+
+        foreach (var pair in tileContentsBuilders)
+            AllTileContents[pair.Key] = pair.Value.Build();
     }
 
     private static void CreatePortals()
