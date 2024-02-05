@@ -162,7 +162,7 @@ public static class DungeonCullingInfo
         return closestTile;
     }
 
-    const int MaxStackCapacity = 10;
+    const int MaxStackCapacity = 15;
     static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
     static readonly int[] IndexStack = new int[MaxStackCapacity];
     static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
