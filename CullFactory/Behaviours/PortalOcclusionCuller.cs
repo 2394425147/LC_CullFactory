@@ -8,9 +8,9 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
 {
     public static PortalOcclusionCuller Instance;
 
-    private readonly List<TileContents> _visibleTiles = [];
+    private readonly List<TileContents> _visibleTiles = new();
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
 
@@ -39,7 +39,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         HideTileContents(_visibleTiles);
         _visibleTiles.Clear();
@@ -56,7 +56,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         ShowTileContents(DungeonCullingInfo.AllTileContents.Values);
     }
