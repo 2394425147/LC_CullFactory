@@ -46,16 +46,21 @@ public static class DungeonCullingInfo
         foreach (var tile in AllTiles)
         {
             var builder = new TileContentsBuilder(tile);
+
+            // Get objects within the current tile.
             CollectContentsIntoTile(tile, builder);
 
+            // Compile the list of lights from here to avoid extra lights from overlapping tiles added below.
+            allLights.AddRange(builder.lights);
+
+            // Get the doors that this tile is connected to. Otherwise, they may pop in and out when the edge of the view
+            // frustum is at the edge of the portal.
             foreach (var doorway in tile.UsedDoorways)
             {
                 if (doorway.doorComponent == null)
                     continue;
                 CollectContentsIntoTile(doorway.doorComponent, builder);
             }
-
-            allLights.AddRange(builder.lights);
 
             tileContentsBuilders[tile] = builder;
         }
