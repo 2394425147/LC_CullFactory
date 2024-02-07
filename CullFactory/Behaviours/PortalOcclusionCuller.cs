@@ -1,4 +1,4 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -7,14 +7,10 @@ namespace CullFactory.Behaviours;
   
 public sealed class PortalOcclusionCuller : MonoBehaviour
 {
-    public static PortalOcclusionCuller Instance;
-
     private readonly List<TileContents> _visibleTiles = new();
 
-    private void Awake()
+    private void OnEnable()
     {
-        Instance = this;
-
         HideTileContents(DungeonCullingInfo.AllTileContents.Values);
     }
 
@@ -77,7 +73,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         ShowTileContents(DungeonCullingInfo.AllTileContents.Values);
     }
