@@ -227,7 +227,7 @@ public static class DungeonCullingInfo
             bool outsideFrustum = false;
             for (int i = 0; i <= stackIndex; i++)
             {
-                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.Bounds))
+                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.bounds))
                 {
                     outsideFrustum = true;
                     break;

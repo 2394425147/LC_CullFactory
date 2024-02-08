@@ -9,8 +9,8 @@ namespace CullFactory.Data;
 
 public class Portal
 {
-    public Vector3[] Corners { get; private set; }
-    public Bounds Bounds { get; private set; }
+    public Vector3[] corners { get; private set; }
+    public Bounds bounds { get; private set; }
 
     public Portal(Doorway doorway)
     {
@@ -18,25 +18,25 @@ public class Portal
         var size = doorway.Socket.Size;
         var halfWidth = size.x / 2;
 
-        Corners =
+        corners =
         [
             new Vector3(halfWidth, 0, 0),
             new Vector3(halfWidth, size.y, 0),
             new Vector3(-halfWidth, size.y, 0),
             new Vector3(-halfWidth, 0, 0),
         ];
-        for (int i = 0; i < Corners.Length; i++)
-            Corners[i] = doorwayTransform.position + doorwayTransform.rotation * Corners[i];
+        for (int i = 0; i < corners.Length; i++)
+            corners[i] = doorwayTransform.position + doorwayTransform.rotation * corners[i];
 
         var min = Vector3.positiveInfinity;
         var max = Vector3.negativeInfinity;
-        foreach (var corner in Corners)
+        foreach (var corner in corners)
         {
             min = Vector3.Min(min, corner);
             max = Vector3.Max(max, corner);
         }
 
-        Bounds = new Bounds
+        bounds = new Bounds
         {
             min = min,
             max = max
@@ -47,7 +47,7 @@ public class Portal
     {
         if (corners.Length != 4)
             throw new ArgumentException($"SetCorners() was called with {corners.Length} corners instead of 4");
-        Corners = corners;
+        this.corners = corners;
 
         var min = Vector3.positiveInfinity;
         var max = Vector3.negativeInfinity;
@@ -57,7 +57,7 @@ public class Portal
             max = Vector3.Max(max, corner);
         }
 
-        Bounds = new Bounds
+        bounds = new Bounds
         {
             min = min,
             max = max
@@ -66,11 +66,11 @@ public class Portal
 
     internal void GetFrustumPlanes(Vector3 origin, Plane[] planes)
     {
-        planes[0] = new Plane(Corners[0], Corners[1], origin);
-        planes[1] = new Plane(Corners[1], Corners[2], origin);
-        planes[2] = new Plane(Corners[2], Corners[3], origin);
-        planes[3] = new Plane(Corners[3], Corners[0], origin);
-        planes[4] = new Plane(Corners[0], Corners[1], Corners[3]);
+        planes[0] = new Plane(corners[0], corners[1], origin);
+        planes[1] = new Plane(corners[1], corners[2], origin);
+        planes[2] = new Plane(corners[2], corners[3], origin);
+        planes[3] = new Plane(corners[3], corners[0], origin);
+        planes[4] = new Plane(corners[0], corners[1], corners[3]);
     }
 
     internal Plane[] GetFrustumPlanes(Vector3 origin)
