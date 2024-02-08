@@ -11,7 +11,7 @@ public class Plugin : BaseUnityPlugin
 {
     private const string Guid = "com.fumiko.CullFactory";
     private const string Name = "CullFactory";
-    private const string Version = "0.6.2";
+    private const string Version = "0.7.0";
     public static Plugin Instance { get; private set; }
 
     public static Config Configuration { get; private set; }
