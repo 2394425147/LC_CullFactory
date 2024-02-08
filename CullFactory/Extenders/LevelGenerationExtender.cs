@@ -12,7 +12,7 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(RoundManager))]
 public sealed class LevelGenerationExtender
 {
-    public static readonly Dictionary<Tile, TileVisibility> MeshContainers = new();
+    public static readonly Dictionary<Tile, TileVisibility> MeshContainers = [];
 
     public static Dictionary<SpawnSyncedObject, GameObject> TileSyncedObjects = [];
 
