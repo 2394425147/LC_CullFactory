@@ -1,3 +1,9 @@
+# 0.7.0
+
+## Added
+
+- Portal occlusion culling (thanks to Zaggy1024!)
+
 # 0.6.2
 
 ## Fixed
