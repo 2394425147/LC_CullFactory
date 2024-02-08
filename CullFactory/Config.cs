@@ -21,6 +21,7 @@ public sealed class Config
                                  "Portal occlusion culling tests what rooms are visible to the camera based on the size of the passages between them." +
                                  "This is the recommended setting, as it should yield a significant performance gain on large maps without any visual change.\n" +
                                  "Depth culling hides rooms based on the number of rooms separating them from the camera.");
+
         Culler.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
 
         UpdateFrequency = configFile.Bind("General",
