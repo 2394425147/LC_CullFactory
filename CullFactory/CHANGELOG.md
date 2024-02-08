@@ -1,3 +1,9 @@
+# 0.7.1
+
+## Fixed
+
+- Various issues due to not fully pulling update commits
+
 # 0.7.0
 
 ## Added
