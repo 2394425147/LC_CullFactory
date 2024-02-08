@@ -14,9 +14,12 @@ public static class DungeonCullingInfo
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
     public static Dictionary<Doorway, Portal> AllPortals = [];
-    public static Tile[] AllTiles { get; private set; }
-    public static Dictionary<Tile, TileContents> AllTileContents { get; private set; }
+    public static TileContents[] AllTileContents { get; private set; }
+    public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
     public static int AllTileLayersMask = 0;
+
+    private static readonly TileContents[] _previouslyOccupiedTiles = new TileContents[5];
+    private static int _nextOccupiedTileIndex = 0;
 
     public static void OnLevelGenerated()
     {
@@ -25,7 +28,6 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing portal information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
 
         startTime = Time.realtimeSinceStartupAsDouble;
-        AllTiles = [.. RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles];
         CollectAllTileContents();
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
@@ -45,13 +47,12 @@ public static class DungeonCullingInfo
 
     private static void CollectAllTileContents()
     {
-        AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
+        TileContentsForTile = new Dictionary<Tile, TileContents>(RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles.Count);
         AllTileLayersMask = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
-        var allLights = new List<Light>();
 
-        foreach (var tile in AllTiles)
+        foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
         {
             var builder = new TileContentsBuilder(tile);
 
@@ -63,9 +64,6 @@ public static class DungeonCullingInfo
                 AllTileLayersMask |= 1 << renderer.gameObject.layer;
             foreach (var light in builder.lights)
                 AllTileLayersMask |= light.cullingMask;
-
-            // Compile the list of lights from here to avoid extra lights from overlapping tiles added below.
-            allLights.AddRange(builder.lights);
 
             // Get the doors that this tile is connected to. Otherwise, they may pop in and out when the edge of the view
             // frustum is at the edge of the portal.
@@ -81,7 +79,7 @@ public static class DungeonCullingInfo
 
         // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
         // but floor decals in the factory interior can as well.
-        foreach (var tile in AllTiles)
+        foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
         {
             var builder = tileContentsBuilders[tile];
 
@@ -93,21 +91,14 @@ public static class DungeonCullingInfo
         }
 
         // Collect all external lights that may influence the tiles that we know of:
-        foreach (var light in allLights)
+        foreach (var (builder, light) in tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
         {
-            var lightTile = light.transform.position.GetTile();
-            if (lightTile == null)
-            {
-                Plugin.Log($"Light '{light.name}' was outside of the dungeon.");
-                continue;
-            }
-
             var lightRangeSquared = light.range * light.range;
 
             var hasShadows = light.shadows != LightShadows.None;
             var lightPassesThroughWalls = light.GetComponent<HDAdditionalLightData>() is HDAdditionalLightData hdLight && hdLight.shadowDimmer < 1;
 
-            foreach (var tile in AllTiles)
+            foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
             {
                 var tileContentsBuilder = tileContentsBuilders[tile];
                 var bounds = tile.Bounds;
@@ -126,14 +117,14 @@ public static class DungeonCullingInfo
                 // occludes the light leaving it, we must ensure that room is rendered to
                 // occlude that light.
                 if (hasShadows)
-                    tileContentsBuilder.externalLightOccluders.UnionWith(tileContentsBuilders[lightTile].renderers);
+                    tileContentsBuilder.externalLightOccluders.UnionWith(builder.renderers);
             }
 
             // If the light has shadows, use our portals to determine where it can reach.
             if (!hasShadows)
                 continue;
 
-            CallForEachLineOfSight(light.transform.position, lightTile, (tiles, index) =>
+            CallForEachLineOfSight(light.transform.position, builder.tile, (tiles, index) =>
             {
                 if (index < 1)
                     return;
@@ -158,7 +149,12 @@ public static class DungeonCullingInfo
         }
 
         foreach (var pair in tileContentsBuilders)
-            AllTileContents[pair.Key] = pair.Value.Build();
+            TileContentsForTile[pair.Key] = pair.Value.Build();
+
+        AllTileContents = new TileContents[TileContentsForTile.Count];
+        int i = 0;
+        foreach (var tileContents in TileContentsForTile.Values)
+            AllTileContents[i++] = tileContents;
     }
 
     private static void CreatePortals()
@@ -172,26 +168,26 @@ public static class DungeonCullingInfo
         }
     }
 
-    public static Tile GetTile(this Vector3 point)
+    public static TileContents GetTileContents(this Vector3 point)
     {
         var sqrClosestTileDistance = SqrOutsideTileRadius;
-        Tile closestTile = null;
+        TileContents closestTileContents = null;
 
-        foreach (var tile in AllTiles)
+        foreach (var tileContents in AllTileContents)
         {
-            if (tile.Bounds.Contains(point))
-                return tile;
+            if (tileContents.bounds.Contains(point))
+                return tileContents;
 
-            var sqrTileDistance = tile.Bounds.SqrDistance(point);
+            var sqrTileDistance = tileContents.bounds.SqrDistance(point);
 
             if (sqrTileDistance > sqrClosestTileDistance)
                 continue;
 
             sqrClosestTileDistance = sqrTileDistance;
-            closestTile = tile;
+            closestTileContents = tileContents;
         }
 
-        return closestTile;
+        return closestTileContents;
     }
 
     const int MaxStackCapacity = 15;

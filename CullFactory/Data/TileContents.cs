@@ -13,6 +13,7 @@ namespace CullFactory.Data;
 public sealed class TileContents(Tile tile, Renderer[] renderers, Light[] lights, Light[] externalLights, Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
+    public readonly Bounds bounds = tile.Bounds;
     public readonly Renderer[] renderers = renderers;
     public readonly Light[] lights = lights;
 

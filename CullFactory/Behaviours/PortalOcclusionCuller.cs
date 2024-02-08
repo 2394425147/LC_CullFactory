@@ -11,7 +11,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
 
     private void OnEnable()
     {
-        HideTileContents(DungeonCullingInfo.AllTileContents.Values);
+        HideTileContents(DungeonCullingInfo.AllTileContents);
 
         RenderPipelineManager.beginCameraRendering += CullForCamera;
     }
@@ -65,18 +65,18 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         {
             var frustum = GeometryUtility.CalculateFrustumPlanes(fromCamera);
 
-            foreach (var tilePair in DungeonCullingInfo.AllTileContents)
+            foreach (var tileContents in DungeonCullingInfo.AllTileContents)
             {
-                if (GeometryUtility.TestPlanesAABB(frustum, tilePair.Key.Bounds))
-                    intoList.Add(tilePair.Value);
+                if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+                    intoList.Add(tileContents);
             }
             return;
         }
 
-        var currentTile = fromCamera.transform.position.GetTile();
+        var currentTileContents = fromCamera.transform.position.GetTileContents();
 
-        if (currentTile != null)
-            DungeonCullingInfo.CallForEachLineOfSight(fromCamera, currentTile, (tiles, index) => intoList.Add(DungeonCullingInfo.AllTileContents[tiles[index]]));
+        if (currentTileContents != null)
+            DungeonCullingInfo.CallForEachLineOfSight(fromCamera, currentTileContents.tile, (tiles, index) => intoList.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]));
     }
 
     private void CullForCamera(ScriptableRenderContext context, Camera camera)
@@ -93,7 +93,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
 
     private void OnDisable()
     {
-        ShowTileContents(DungeonCullingInfo.AllTileContents.Values);
+        ShowTileContents(DungeonCullingInfo.AllTileContents);
 
         RenderPipelineManager.beginCameraRendering -= CullForCamera;
     }
