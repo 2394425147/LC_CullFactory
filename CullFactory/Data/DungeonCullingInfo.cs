@@ -16,6 +16,7 @@ public static class DungeonCullingInfo
     public static Dictionary<Doorway, Portal> AllPortals = [];
     public static Tile[] AllTiles { get; private set; }
     public static Dictionary<Tile, TileContents> AllTileContents { get; private set; }
+    public static int AllTileLayersMask = 0;
 
     public static void OnLevelGenerated()
     {
@@ -42,6 +43,7 @@ public static class DungeonCullingInfo
     private static void CollectAllTileContents()
     {
         AllTileContents = new Dictionary<Tile, TileContents>(AllTiles.Length);
+        AllTileLayersMask = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
         var allLights = new List<Light>();
@@ -52,6 +54,12 @@ public static class DungeonCullingInfo
 
             // Get objects within the current tile.
             CollectContentsIntoTile(tile, builder);
+
+            // Create a mask containing all the layers that are used by the contents of tiles.
+            foreach (var renderer in builder.renderers)
+                AllTileLayersMask |= 1 << renderer.gameObject.layer;
+            foreach (var light in builder.lights)
+                AllTileLayersMask |= light.cullingMask;
 
             // Compile the list of lights from here to avoid extra lights from overlapping tiles added below.
             allLights.AddRange(builder.lights);
