@@ -20,6 +20,7 @@ public sealed class Config
                                  "The culling type to use.\n" +
                                  "Portal occlusion culling tests what rooms are visible to the camera based on the size of the passages between them.\n" +
                                  "Depth culling hides rooms based on the number of rooms separating them from the camera.");
+
         Culler.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
 
         UpdateFrequency = configFile.Bind("General",
