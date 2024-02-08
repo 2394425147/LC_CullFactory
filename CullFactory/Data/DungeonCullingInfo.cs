@@ -20,11 +20,14 @@ public static class DungeonCullingInfo
 
     public static void OnLevelGenerated()
     {
+        var startTime = Time.realtimeSinceStartupAsDouble;
         CreatePortals();
+        Plugin.Log($"Preparing portal information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
 
+        startTime = Time.realtimeSinceStartupAsDouble;
         AllTiles = [.. RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles];
-
         CollectAllTileContents();
+        Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
     private static void CollectContentsIntoTile(Component parent, TileContentsBuilder builder)
