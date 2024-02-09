@@ -46,6 +46,9 @@ public class Plugin : BaseUnityPlugin
 
     public static void CreateCullingHandler()
     {
+        if (RoundManager.Instance.dungeonGenerator == null)
+            return;
+
         var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
         Destroy(dungeonObject.GetComponent<DynamicCuller>());
         Destroy(dungeonObject.GetComponent<PortalOcclusionCuller>());
