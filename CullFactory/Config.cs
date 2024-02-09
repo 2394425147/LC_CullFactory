@@ -18,7 +18,7 @@ public sealed class Config
                                  "Culling type",
                                  CullingType.PortalOcclusionCulling,
                                  "The culling type to use.\n" +
-                                 "Portal occlusion culling tests what rooms are visible to the camera based on the size of the passages between them." +
+                                 "Portal occlusion culling tests what rooms are visible to the camera based on the size of the passages between them. " +
                                  "This is the recommended setting, as it should yield a significant performance gain on large maps without any visual change.\n" +
                                  "Depth culling hides rooms based on the number of rooms separating them from the camera.");
 
@@ -53,7 +53,7 @@ public sealed class Config
                                           "Override map seed",
                                           "",
                                           "INTENDED FOR BENCHMARKING ONLY. Leave this empty if you are playing normally.\n" +
-                                          "This forces the map seed to be whatever is entered here, so that benchmarking" +
+                                          "This forces the map seed to be whatever is entered here, so that benchmarking " +
                                           "numbers can remain as consistent as possible between runs.");
     }
 
