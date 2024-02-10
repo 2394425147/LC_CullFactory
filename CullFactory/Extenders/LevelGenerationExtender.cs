@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -36,6 +36,7 @@ public sealed class LevelGenerationExtender
         DungeonCullingInfo.OnLevelGenerated();
 
         Plugin.CreateCullingHandler();
+        Plugin.CreateCullingVisualizers();
     }
 
     [HarmonyTranspiler]

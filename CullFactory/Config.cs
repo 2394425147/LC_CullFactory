@@ -64,7 +64,7 @@ public sealed class Config
                                            "doesn't block the entirety of the visible portion of the next tile, then culling " +
                                            "will not be correct.");
 
-        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
+        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
 
         VisualizedPortalOutsetDistance = configFile.Bind("Debug",
                                                          "Visualized portal outset distance",
@@ -73,7 +73,7 @@ public sealed class Config
                                                          "actual position of the portal. For doors that don't cover an entire tile " +
                                                          "wall, this allows seeing the exact bounds it covers.");
 
-        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
+        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
     }
 
     public ConfigEntry<bool> Logging { get; private set; }

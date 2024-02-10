@@ -63,4 +63,15 @@ public class Plugin : BaseUnityPlugin
                 break;
         }
     }
+
+    public static void CreateCullingVisualizers()
+    {
+        if (RoundManager.Instance.dungeonGenerator == null)
+            return;
+
+        var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
+
+        var visualizer = dungeonObject.GetComponent<CullingVisualizer>() ?? dungeonObject.AddComponent<CullingVisualizer>();
+        visualizer.RefreshVisualizers();
+    }
 }
