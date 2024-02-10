@@ -63,13 +63,7 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
     {
         if (fromCamera.orthographic)
         {
-            var frustum = GeometryUtility.CalculateFrustumPlanes(fromCamera);
-
-            foreach (var tileContents in DungeonCullingInfo.AllTileContents)
-            {
-                if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
-                    intoList.Add(tileContents);
-            }
+            DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(fromCamera, intoList);
             return;
         }
 

@@ -187,6 +187,17 @@ public static class DungeonCullingInfo
         return closestTileContents;
     }
 
+    public static void CollectAllTilesWithinCameraFrustum(Camera camera, List<TileContents> intoList)
+    {
+        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+
+        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+        {
+            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+                intoList.Add(tileContents);
+        }
+    }
+
     const int MaxStackCapacity = 15;
     static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
     static readonly int[] IndexStack = new int[MaxStackCapacity];
