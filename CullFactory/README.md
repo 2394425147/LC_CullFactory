@@ -16,5 +16,3 @@ This method is intended to hide all objects that are not visible to a camera. It
 
 ### Depth Culling
 This is a more naive method that will make tiles visible that are separated from the camera by a certain number of tiles. This may result in hallways becoming invisible in view of the camera.
-
-It is also currently not guaranteed to make tiles visible in the area of every camera. It should make the area around the player and radar map targets visible, but any cameras not covered by those may see through the world sometimes.
