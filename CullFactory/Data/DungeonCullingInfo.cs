@@ -29,6 +29,17 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
+    private static void CreatePortals()
+    {
+        AllPortals.Clear();
+
+        foreach (var doorConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
+        {
+            AllPortals[doorConnection.A] = new Portal(doorConnection.A);
+            AllPortals[doorConnection.B] = new Portal(doorConnection.B);
+        }
+    }
+
     private static void CollectContentsIntoTile(Component parent, TileContentsBuilder builder)
     {
         builder.renderers.UnionWith(parent.GetComponentsInChildren<Renderer>());
@@ -152,17 +163,6 @@ public static class DungeonCullingInfo
         var i = 0;
         foreach (var tileContents in TileContentsForTile.Values)
             AllTileContents[i++] = tileContents;
-    }
-
-    private static void CreatePortals()
-    {
-        AllPortals.Clear();
-
-        foreach (var doorConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
-        {
-            AllPortals[doorConnection.A] = new Portal(doorConnection.A);
-            AllPortals[doorConnection.B] = new Portal(doorConnection.B);
-        }
     }
 
     public static TileContents GetTileContents(this Vector3 point)
