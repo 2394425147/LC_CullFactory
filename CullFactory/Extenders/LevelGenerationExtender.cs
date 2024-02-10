@@ -34,6 +34,7 @@ public sealed class LevelGenerationExtender
         }
 
         DungeonCullingInfo.OnLevelGenerated();
+        TeleportExtender.SetInitialFarClipPlane();
 
         Plugin.CreateCullingHandler();
         Plugin.CreateCullingVisualizers();

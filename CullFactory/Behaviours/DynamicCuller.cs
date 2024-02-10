@@ -13,8 +13,6 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private const float VanillaClipDistance = 400;
-
     private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
     private static readonly List<ManualCameraRenderer> Monitors = new();
     private static readonly List<Vector3> CullOrigins = new();
@@ -45,7 +43,7 @@ public sealed class DynamicCuller : MonoBehaviour
         foreach (var monitor in _enabledMonitors)
         {
             var targetGameObject = monitor.radarTargets[monitor.targetTransformIndex].transform.gameObject;
-            if (!EntranceTeleportExtender.IsInsideFactory(targetGameObject, out var targetTransform))
+            if (!TeleportExtender.IsInsideFactory(targetGameObject, out var targetTransform))
                 continue;
 
             CullOrigins.Add(targetTransform.position);
@@ -77,21 +75,6 @@ public sealed class DynamicCuller : MonoBehaviour
             Monitors.Add(cameraRenderer);
 
             Plugin.Log($"Found monitor camera \"{cameraRenderer.name}\"");
-        }
-
-        if (Math.Abs(Plugin.Configuration.SurfaceCullDistance.Value - VanillaClipDistance) <= float.Epsilon * 2)
-            return;
-
-        foreach (var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None))
-        {
-            var isMonitorCamera = Monitors.FindIndex(monitor => monitor.mapCamera == camera) != -1;
-
-            if (isMonitorCamera ||
-                Math.Abs(camera.farClipPlane - VanillaClipDistance) > float.Epsilon * 2)
-                continue;
-
-            camera.farClipPlane = Mathf.Min(camera.farClipPlane, Plugin.Configuration.SurfaceCullDistance.Value);
-            Plugin.Log($"Set culling distance of \"{camera.name}\" to {Plugin.Configuration.SurfaceCullDistance.Value}");
         }
     }
 
