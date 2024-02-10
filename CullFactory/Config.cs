@@ -74,6 +74,14 @@ public sealed class Config
                                                          "wall, this allows seeing the exact bounds it covers.");
 
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
+
+        VisualizeTileBounds = configFile.Bind("Debug",
+                                              "Visualize tile bounds",
+                                              false,
+                                              "Shows a rectangular prism to represent the bounds all tiles. These bounds are used " +
+                                              "to determine which tile a camera resides in.");
+
+        VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
     }
 
     public ConfigEntry<bool> Logging { get; private set; }
@@ -85,4 +93,5 @@ public sealed class Config
     public ConfigEntry<string> OverrideMapSeed { get; private set; }
     public ConfigEntry<bool> VisualizePortals { get; private set; }
     public ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
+    public ConfigEntry<bool> VisualizeTileBounds { get; private set; }
 }
