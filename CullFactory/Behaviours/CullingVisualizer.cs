@@ -35,10 +35,9 @@ namespace CullFactory.Behaviours
 
         private void SpawnAllPortalVisualizers()
         {
+            Destroy(_portalVisualizersRoot);
             if (!Plugin.Configuration.VisualizePortals.Value)
                 return;
-
-            Destroy(_portalVisualizersRoot);
             _portalVisualizersRoot = new GameObject("PortalVisualizers");
 
             var portalPrefab = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -76,10 +75,9 @@ namespace CullFactory.Behaviours
 
         private void SpawnAllTileBoundsVisualizers()
         {
+            Destroy(_tileBoundsVisualizersRoot);
             if (!Plugin.Configuration.VisualizeTileBounds.Value)
                 return;
-
-            Destroy(_tileBoundsVisualizersRoot);
             _tileBoundsVisualizersRoot = new GameObject("TileBoundsVisualizers");
 
             var tileBoundsPrefab = GameObject.CreatePrimitive(PrimitiveType.Cube);

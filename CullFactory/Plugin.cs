@@ -71,7 +71,8 @@ public class Plugin : BaseUnityPlugin
 
         var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
 
-        var visualizer = dungeonObject.GetComponent<CullingVisualizer>() ?? dungeonObject.AddComponent<CullingVisualizer>();
-        visualizer.RefreshVisualizers();
+        Destroy(dungeonObject.GetComponent<CullingVisualizer>());
+        var newVisualizer = dungeonObject.AddComponent<CullingVisualizer>();
+        newVisualizer.RefreshVisualizers();
     }
 }
