@@ -97,16 +97,6 @@ public static class TeleportExtender
                                                  ? Plugin.Configuration.CullDistance.Value
                                                  : Plugin.Configuration.SurfaceCullDistance.Value;
 
-        if (DynamicCuller.Instance != null && player == DynamicCuller.FocusedPlayer)
-        {
-            if (DynamicCuller.useFactoryFarPlane == player.isInsideFactory)
-                return;
-            DynamicCuller.useFactoryFarPlane = player.isInsideFactory;
-            // Force an update
-            if (DynamicCuller.useFactoryFarPlane)
-                DynamicCuller.Instance.Update();
-        }
-
         Plugin.Log($"{player.playerUsername} is{(player.isInsideFactory ? "" : " not")} in the factory, set far plane distance to {player.gameplayCamera.farClipPlane}");
     }
 

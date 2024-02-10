@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using CullFactory.Extenders;
+using CullFactory.Data;
 using DunGen;
-using GameNetcodeStuff;
 using UnityEngine;
 
 namespace CullFactory.Behaviours;
@@ -13,20 +10,25 @@ namespace CullFactory.Behaviours;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private static readonly ConcurrentDictionary<Tile, TileVisibility> VisibleTilesThisFrame = new();
-    private static readonly List<ManualCameraRenderer> Monitors = new();
-    private static readonly List<Vector3> CullOrigins = new();
+    private static readonly List<TileContents> VisibleTilesThisFrame = [];
 
-    private static List<ManualCameraRenderer> _enabledMonitors = new();
     private static float _lastUpdateTime;
-    private static Vector3 _lastKnownPlayerPosition;
-    public static bool useFactoryFarPlane;
-    public static DynamicCuller Instance { get; private set; }
 
-    public static PlayerControllerB FocusedPlayer => GameNetworkManager.Instance.localPlayerController.hasBegunSpectating
-                                                         ? GameNetworkManager.Instance.localPlayerController
-                                                                             .spectatedPlayerScript
-                                                         : GameNetworkManager.Instance.localPlayerController;
+    private void SetTilesVisible(IEnumerable<TileContents> tiles, bool visible)
+    {
+        foreach (var tileContents in tiles)
+        {
+            foreach (var renderer in tileContents.renderers)
+                renderer.forceRenderingOff = !visible;
+            foreach (var light in tileContents.lights)
+                light.enabled = visible;
+        }
+    }
+
+    private void OnEnable()
+    {
+        SetTilesVisible(DungeonCullingInfo.AllTileContents, false);
+    }
 
     public void LateUpdate()
     {
@@ -36,125 +38,66 @@ public sealed class DynamicCuller : MonoBehaviour
 
         _lastUpdateTime = Time.time;
 
-        _enabledMonitors = Monitors.FindAll(monitor => monitor.mapCamera.enabled);
-
-        CullOrigins.Clear();
-
-        foreach (var monitor in _enabledMonitors)
-        {
-            var targetGameObject = monitor.radarTargets[monitor.targetTransformIndex].transform.gameObject;
-            if (!TeleportExtender.IsInsideFactory(targetGameObject, out var targetTransform))
-                continue;
-
-            CullOrigins.Add(targetTransform.position);
-        }
-
-        if (FocusedPlayer.isInsideFactory || CullOrigins.Count > 0)
-            IncludeVisibleTiles();
-
-        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
-            container.SetVisible(VisibleTilesThisFrame.ContainsKey(container.parentTile));
-    }
-
-    private void OnEnable()
-    {
-        if (Instance != null)
-            Destroy(Instance);
-
-        Instance = this;
-
-        Monitors.Clear();
-
-        foreach (var cameraRenderer in FindObjectsByType<ManualCameraRenderer>(FindObjectsSortMode.None))
-        {
-            var isMonitorCamera = cameraRenderer.mapCamera != null;
-
-            if (!isMonitorCamera)
-                continue;
-
-            Monitors.Add(cameraRenderer);
-
-            Plugin.Log($"Found monitor camera \"{cameraRenderer.name}\"");
-        }
-    }
-
-    private static void IncludeVisibleTiles()
-    {
-        var localPlayerRoomFound = false;
-        Tile fallbackPlayerOrigin = null;
-
+        SetTilesVisible(VisibleTilesThisFrame, false);
         VisibleTilesThisFrame.Clear();
 
-        foreach (var tile in LevelGenerationExtender.MeshContainers.Keys)
+        foreach (var camera in Camera.allCameras)
         {
-            var anyOriginCaptured = CullOrigins.RemoveAll(pos => tile.Bounds.Contains(pos)) > 0;
-
-            if (FocusedPlayer.isInsideFactory && !localPlayerRoomFound)
+            if (camera.orthographic)
             {
-                if (tile.Bounds.Contains(FocusedPlayer.gameplayCamera.transform.position))
-                {
-                    _lastKnownPlayerPosition = FocusedPlayer.gameplayCamera.transform.position;
-                    anyOriginCaptured = localPlayerRoomFound = true;
-                }
-                else if (tile.Bounds.Contains(_lastKnownPlayerPosition))
-                {
-                    fallbackPlayerOrigin = tile;
-                }
+                DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(camera, VisibleTilesThisFrame);
+                continue;
             }
 
-            if (!anyOriginCaptured)
+            var cameraTile = camera.transform.position.GetTileContents();
+            if (cameraTile == null)
                 continue;
-
-            IncludeNearbyTiles(tile);
+            IncludeNearbyTiles(cameraTile.tile);
         }
 
-        if (!localPlayerRoomFound && fallbackPlayerOrigin != null)
-            IncludeNearbyTiles(fallbackPlayerOrigin);
+        SetTilesVisible(VisibleTilesThisFrame, true);
     }
 
     private static void IncludeNearbyTiles(Tile origin)
     {
-        var depthTesterQueue = new Queue<TileDepthTester>();
+        var depthTarget = Plugin.Configuration.MaxBranchingDepth.Value - 1;
+        // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.
+        var depthTesterQueue = new Stack<TileDepthTester>(depthTarget * depthTarget);
         var traversedTiles = new HashSet<Tile>();
 
         depthTesterQueue.Clear();
-        depthTesterQueue.Enqueue(new TileDepthTester(origin, 0));
+        depthTesterQueue.Push(new TileDepthTester(origin, 0));
 
         while (depthTesterQueue.Count > 0)
         {
-            var tile = depthTesterQueue.Dequeue();
+            var tileFrame = depthTesterQueue.Pop();
 
             // We use a second list here so other depth searches won't interfere
             // E.g. A is the first process, B is the second:
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            VisibleTilesThisFrame.TryAdd(tile.tile, LevelGenerationExtender.MeshContainers[tile.tile]);
-            traversedTiles.Add(tile.tile);
+            VisibleTilesThisFrame.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
+            traversedTiles.Add(tileFrame.tile);
 
-            if (tile.iteration == Plugin.Configuration.MaxBranchingDepth.Value - 1)
+            if (tileFrame.iteration == depthTarget)
                 continue;
 
-            foreach (var doorway in tile.tile.UsedDoorways)
+            foreach (var doorway in tileFrame.tile.UsedDoorways)
             {
                 var neighborTile = doorway.ConnectedDoorway.Tile;
 
-                if (traversedTiles.Contains(neighborTile) ||
-                    // This is possible due to traversing to a tile that has null doorways
-                    !LevelGenerationExtender.MeshContainers.ContainsKey(neighborTile))
+                if (traversedTiles.Contains(neighborTile))
                     continue;
 
-                depthTesterQueue.Enqueue(new TileDepthTester(neighborTile, tile.iteration + 1));
+                depthTesterQueue.Push(new TileDepthTester(neighborTile, tileFrame.iteration + 1));
             }
         }
     }
 
     private void OnDestroy()
     {
-        Instance = null;
-
-        foreach (var container in LevelGenerationExtender.MeshContainers.Values)
-            container.SetVisible(true);
+        SetTilesVisible(DungeonCullingInfo.AllTileContents, true);
     }
 }
 
