@@ -30,24 +30,6 @@ public sealed class Config
                                           "Higher values make culling more responsive at the cost of performance.\n" +
                                           "Update interval: 1 / value (seconds)");
 
-        VisualizePortals = configFile.Bind("Portal occlusion culling",
-                                           "Visualize portals",
-                                           false,
-                                           "This is a debug option to visualize the portals that are used to determine " +
-                                           "visibility inside the interior. If the portal doesn't block the entirety of " +
-                                           "the visible portion of the next tile, then culling will not be correct.");
-
-        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
-
-        VisualizedPortalOutsetDistance = configFile.Bind("Portal occlusion culling",
-                                                         "Visualized portal outset distance",
-                                                         0.2f,
-                                                         "The distance to offset each side of a portal visualizer out from the " +
-                                                         "actual position of the portal. For doors that don't cover an entire tile " +
-                                                         "wall, this allows seeing the exact bounds it covers.");
-
-        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
-
         MaxBranchingDepth = configFile.Bind("Depth culling",
                                             "Max branching depth",
                                             4,
@@ -73,15 +55,34 @@ public sealed class Config
                                           "INTENDED FOR BENCHMARKING ONLY. Leave this empty if you are playing normally.\n" +
                                           "This forces the map seed to be whatever is entered here, so that benchmarking " +
                                           "numbers can remain as consistent as possible between runs.");
+
+        VisualizePortals = configFile.Bind("Debug",
+                                           "Visualize portals",
+                                           false,
+                                           "Shows a rectangle representing the bounds of all portals that are used to " +
+                                           "determine visibility when portal occlusion culling is enabled. If the portal " +
+                                           "doesn't block the entirety of the visible portion of the next tile, then culling " +
+                                           "will not be correct.");
+
+        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
+
+        VisualizedPortalOutsetDistance = configFile.Bind("Debug",
+                                                         "Visualized portal outset distance",
+                                                         0.2f,
+                                                         "The distance to offset each side of a portal visualizer out from the " +
+                                                         "actual position of the portal. For doors that don't cover an entire tile " +
+                                                         "wall, this allows seeing the exact bounds it covers.");
+
+        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
     }
 
     public ConfigEntry<bool> Logging { get; private set; }
     public ConfigEntry<CullingType> Culler { get; private set; }
     public ConfigEntry<float> UpdateFrequency { get; private set; }
-    public ConfigEntry<bool> VisualizePortals { get; private set; }
-    public ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public ConfigEntry<float> CullDistance { get; private set; }
     public ConfigEntry<float> SurfaceCullDistance { get; private set; }
     public ConfigEntry<string> OverrideMapSeed { get; private set; }
+    public ConfigEntry<bool> VisualizePortals { get; private set; }
+    public ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
 }
