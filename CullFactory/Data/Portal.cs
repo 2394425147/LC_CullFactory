@@ -43,27 +43,6 @@ public class Portal
         };
     }
 
-    internal void SetCorners(Vector3[] corners)
-    {
-        if (corners.Length != 4)
-            throw new ArgumentException($"SetCorners() was called with {corners.Length} corners instead of 4");
-        this.corners = corners;
-
-        var min = Vector3.positiveInfinity;
-        var max = Vector3.negativeInfinity;
-        foreach (var corner in corners)
-        {
-            min = Vector3.Min(min, corner);
-            max = Vector3.Max(max, corner);
-        }
-
-        bounds = new Bounds
-        {
-            min = min,
-            max = max
-        };
-    }
-
     internal void GetFrustumPlanes(Vector3 origin, Plane[] planes)
     {
         planes[0] = new Plane(corners[0], corners[1], origin);
