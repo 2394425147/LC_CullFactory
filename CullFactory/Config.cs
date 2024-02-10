@@ -35,6 +35,15 @@ public sealed class Config
                                             4,
                                             "How many doors can be traversed before a room is culled.");
 
+        EnableCullDistanceOverride = configFile.Bind("Distance culling",
+                                                     "Enabled",
+                                                     false,
+                                                     "Whether to override the camera's far plane distance. When " +
+                                                     "this is false, the 'Cull distance' and 'Surface cull distance' " +
+                                                     "options will have no effect.\n" +
+                                                     "If performance with portal occlusion culling enabled is insufficient " +
+                                                     "this may provide a small boost in performance.");
+
         CullDistance = configFile.Bind("Distance culling",
                                        "Cull distance",
                                        40f,
@@ -88,6 +97,7 @@ public sealed class Config
     public ConfigEntry<CullingType> Culler { get; private set; }
     public ConfigEntry<float> UpdateFrequency { get; private set; }
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
+    public ConfigEntry<bool> EnableCullDistanceOverride { get; private set; }
     public ConfigEntry<float> CullDistance { get; private set; }
     public ConfigEntry<float> SurfaceCullDistance { get; private set; }
     public ConfigEntry<string> OverrideMapSeed { get; private set; }
