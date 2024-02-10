@@ -1,3 +1,19 @@
+# 0.7.2
+
+## Added
+
+- Added options to visualize the portals and tile bounds used to determine culling
+
+## Changed
+
+- Changed the render distance option to be opt-in with the `[Distance culling] Enabled` option
+
+## Fixed
+
+- Partially prevented the entrance room on Scoopy's Sewer interior from appearing invisible
+- Fixed depth culling sometimes allowing tiles to remain invisible on cameras
+- Fixed issues that could cause the render distance to be set to the interior value when outside or vice versa
+
 # 0.7.1
 
 ## Fixed
