@@ -28,7 +28,7 @@ public sealed class DynamicCuller : MonoBehaviour
                                                                              .spectatedPlayerScript
                                                          : GameNetworkManager.Instance.localPlayerController;
 
-    public void Update()
+    public void LateUpdate()
     {
         if (StartOfRound.Instance.allPlayersDead ||
             Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
