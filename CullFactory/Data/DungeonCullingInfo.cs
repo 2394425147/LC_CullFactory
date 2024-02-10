@@ -191,7 +191,7 @@ public static class DungeonCullingInfo
     {
         var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
 
-        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+        foreach (var tileContents in AllTileContents)
         {
             if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
                 intoList.Add(tileContents);
