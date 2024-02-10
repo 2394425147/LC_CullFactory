@@ -18,9 +18,6 @@ public static class DungeonCullingInfo
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
     public static int AllTileLayersMask = 0;
 
-    private static readonly TileContents[] _previouslyOccupiedTiles = new TileContents[5];
-    private static int _nextOccupiedTileIndex = 0;
-
     public static void OnLevelGenerated()
     {
         var startTime = Time.realtimeSinceStartupAsDouble;
