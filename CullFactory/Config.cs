@@ -28,6 +28,7 @@ public sealed class Config
                                           "Update frequency",
                                           5f,
                                           "Higher values make culling more responsive at the cost of performance.\n" +
+                                          "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
 
         MaxBranchingDepth = configFile.Bind("Depth culling",
