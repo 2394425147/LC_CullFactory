@@ -76,7 +76,7 @@ namespace CullFactory.Behaviours.Visualization
 
             var insetVector = new Vector3(TileBoundsInset, TileBoundsInset, TileBoundsInset);
 
-            for (int i = 0; i < DungeonCullingInfo.AllTileContents.Length; i++)
+            for (var i = 0; i < DungeonCullingInfo.AllTileContents.Length; i++)
             {
                 var tile = DungeonCullingInfo.AllTileContents[i];
                 var tileBoundsVisualizer = Instantiate(tileBoundsPrefab, _tileBoundsVisualizersRoot.transform);
@@ -105,7 +105,7 @@ namespace CullFactory.Behaviours.Visualization
             // Mesh.vertices elements cannot be modified directly.
             var vertices = mesh.vertices;
             var vertexOffset = new Vector3(0, 0.5f, -Plugin.Configuration.VisualizedPortalOutsetDistance.Value);
-            for (int i = 0; i < vertices.Length; i++)
+            for (var i = 0; i < vertices.Length; i++)
                 vertices[i] += vertexOffset;
             mesh.vertices = vertices;
             mesh.RecalculateBounds();

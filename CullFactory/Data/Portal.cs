@@ -25,7 +25,7 @@ public class Portal
             new Vector3(-halfWidth, size.y, 0),
             new Vector3(-halfWidth, 0, 0),
         ];
-        for (int i = 0; i < corners.Length; i++)
+        for (var i = 0; i < corners.Length; i++)
             corners[i] = doorwayTransform.position + doorwayTransform.rotation * corners[i];
 
         var min = Vector3.positiveInfinity;

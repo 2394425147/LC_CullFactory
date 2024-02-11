@@ -149,7 +149,7 @@ public static class DungeonCullingInfo
             TileContentsForTile[pair.Key] = pair.Value.Build();
 
         AllTileContents = new TileContents[TileContentsForTile.Count];
-        int i = 0;
+        var i = 0;
         foreach (var tileContents in TileContentsForTile.Values)
             AllTileContents[i++] = tileContents;
     }
@@ -210,7 +210,7 @@ public static class DungeonCullingInfo
         TileStack[0] = originTile;
         IndexStack[0] = 0;
         FrustumStack[0] = frustum;
-        int stackIndex = 0;
+        var stackIndex = 0;
 
         callback(TileStack, stackIndex);
 
@@ -232,8 +232,8 @@ public static class DungeonCullingInfo
 
             var portal = AllPortals[doorway];
 
-            bool outsideFrustum = false;
-            for (int i = 0; i <= stackIndex; i++)
+            var outsideFrustum = false;
+            for (var i = 0; i <= stackIndex; i++)
             {
                 if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.bounds))
                 {
