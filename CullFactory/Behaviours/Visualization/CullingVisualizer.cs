@@ -13,6 +13,18 @@ namespace CullFactory.Behaviours.Visualization
         private static readonly Shader VisualizerShader = Shader.Find("HDRP/Unlit");
         private static readonly Color[] ColorRotation = [Color.red, Color.yellow, Color.green, Color.blue, Color.cyan, Color.grey];
 
+        private static readonly Material PortalVisualizerMaterial = new(VisualizerShader)
+        {
+            name = "PortalVisualizerMaterial",
+            color = Color.white,
+        };
+
+        private static readonly Material TileBoundsVisualizerMaterial = new(VisualizerShader)
+        {
+            name = "TileBoundsVisualizerMaterial",
+            color = Color.yellow,
+        };
+
         private GameObject _portalVisualizersRoot;
         private GameObject _tileBoundsVisualizersRoot;
 
@@ -23,48 +35,26 @@ namespace CullFactory.Behaviours.Visualization
 
         public void RefreshVisualizers()
         {
-            SpawnAllPortalVisualizers();
-            SpawnAllTileBoundsVisualizers();
+            SpawnPortalVisualizers();
+            SpawnTileBoundsVisualizers();
         }
 
-        private void SpawnPortalVisualizer(GameObject prefab, Doorway doorway)
+        private void SpawnPortalVisualizer(Transform prefab, Doorway doorway)
         {
             var portalVisualizer = Instantiate(prefab, _portalVisualizersRoot.transform);
-            portalVisualizer.transform.position = doorway.transform.position;
-            portalVisualizer.transform.transform.rotation = doorway.transform.rotation;
-            portalVisualizer.transform.localScale = new Vector3(doorway.Socket.Size.x, doorway.Socket.Size.y, 1);
+            portalVisualizer.position = doorway.transform.position;
+            portalVisualizer.rotation = doorway.transform.rotation;
+            portalVisualizer.localScale = new Vector3(doorway.Socket.Size.x, doorway.Socket.Size.y, 1);
         }
 
-        private void SpawnAllPortalVisualizers()
+        private void SpawnPortalVisualizers()
         {
             Destroy(_portalVisualizersRoot);
             if (!Plugin.Configuration.VisualizePortals.Value)
                 return;
             _portalVisualizersRoot = new GameObject("PortalVisualizers");
 
-            var portalPrefab = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            portalPrefab.name = "PortalVisualizer";
-
-            // Destroy is deferred, so destroy the collider immediately to avoid cloning it
-            // when using this as a prefab.
-            DestroyImmediate(portalPrefab.GetComponent<Collider>());
-
-            var renderer = portalPrefab.GetComponent<Renderer>();
-            renderer.material = new Material(VisualizerShader)
-            {
-                name = "PortalVisualizerMaterial",
-                color = Color.white,
-            };
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-
-            var mesh = portalPrefab.GetComponent<MeshFilter>().mesh;
-            // Mesh.vertices elements cannot be modified directly.
-            var vertices = mesh.vertices;
-            var vertexOffset = new Vector3(0, 0.5f, -Plugin.Configuration.VisualizedPortalOutsetDistance.Value);
-            for (int i = 0; i < vertices.Length; i++)
-                vertices[i] = vertices[i] + vertexOffset;
-            mesh.vertices = vertices;
-            mesh.RecalculateBounds();
+            var portalPrefab = CreatePortalVisualizer();
 
             foreach (var doorwayConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
             {
@@ -75,28 +65,14 @@ namespace CullFactory.Behaviours.Visualization
             Destroy(portalPrefab);
         }
 
-        private void SpawnAllTileBoundsVisualizers()
+        private void SpawnTileBoundsVisualizers()
         {
             Destroy(_tileBoundsVisualizersRoot);
             if (!Plugin.Configuration.VisualizeTileBounds.Value)
                 return;
             _tileBoundsVisualizersRoot = new GameObject("TileBoundsVisualizers");
 
-            var tileBoundsPrefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            tileBoundsPrefab.name = "TileBounds";
-
-            DestroyImmediate(tileBoundsPrefab.GetComponent<Collider>());
-
-            var renderer = tileBoundsPrefab.GetComponent<Renderer>();
-            renderer.material = new Material(VisualizerShader)
-            {
-                name = "TileBoundsVisualizerMaterial",
-                color = Color.yellow,
-            };
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-
-            var mesh = tileBoundsPrefab.GetComponent<MeshFilter>().sharedMesh;
-            mesh.triangles = [.. mesh.triangles, .. mesh.triangles.Reverse()];
+            var tileBoundsPrefab = CreateTileBoundsVisualizer();
 
             var insetVector = new Vector3(TileBoundsInset, TileBoundsInset, TileBoundsInset);
 
@@ -106,10 +82,51 @@ namespace CullFactory.Behaviours.Visualization
                 var tileBoundsVisualizer = Instantiate(tileBoundsPrefab, _tileBoundsVisualizersRoot.transform);
                 tileBoundsVisualizer.transform.position = tile.bounds.center;
                 tileBoundsVisualizer.transform.localScale = tile.bounds.size - insetVector;
-                tileBoundsVisualizer.GetComponent<Renderer>().material.color = ColorRotation[i % ColorRotation.Length];
+                tileBoundsVisualizer.material.color = ColorRotation[i % ColorRotation.Length];
             }
 
             Destroy(tileBoundsPrefab);
+        }
+
+        private static Transform CreatePortalVisualizer()
+        {
+            var portalPrefab = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            portalPrefab.name = "PortalVisualizer";
+
+            // Destroy is deferred, so destroy the collider immediately to avoid cloning it
+            // when using this as a prefab.
+            DestroyImmediate(portalPrefab.GetComponent<Collider>());
+
+            var renderer = portalPrefab.GetComponent<Renderer>();
+            renderer.material = PortalVisualizerMaterial;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+
+            var mesh = portalPrefab.GetComponent<MeshFilter>().mesh;
+            // Mesh.vertices elements cannot be modified directly.
+            var vertices = mesh.vertices;
+            var vertexOffset = new Vector3(0, 0.5f, -Plugin.Configuration.VisualizedPortalOutsetDistance.Value);
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] += vertexOffset;
+            mesh.vertices = vertices;
+            mesh.RecalculateBounds();
+            return portalPrefab.transform;
+        }
+
+        private static Renderer CreateTileBoundsVisualizer()
+        {
+            var tileBoundsPrefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            tileBoundsPrefab.name = "TileBounds";
+
+            DestroyImmediate(tileBoundsPrefab.GetComponent<Collider>());
+
+            var renderer = tileBoundsPrefab.GetComponent<Renderer>();
+            renderer.material = TileBoundsVisualizerMaterial;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+
+            var mesh = tileBoundsPrefab.GetComponent<MeshFilter>().sharedMesh;
+            mesh.triangles = [.. mesh.triangles, .. mesh.triangles.Reverse()];
+
+            return renderer;
         }
 
         private void OnDisable()
