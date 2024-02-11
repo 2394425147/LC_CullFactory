@@ -3,7 +3,7 @@ using CullFactory.Data;
 using DunGen;
 using UnityEngine;
 
-namespace CullFactory.Behaviours;
+namespace CullFactory.Behaviours.CullingMethods;
 
 /// <summary>
 ///     DynamicCuller instances are tied to each moon

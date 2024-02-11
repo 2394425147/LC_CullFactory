@@ -1,9 +1,9 @@
-using CullFactory.Data;
 using System.Collections.Generic;
+using CullFactory.Data;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace CullFactory.Behaviours;
+namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : MonoBehaviour
 {

@@ -1,4 +1,4 @@
-namespace CullFactory;
+namespace CullFactory.Data;
 
 public enum CullingType
 {

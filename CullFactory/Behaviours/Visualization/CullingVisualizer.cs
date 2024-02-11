@@ -1,10 +1,10 @@
-﻿using CullFactory.Data;
+﻿using System.Linq;
+using CullFactory.Data;
 using DunGen;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace CullFactory.Behaviours
+namespace CullFactory.Behaviours.Visualization
 {
     internal class CullingVisualizer : MonoBehaviour
     {
