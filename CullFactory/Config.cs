@@ -32,6 +32,20 @@ public sealed class Config
                                           "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
 
+        UseFallbackPortalsForInteriors = configFile.Bind("Portal occlusion culling",
+                                            "Use fallback portals for interiors",
+                                            "CastleFlow, SewerFlow",
+                                            "A comma-separated list of interior names on which the portal occlusion culling " +
+                                            "should consider the portals to be the maximum size allowable within their tile.\n" +
+                                            "This can be used to prevent compatibility issues with mods that don't correctly " +
+                                            "set the size of their doorway sockets.\n" +
+                                            "Note that this will decrease the performance gain from using portal occlusion " +
+                                            "culling due to the size of the portals generated with this option enabled.\n" +
+                                            "To check if this is necessary for an interior, the 'Visualize portals' option" +
+                                            "can be used, please refer to its description.");
+        UseFallbackPortalsForInteriors.SettingChanged += (_, _) => DungeonCullingInfo.UpdateFallbackPortalInteriors(UseFallbackPortalsForInteriors.Value);
+        DungeonCullingInfo.UpdateFallbackPortalInteriors(UseFallbackPortalsForInteriors.Value);
+
         MaxBranchingDepth = configFile.Bind("Depth culling",
                                             "Max branching depth",
                                             4,
@@ -98,6 +112,7 @@ public sealed class Config
     public ConfigEntry<bool> Logging { get; private set; }
     public ConfigEntry<CullingType> Culler { get; private set; }
     public ConfigEntry<float> UpdateFrequency { get; private set; }
+    public ConfigEntry<string> UseFallbackPortalsForInteriors { get; private set; }
     public ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public ConfigEntry<bool> EnableCullDistanceOverride { get; private set; }
     public ConfigEntry<float> CullDistance { get; private set; }

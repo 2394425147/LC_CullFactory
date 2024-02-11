@@ -8,18 +8,25 @@ public class Portal
     public Vector3[] corners { get; private set; }
     public Bounds bounds { get; private set; }
 
-    public Portal(Doorway doorway)
+    public Portal(Doorway doorway, bool deriveBoundsFromTile = false)
     {
         var doorwayTransform = doorway.transform;
-        var size = doorway.Socket.Size;
-        var halfWidth = size.x / 2;
+        var horizontalExtent = doorway.Socket.Size.x / 2;
+        var height = doorway.Socket.Size.y;
+
+        if (deriveBoundsFromTile)
+        {
+            var localTileBounds = doorwayTransform.InverseTransformBounds(doorway.Tile.Bounds);
+            horizontalExtent = Mathf.Min(-localTileBounds.min.x, localTileBounds.max.x);
+            height = localTileBounds.max.y;
+        }
 
         corners =
         [
-            new Vector3(halfWidth, 0, 0),
-            new Vector3(halfWidth, size.y, 0),
-            new Vector3(-halfWidth, size.y, 0),
-            new Vector3(-halfWidth, 0, 0),
+            new Vector3(horizontalExtent, 0, 0),
+            new Vector3(horizontalExtent, height, 0),
+            new Vector3(-horizontalExtent, height, 0),
+            new Vector3(-horizontalExtent, 0, 0),
         ];
         for (var i = 0; i < corners.Length; i++)
             corners[i] = doorwayTransform.position + doorwayTransform.rotation * corners[i];

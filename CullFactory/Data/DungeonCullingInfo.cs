@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DunGen;
@@ -13,6 +14,8 @@ public static class DungeonCullingInfo
 
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
+    public static string[] UseFallbackPortalsForInteriors = [];
+
     public static Dictionary<Doorway, Portal> AllPortals;
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
@@ -23,8 +26,12 @@ public static class DungeonCullingInfo
         var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
         Plugin.AlwaysLog($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
 
+        var derivePortalBoundsFromTile = Array.IndexOf(UseFallbackPortalsForInteriors, interiorName) != -1;
+        if (derivePortalBoundsFromTile)
+            Plugin.AlwaysLog($"Using tile bounds to determine the size of portals for {interiorName}.");
+
         var startTime = Time.realtimeSinceStartupAsDouble;
-        CreatePortals();
+        CreatePortals(derivePortalBoundsFromTile);
         Plugin.Log($"Preparing portal information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
 
         startTime = Time.realtimeSinceStartupAsDouble;
@@ -32,15 +39,27 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
-    private static void CreatePortals()
+    public static void UpdateFallbackPortalInteriors(string configValue)
+    {
+        UseFallbackPortalsForInteriors = configValue
+                                             .Split(',')
+                                             .Where(name => name.Length > 0)
+                                             .Select(name => name[0] == ' ' ? name[1..] : name)
+                                             .ToArray();
+
+        if (AllPortals != null)
+            OnLevelGenerated();
+    }
+
+    private static void CreatePortals(bool deriveBoundsFromTile)
     {
         var connections = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections;
         AllPortals = new(connections.Count);
 
         foreach (var doorConnection in connections)
         {
-            AllPortals[doorConnection.A] = new Portal(doorConnection.A);
-            AllPortals[doorConnection.B] = new Portal(doorConnection.B);
+            AllPortals[doorConnection.A] = new Portal(doorConnection.A, deriveBoundsFromTile);
+            AllPortals[doorConnection.B] = new Portal(doorConnection.B, deriveBoundsFromTile);
         }
     }
 
