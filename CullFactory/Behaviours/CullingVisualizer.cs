@@ -8,8 +8,10 @@ namespace CullFactory.Behaviours
 {
     internal class CullingVisualizer : MonoBehaviour
     {
+        private const float TileBoundsInset = 0.00025f;
+
+        private static readonly Shader VisualizerShader = Shader.Find("HDRP/Unlit");
         private static readonly Color[] ColorRotation = [Color.red, Color.yellow, Color.green, Color.blue, Color.cyan, Color.grey];
-        private static readonly float TileBoundsInset = 0.00025f;
 
         private GameObject _portalVisualizersRoot;
         private GameObject _tileBoundsVisualizersRoot;
@@ -48,7 +50,7 @@ namespace CullFactory.Behaviours
             DestroyImmediate(portalPrefab.GetComponent<Collider>());
 
             var renderer = portalPrefab.GetComponent<Renderer>();
-            renderer.material = new Material(Shader.Find("HDRP/Unlit"))
+            renderer.material = new Material(VisualizerShader)
             {
                 name = "PortalVisualizerMaterial",
                 color = Color.white,
@@ -86,7 +88,7 @@ namespace CullFactory.Behaviours
             DestroyImmediate(tileBoundsPrefab.GetComponent<Collider>());
 
             var renderer = tileBoundsPrefab.GetComponent<Renderer>();
-            renderer.material = new Material(Shader.Find("HDRP/Unlit"))
+            renderer.material = new Material(VisualizerShader)
             {
                 name = "TileBoundsVisualizerMaterial",
                 color = Color.yellow,
