@@ -34,12 +34,17 @@ public class Plugin : BaseUnityPlugin
         Log($"Plugin {Name} is loaded!");
     }
 
+    public static void AlwaysLog(string s)
+    {
+        Instance.Logger.LogInfo(s);
+    }
+
     public static void Log(string s)
     {
         if (!Configuration.Logging.Value)
             return;
 
-        Instance.Logger.LogInfo(s);
+        AlwaysLog(s);
     }
 
     public static void LogError(string s)

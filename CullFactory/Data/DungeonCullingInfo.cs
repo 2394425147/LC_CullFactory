@@ -20,6 +20,9 @@ public static class DungeonCullingInfo
 
     public static void OnLevelGenerated()
     {
+        var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
+        Plugin.AlwaysLog($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
+
         var startTime = Time.realtimeSinceStartupAsDouble;
         CreatePortals();
         Plugin.Log($"Preparing portal information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
