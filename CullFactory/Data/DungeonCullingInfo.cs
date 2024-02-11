@@ -58,12 +58,13 @@ public static class DungeonCullingInfo
 
     private static void CollectAllTileContents()
     {
-        TileContentsForTile = new Dictionary<Tile, TileContents>(RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles.Count);
+        var tiles = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles;
+        TileContentsForTile = new(tiles.Count);
         AllTileLayersMask = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
 
-        foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
+        foreach (var tile in tiles)
         {
             var builder = new TileContentsBuilder(tile);
 
@@ -90,7 +91,7 @@ public static class DungeonCullingInfo
 
         // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
         // but floor decals in the factory interior can as well.
-        foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
+        foreach (var tile in tiles)
         {
             var builder = tileContentsBuilders[tile];
 
@@ -109,7 +110,7 @@ public static class DungeonCullingInfo
             var hasShadows = light.shadows != LightShadows.None;
             var lightPassesThroughWalls = light.GetComponent<HDAdditionalLightData>() is HDAdditionalLightData hdLight && hdLight.shadowDimmer < 1;
 
-            foreach (var tile in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles)
+            foreach (var tile in tiles)
             {
                 var tileContentsBuilder = tileContentsBuilders[tile];
                 var bounds = tile.Bounds;
