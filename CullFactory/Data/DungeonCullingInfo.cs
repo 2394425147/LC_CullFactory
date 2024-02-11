@@ -13,7 +13,7 @@ public static class DungeonCullingInfo
 
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
-    public static Dictionary<Doorway, Portal> AllPortals = [];
+    public static Dictionary<Doorway, Portal> AllPortals;
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
     public static int AllTileLayersMask = 0;
@@ -34,9 +34,10 @@ public static class DungeonCullingInfo
 
     private static void CreatePortals()
     {
-        AllPortals.Clear();
+        var connections = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections;
+        AllPortals = new(connections.Count);
 
-        foreach (var doorConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
+        foreach (var doorConnection in connections)
         {
             AllPortals[doorConnection.A] = new Portal(doorConnection.A);
             AllPortals[doorConnection.B] = new Portal(doorConnection.B);
