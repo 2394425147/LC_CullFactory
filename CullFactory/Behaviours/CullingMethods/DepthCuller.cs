@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CullFactory.Data;
+using CullFactory.Services;
 using DunGen;
 using UnityEngine;
 
@@ -14,20 +15,9 @@ public sealed class DepthCuller : CullingMethod
 
     private float _lastUpdateTime;
 
-    private void SetTilesVisible(IEnumerable<TileContents> tiles, bool visible)
-    {
-        foreach (var tileContents in tiles)
-        {
-            foreach (var renderer in tileContents.renderers)
-                renderer.forceRenderingOff = !visible;
-            foreach (var light in tileContents.lights)
-                light.enabled = visible;
-        }
-    }
-
     private void OnEnable()
     {
-        SetTilesVisible(DungeonCullingInfo.AllTileContents, false);
+        DungeonCullingInfo.AllTileContents.SetVisible(false);
 
         _visibleTilesThisFrame.Clear();
     }
@@ -40,7 +30,7 @@ public sealed class DepthCuller : CullingMethod
 
         _lastUpdateTime = Time.time;
 
-        SetTilesVisible(_visibleTilesThisFrame, false);
+        _visibleTilesThisFrame.SetVisible(false);
         _visibleTilesThisFrame.Clear();
 
         foreach (var camera in Camera.allCameras)
@@ -57,7 +47,7 @@ public sealed class DepthCuller : CullingMethod
             IncludeNearbyTiles(cameraTile.tile);
         }
 
-        SetTilesVisible(_visibleTilesThisFrame, true);
+        _visibleTilesThisFrame.SetVisible(true);
     }
 
     private void IncludeNearbyTiles(Tile origin)
@@ -99,7 +89,7 @@ public sealed class DepthCuller : CullingMethod
 
     private void OnDestroy()
     {
-        SetTilesVisible(DungeonCullingInfo.AllTileContents, true);
+        DungeonCullingInfo.AllTileContents.SetVisible(true);
     }
 }
 

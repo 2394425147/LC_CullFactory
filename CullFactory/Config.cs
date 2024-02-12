@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 
 namespace CullFactory;
@@ -26,8 +27,6 @@ public sealed class Config
                                           "Higher values make culling more responsive at the cost of performance.\n" +
                                           "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
-
-        Culler.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
 
         #endregion
 
@@ -118,11 +117,12 @@ public sealed class Config
                                   false,
                                   "View culling activity in the console.");
 
+        #endregion
+
+        Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
-
-        #endregion
     }
 
     public ConfigEntry<bool> Logging { get; private set; }
