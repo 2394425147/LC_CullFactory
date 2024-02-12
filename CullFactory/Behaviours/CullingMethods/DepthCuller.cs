@@ -6,9 +6,9 @@ using UnityEngine;
 namespace CullFactory.Behaviours.CullingMethods;
 
 /// <summary>
-///     DynamicCuller instances are tied to each moon
+///     DepthCuller instances are tied to each moon
 /// </summary>
-public sealed class DynamicCuller : MonoBehaviour
+public sealed class DepthCuller : MonoBehaviour
 {
     private readonly List<TileContents> _visibleTilesThisFrame = [];
 

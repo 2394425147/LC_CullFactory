@@ -58,7 +58,7 @@ public class Plugin : BaseUnityPlugin
             return;
 
         var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
-        Destroy(dungeonObject.GetComponent<DynamicCuller>());
+        Destroy(dungeonObject.GetComponent<DepthCuller>());
         Destroy(dungeonObject.GetComponent<PortalOcclusionCuller>());
 
         switch (Configuration.Culler.Value)
@@ -67,7 +67,7 @@ public class Plugin : BaseUnityPlugin
                 dungeonObject.AddComponent<PortalOcclusionCuller>();
                 break;
             case CullingType.DepthCulling:
-                dungeonObject.AddComponent<DynamicCuller>();
+                dungeonObject.AddComponent<DepthCuller>();
                 break;
         }
     }
