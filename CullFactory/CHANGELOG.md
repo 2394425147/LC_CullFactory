@@ -1,3 +1,15 @@
+# TBD
+
+## Added
+
+- A compatibility mode for interiors that have incorrect portal sizes
+
+## Fixed
+
+- Scoopys Variety Mod's interiors would appear invisible at certain distances or angles with portal occlusion culling, this is fixed by using the compatibility mode mentioned above by default
+- Shadows would flicker on Scarlet Devil Mansion with portal occlusion culling
+- Using depth culling could cause error spam that would leave the interior entirely invisible
+
 # 0.7.2
 
 ## Added
