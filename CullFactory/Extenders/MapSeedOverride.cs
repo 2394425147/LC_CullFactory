@@ -7,7 +7,7 @@ internal class MapSeedOverride
 {
     [HarmonyPatch(typeof(StartOfRound), "Start")]
     [HarmonyPostfix]
-    static void StartOfRound_StartPostfix(StartOfRound __instance)
+    private static void StartOfRound_StartPostfix(StartOfRound __instance)
     {
         if (int.TryParse(Plugin.Configuration.OverrideMapSeed.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var seed))
         {

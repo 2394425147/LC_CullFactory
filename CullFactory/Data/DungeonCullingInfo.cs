@@ -51,15 +51,15 @@ public static class DungeonCullingInfo
             OnLevelGenerated();
     }
 
-    private static void CreatePortals(bool deriveBoundsFromTile)
+    private static void CreatePortals(bool useTileBounds)
     {
         var connections = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections;
-        AllPortals = new(connections.Count);
+        AllPortals = new Dictionary<Doorway, Portal>(connections.Count);
 
         foreach (var doorConnection in connections)
         {
-            AllPortals[doorConnection.A] = new Portal(doorConnection.A, deriveBoundsFromTile);
-            AllPortals[doorConnection.B] = new Portal(doorConnection.B, deriveBoundsFromTile);
+            AllPortals[doorConnection.A] = new Portal(doorConnection.A, useTileBounds);
+            AllPortals[doorConnection.B] = new Portal(doorConnection.B, useTileBounds);
         }
     }
 
@@ -79,7 +79,7 @@ public static class DungeonCullingInfo
     private static void CollectAllTileContents()
     {
         var tiles = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles;
-        TileContentsForTile = new(tiles.Count);
+        TileContentsForTile = new Dictionary<Tile, TileContents>(tiles.Count);
         AllTileLayersMask = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
@@ -128,7 +128,7 @@ public static class DungeonCullingInfo
             var lightRangeSquared = light.range * light.range;
 
             var hasShadows = light.shadows != LightShadows.None;
-            var lightPassesThroughWalls = light.GetComponent<HDAdditionalLightData>() is HDAdditionalLightData hdLight && hdLight.shadowDimmer < 1;
+            var lightPassesThroughWalls = light.GetComponent<HDAdditionalLightData>() is { shadowDimmer: < 1 };
 
             foreach (var tile in tiles)
             {
@@ -222,10 +222,10 @@ public static class DungeonCullingInfo
         }
     }
 
-    const int MaxStackCapacity = 15;
-    static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
-    static readonly int[] IndexStack = new int[MaxStackCapacity];
-    static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
+    private const int MaxStackCapacity = 15;
+    private static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
+    private static readonly int[] IndexStack = new int[MaxStackCapacity];
+    private static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
 
     public delegate void LineOfSightCallback(Tile[] tileStack, int stackIndex);
 
@@ -259,7 +259,7 @@ public static class DungeonCullingInfo
             var outsideFrustum = false;
             for (var i = 0; i <= stackIndex; i++)
             {
-                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.bounds))
+                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.Bounds))
                 {
                     outsideFrustum = true;
                     break;
@@ -281,7 +281,7 @@ public static class DungeonCullingInfo
             if (FrustumStack[stackIndex] is null)
                 FrustumStack[stackIndex] = portal.GetFrustumPlanes(origin);
             else
-                portal.GetFrustumPlanes(origin, FrustumStack[stackIndex]);
+                portal.GetFrustumPlanesNonAlloc(origin, FrustumStack[stackIndex]);
 
             callback(TileStack, stackIndex);
         }
