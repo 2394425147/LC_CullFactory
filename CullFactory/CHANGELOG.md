@@ -1,20 +1,21 @@
-# TBD
+# 0.8.0
 
 ## Added
 
-- A compatibility mode for interiors that have incorrect portal sizes
+- A compatibility mode for incorrect portals (Enabled by default)
 
 ## Fixed
 
-- Scoopys Variety Mod's interiors would appear invisible at certain distances or angles with portal occlusion culling, this is fixed by using the compatibility mode mentioned above by default
-- Shadows would flicker on Scarlet Devil Mansion with portal occlusion culling
-- Using depth culling could cause error spam that would leave the interior entirely invisible
+- **Scoopys Variety Mod's interiors** would sometimes appear invisible with portal occlusion culling
+  - This is fixed by using the compatibility mode mentioned above
+- Shadows flickering on **Scarlet Devil Mansion** with portal occlusion culling
+- Depth culling sometimes causing interiors to become entirely invisible
 
 # 0.7.2
 
 ## Added
 
-- Options to visualize the portals and tile bounds used to determine culling
+- Options to visualize the portals and tile bounds
 
 ## Changed
 
@@ -22,9 +23,9 @@
 
 ## Fixed
 
-- The entrance room on Scoopy's Sewer interior would appear invisible at certain angles
+- The entrance room on **Scoopy's Sewer interior** would appear invisible at certain angles
 - Depth culling sometimes allowing tiles to remain invisible on cameras
-- The render distance would not be changed when entering or leaving on clients, or when using the ship teleporters
+- Camera render distance not changing when entering or leaving on clients, or when using the ship teleporters
 
 # 0.7.1
 
