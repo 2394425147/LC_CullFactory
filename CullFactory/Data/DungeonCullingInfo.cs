@@ -14,7 +14,7 @@ public static class DungeonCullingInfo
 
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
-    public static string[] UseFallbackPortalsForInteriors = [];
+    public static string[] InteriorsWithFallbackPortals = [];
 
     public static Dictionary<Doorway, Portal> AllPortals;
     public static TileContents[] AllTileContents { get; private set; }
@@ -26,7 +26,7 @@ public static class DungeonCullingInfo
         var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
         Plugin.AlwaysLog($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
 
-        var derivePortalBoundsFromTile = Array.IndexOf(UseFallbackPortalsForInteriors, interiorName) != -1;
+        var derivePortalBoundsFromTile = Array.IndexOf(InteriorsWithFallbackPortals, interiorName) != -1;
         if (derivePortalBoundsFromTile)
             Plugin.AlwaysLog($"Using tile bounds to determine the size of portals for {interiorName}.");
 
@@ -39,13 +39,11 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
-    public static void UpdateFallbackPortalInteriors(string configValue)
+    public static void UpdateInteriorsWithFallbackPortals(string configValue)
     {
-        UseFallbackPortalsForInteriors = configValue
-                                             .Split(',')
-                                             .Where(name => name.Length > 0)
-                                             .Select(name => name[0] == ' ' ? name[1..] : name)
-                                             .ToArray();
+        InteriorsWithFallbackPortals = configValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                    .Select(name => name.Trim())
+                                                    .ToArray();
 
         if (AllPortals != null)
             OnLevelGenerated();
@@ -116,14 +114,19 @@ public static class DungeonCullingInfo
             var builder = tileContentsBuilders[tile];
 
             var overlappingTileBounds = tile.Bounds;
-            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance);
+            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance,
+                                                         AdjacentTileIntrusionDistance);
 
             foreach (var adjacentTile in tile.GetAdjactedTiles())
-                builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers.Where(renderer => renderer.bounds.Intersects(overlappingTileBounds)));
+                builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers
+                                                                              .Where(renderer =>
+                                                                                         renderer.bounds
+                                                                                             .Intersects(overlappingTileBounds)));
         }
 
         // Collect all external lights that may influence the tiles that we know of:
-        foreach (var (builder, light) in tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
+        foreach (var (builder, light) in
+                 tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
         {
             var lightRangeSquared = light.range * light.range;
 
@@ -265,6 +268,7 @@ public static class DungeonCullingInfo
                     break;
                 }
             }
+
             if (outsideFrustum)
                 continue;
 
