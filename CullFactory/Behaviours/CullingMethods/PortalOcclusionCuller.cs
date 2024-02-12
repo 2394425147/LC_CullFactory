@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CullFactory.Data;
 using CullFactory.Services;
@@ -9,10 +10,12 @@ namespace CullFactory.Behaviours.CullingMethods;
 public sealed class PortalOcclusionCuller : CullingMethod
 {
     private static readonly HashSet<TileContents> VisibleTiles = [];
+    private static Camera _uiCamera;
 
     private void OnEnable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(false);
+        _uiCamera = Array.Find(Camera.allCameras, cam => cam.name == "UICamera");
 
         RenderPipelineManager.beginCameraRendering += CullForCamera;
 
@@ -21,8 +24,10 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
     private static void CullForCamera(ScriptableRenderContext context, Camera camera)
     {
-        if ((camera.cullingMask & DungeonCullingInfo.AllTileLayersMask) == 0)
+        if ((camera.cullingMask & DungeonCullingInfo.TileLayerMasks) == 0 || camera == _uiCamera)
             return;
+
+        Plugin.Log($"Culling for {camera}");
 
         VisibleTiles.Clear();
         VisibleTiles.FindFromCamera(camera);

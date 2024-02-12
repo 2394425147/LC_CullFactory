@@ -19,7 +19,7 @@ public static class DungeonCullingInfo
     public static Dictionary<Doorway, Portal> AllPortals;
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
-    public static int AllTileLayersMask = 0;
+    public static int TileLayerMasks { get; private set; }
 
     public static void OnLevelGenerated()
     {
@@ -74,7 +74,7 @@ public static class DungeonCullingInfo
     {
         var tiles = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles;
         TileContentsForTile = new Dictionary<Tile, TileContents>(tiles.Count);
-        AllTileLayersMask = 0;
+        TileLayerMasks = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
 
@@ -87,9 +87,9 @@ public static class DungeonCullingInfo
 
             // Create a mask containing all the layers that are used by the contents of tiles.
             foreach (var renderer in builder.renderers)
-                AllTileLayersMask |= 1 << renderer.gameObject.layer;
+                TileLayerMasks |= 1 << renderer.gameObject.layer;
             foreach (var light in builder.lights)
-                AllTileLayersMask |= light.cullingMask;
+                TileLayerMasks |= light.cullingMask;
 
             // Get the doors that this tile is connected to. Otherwise, they may pop in and out when the edge of the view
             // frustum is at the edge of the portal.
