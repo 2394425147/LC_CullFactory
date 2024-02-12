@@ -14,8 +14,6 @@ public static class DungeonCullingInfo
 
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
-    public static string[] InteriorsWithFallbackPortals = [];
-
     public static Dictionary<Doorway, Portal> AllPortals;
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
@@ -26,7 +24,7 @@ public static class DungeonCullingInfo
         var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
         Plugin.AlwaysLog($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
 
-        var derivePortalBoundsFromTile = Array.IndexOf(InteriorsWithFallbackPortals, interiorName) != -1;
+        var derivePortalBoundsFromTile = Array.IndexOf(Config.InteriorsWithFallbackPortals, interiorName) != -1;
         if (derivePortalBoundsFromTile)
             Plugin.AlwaysLog($"Using tile bounds to determine the size of portals for {interiorName}.");
 
@@ -39,13 +37,8 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
-    public static void UpdateInteriorsWithFallbackPortals(string configValue)
+    public static void UpdateInteriorsWithFallbackPortals()
     {
-        InteriorsWithFallbackPortals = configValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(name => name.Trim())
-                                                    .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name)
-                                                    .ToArray();
-
         if (AllPortals != null)
             OnLevelGenerated();
     }

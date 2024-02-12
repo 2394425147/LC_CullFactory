@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
@@ -32,17 +34,13 @@ public static class Config
 
         #region Portal Occlusion Culling
 
-        InteriorsWithFallbackPortals = configFile.Bind("Portal occlusion culling",
-                                                       "Use fallback portals for interiors",
-                                                       "CastleFlow, SewerFlow",
-                                                       "Use a more forgiving testing method for the specified interiors.\n" +
-                                                       "This is recommended for interiors with incorrect portal sizes.\n\n" +
-                                                       "Value:\n" +
-                                                       "A list of dungeon generators, separated by commas \",\".");
-
-        InteriorsWithFallbackPortals.SettingChanged += (_, _) =>
-            DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
-        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
+        InteriorsWithFallbackPortalsRaw = configFile.Bind("Portal occlusion culling",
+                                                          "Use fallback portals for interiors",
+                                                          "CastleFlow, SewerFlow",
+                                                          "Use a more forgiving testing method for the specified interiors.\n" +
+                                                          "This is recommended for interiors with incorrect portal sizes.\n\n" +
+                                                          "Value:\n" +
+                                                          "A list of dungeon generators, separated by commas \",\".");
 
         #endregion
 
@@ -120,9 +118,22 @@ public static class Config
         #endregion
 
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
+        InteriorsWithFallbackPortalsRaw.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
+
+        UpdateInteriorsWithFallbackPortals();
+    }
+
+    private static void UpdateInteriorsWithFallbackPortals()
+    {
+        InteriorsWithFallbackPortals = InteriorsWithFallbackPortalsRaw.Value
+                                                                      .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                                      .Select(name => name.Trim())
+                                                                      .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name)
+                                                                      .ToArray();
+        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
     }
 
     public static ConfigEntry<bool> Logging { get; private set; }
@@ -138,7 +149,7 @@ public static class Config
     /// Can prevent compatibility issues with mods that don't correctly set the size of their doorway sockets.
     /// </para>
     /// </summary>
-    public static ConfigEntry<string> InteriorsWithFallbackPortals { get; private set; }
+    public static ConfigEntry<string> InteriorsWithFallbackPortalsRaw { get; private set; }
 
     public static ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public static ConfigEntry<bool> CullDistanceEnabled { get; private set; }
@@ -148,4 +159,6 @@ public static class Config
     public static ConfigEntry<bool> VisualizePortals { get; private set; }
     public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
     public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+
+    public static string[] InteriorsWithFallbackPortals { get; private set; }
 }
