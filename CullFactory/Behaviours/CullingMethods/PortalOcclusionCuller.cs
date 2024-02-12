@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using BepInEx;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
@@ -9,7 +11,8 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
-    private static readonly List<TileContents> VisibleTiles = [];
+    private static List<TileContents> VisibleTiles = [];
+    private static List<TileContents> VisibleTilesLastCall = [];
 
     private void OnEnable()
     {
@@ -25,11 +28,15 @@ public sealed class PortalOcclusionCuller : CullingMethod
         if ((camera.cullingMask & DungeonCullingInfo.TileLayerMasks) == 0)
             return;
 
-        VisibleTiles.SetVisible(false);
         VisibleTiles.Clear();
-
         VisibleTiles.FindFromCamera(camera);
+
+        foreach (var tileContent in VisibleTilesLastCall)
+            tileContent.SetVisible(VisibleTiles.Contains(tileContent));
+
         VisibleTiles.SetVisible(true);
+
+        (VisibleTilesLastCall, VisibleTiles) = (VisibleTiles, VisibleTilesLastCall);
     }
 
     private void OnDisable()
