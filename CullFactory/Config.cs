@@ -42,8 +42,8 @@ public sealed class Config
                                                        "A list of dungeon generators, separated by commas \",\".");
 
         InteriorsWithFallbackPortals.SettingChanged += (_, _) =>
-            DungeonCullingInfo.UpdateFallbackPortalInteriors(InteriorsWithFallbackPortals.Value);
-        DungeonCullingInfo.UpdateFallbackPortalInteriors(InteriorsWithFallbackPortals.Value);
+            DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
+        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
 
         #endregion
 
