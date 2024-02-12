@@ -25,7 +25,7 @@ public sealed class DepthCuller : CullingMethod
     public void LateUpdate()
     {
         if (StartOfRound.Instance.allPlayersDead ||
-            Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
+            Time.time - _lastUpdateTime < 1 / Config.UpdateFrequency.Value)
             return;
 
         _lastUpdateTime = Time.time;
@@ -52,7 +52,7 @@ public sealed class DepthCuller : CullingMethod
 
     private void IncludeNearbyTiles(Tile origin)
     {
-        var depthTarget = Plugin.Configuration.MaxBranchingDepth.Value - 1;
+        var depthTarget = Config.MaxBranchingDepth.Value - 1;
         // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.
         var depthTesterQueue = new Stack<TileDepthTester>(depthTarget * depthTarget);
         var traversedTiles = new HashSet<Tile>();

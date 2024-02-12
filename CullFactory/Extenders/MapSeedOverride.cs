@@ -9,7 +9,7 @@ internal class MapSeedOverride
     [HarmonyPostfix]
     private static void StartOfRound_StartPostfix(StartOfRound __instance)
     {
-        if (int.TryParse(Plugin.Configuration.OverrideMapSeed.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var seed))
+        if (int.TryParse(Config.OverrideMapSeed.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var seed))
         {
             __instance.overrideRandomSeed = true;
             __instance.overrideSeedNumber = seed;

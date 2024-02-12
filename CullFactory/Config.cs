@@ -7,9 +7,9 @@ namespace CullFactory;
 /// <summary>
 ///     Typed wrapper around the <see cref="BepInEx.Configuration.ConfigFile" /> class
 /// </summary>
-public sealed class Config
+public static class Config
 {
-    public Config(ConfigFile configFile)
+    public static void Initialize(ConfigFile configFile)
     {
         #region General
 
@@ -125,9 +125,9 @@ public sealed class Config
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
     }
 
-    public ConfigEntry<bool> Logging { get; private set; }
-    public ConfigEntry<CullingType> Culler { get; private set; }
-    public ConfigEntry<float> UpdateFrequency { get; private set; }
+    public static ConfigEntry<bool> Logging { get; private set; }
+    public static ConfigEntry<CullingType> Culler { get; private set; }
+    public static ConfigEntry<float> UpdateFrequency { get; private set; }
 
     /// <summary>
     /// <para>
@@ -138,14 +138,14 @@ public sealed class Config
     /// Can prevent compatibility issues with mods that don't correctly set the size of their doorway sockets.
     /// </para>
     /// </summary>
-    public ConfigEntry<string> InteriorsWithFallbackPortals { get; private set; }
+    public static ConfigEntry<string> InteriorsWithFallbackPortals { get; private set; }
 
-    public ConfigEntry<int> MaxBranchingDepth { get; private set; }
-    public ConfigEntry<bool> CullDistanceEnabled { get; private set; }
-    public ConfigEntry<float> CullDistance { get; private set; }
-    public ConfigEntry<float> SurfaceCullDistance { get; private set; }
-    public ConfigEntry<string> OverrideMapSeed { get; private set; }
-    public ConfigEntry<bool> VisualizePortals { get; private set; }
-    public ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
-    public ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+    public static ConfigEntry<int> MaxBranchingDepth { get; private set; }
+    public static ConfigEntry<bool> CullDistanceEnabled { get; private set; }
+    public static ConfigEntry<float> CullDistance { get; private set; }
+    public static ConfigEntry<float> SurfaceCullDistance { get; private set; }
+    public static ConfigEntry<string> OverrideMapSeed { get; private set; }
+    public static ConfigEntry<bool> VisualizePortals { get; private set; }
+    public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
+    public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
 }

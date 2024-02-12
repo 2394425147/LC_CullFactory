@@ -21,7 +21,7 @@ public abstract class CullingMethod : MonoBehaviour
 
         var dungeon = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
 
-        switch (Plugin.Configuration.Culler.Value)
+        switch (Config.Culler.Value)
         {
             case CullingType.PortalOcclusionCulling:
                 Instance = dungeon.AddComponent<PortalOcclusionCuller>();

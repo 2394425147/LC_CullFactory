@@ -50,7 +50,7 @@ namespace CullFactory.Behaviours.Visualization
         private void SpawnPortalVisualizers()
         {
             Destroy(_portalVisualizersRoot);
-            if (!Plugin.Configuration.VisualizePortals.Value)
+            if (!Config.VisualizePortals.Value)
                 return;
             _portalVisualizersRoot = new GameObject("PortalVisualizers");
 
@@ -68,7 +68,7 @@ namespace CullFactory.Behaviours.Visualization
         private void SpawnTileBoundsVisualizers()
         {
             Destroy(_tileBoundsVisualizersRoot);
-            if (!Plugin.Configuration.VisualizeTileBounds.Value)
+            if (!Config.VisualizeTileBounds.Value)
                 return;
             _tileBoundsVisualizersRoot = new GameObject("TileBoundsVisualizers");
 
@@ -104,7 +104,7 @@ namespace CullFactory.Behaviours.Visualization
             var mesh = portalPrefab.GetComponent<MeshFilter>().mesh;
             // Mesh.vertices elements cannot be modified directly.
             var vertices = mesh.vertices;
-            var vertexOffset = new Vector3(0, 0.5f, -Plugin.Configuration.VisualizedPortalOutsetDistance.Value);
+            var vertexOffset = new Vector3(0, 0.5f, -Config.VisualizedPortalOutsetDistance.Value);
             for (var i = 0; i < vertices.Length; i++)
                 vertices[i] += vertexOffset;
             mesh.vertices = vertices;
