@@ -8,7 +8,7 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// <summary>
 ///     DepthCuller instances are tied to each moon
 /// </summary>
-public sealed class DepthCuller : MonoBehaviour
+public sealed class DepthCuller : CullingMethod
 {
     private readonly List<TileContents> _visibleTilesThisFrame = [];
 

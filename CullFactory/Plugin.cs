@@ -52,26 +52,6 @@ public class Plugin : BaseUnityPlugin
         Instance.Logger.LogError(s);
     }
 
-    public static void CreateCullingHandler()
-    {
-        if (RoundManager.Instance.dungeonGenerator == null)
-            return;
-
-        var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
-        Destroy(dungeonObject.GetComponent<DepthCuller>());
-        Destroy(dungeonObject.GetComponent<PortalOcclusionCuller>());
-
-        switch (Configuration.Culler.Value)
-        {
-            case CullingType.PortalOcclusionCulling:
-                dungeonObject.AddComponent<PortalOcclusionCuller>();
-                break;
-            case CullingType.DepthCulling:
-                dungeonObject.AddComponent<DepthCuller>();
-                break;
-        }
-    }
-
     public static void CreateCullingVisualizers()
     {
         if (RoundManager.Instance.dungeonGenerator == null)

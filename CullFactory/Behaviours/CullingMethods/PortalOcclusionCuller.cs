@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours.CullingMethods;
 
-public sealed class PortalOcclusionCuller : MonoBehaviour
+public sealed class PortalOcclusionCuller : CullingMethod
 {
     private readonly List<TileContents> _visibleTiles = new();
 

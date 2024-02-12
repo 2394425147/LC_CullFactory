@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 using DunGen;
 using HarmonyLib;
@@ -21,7 +22,7 @@ public sealed class LevelGenerationExtender
         DungeonCullingInfo.OnLevelGenerated();
         TeleportExtender.SetInitialFarClipPlane();
 
-        Plugin.CreateCullingHandler();
+        CullingMethod.Initialize();
         Plugin.CreateCullingVisualizers();
     }
 
