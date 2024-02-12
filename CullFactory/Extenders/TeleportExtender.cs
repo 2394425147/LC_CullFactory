@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CullFactory.Behaviours;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
@@ -14,14 +13,14 @@ public static class TeleportExtender
 
     public static void SetInitialFarClipPlane()
     {
-        if (!Plugin.Configuration.CullDistanceEnabled.Value)
+        if (!Config.CullDistanceEnabled.Value)
             return;
 
         foreach (var player in StartOfRound.Instance.allPlayerScripts)
         {
             var camera = player.gameplayCamera;
-            camera.farClipPlane = Plugin.Configuration.SurfaceCullDistance.Value;
-            Plugin.Log($"Set culling distance of \"{camera.name}\" to {Plugin.Configuration.SurfaceCullDistance.Value}");
+            camera.farClipPlane = Config.SurfaceCullDistance.Value;
+            Plugin.Log($"Set culling distance of \"{camera.name}\" to {Config.SurfaceCullDistance.Value}");
         }
     }
 
@@ -90,12 +89,12 @@ public static class TeleportExtender
 
     private static void UpdateFarPlane(PlayerControllerB player)
     {
-        if (!Plugin.Configuration.CullDistanceEnabled.Value)
+        if (!Config.CullDistanceEnabled.Value)
             return;
 
         player.gameplayCamera.farClipPlane = player.isInsideFactory
-                                                 ? Plugin.Configuration.CullDistance.Value
-                                                 : Plugin.Configuration.SurfaceCullDistance.Value;
+                                                 ? Config.CullDistance.Value
+                                                 : Config.SurfaceCullDistance.Value;
 
         Plugin.Log($"{player.playerUsername} is{(player.isInsideFactory ? "" : " not")} in the factory, set far plane distance to {player.gameplayCamera.farClipPlane}");
     }

@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 using DunGen;
 using HarmonyLib;
@@ -12,7 +12,7 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(RoundManager))]
 public sealed class LevelGenerationExtender
 {
-    public static Dictionary<SpawnSyncedObject, GameObject> TileSyncedObjects = [];
+    public static readonly Dictionary<SpawnSyncedObject, GameObject> TileSyncedObjects = [];
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(RoundManager.waitForMainEntranceTeleportToSpawn))]
@@ -21,7 +21,7 @@ public sealed class LevelGenerationExtender
         DungeonCullingInfo.OnLevelGenerated();
         TeleportExtender.SetInitialFarClipPlane();
 
-        Plugin.CreateCullingHandler();
+        CullingMethod.Initialize();
         Plugin.CreateCullingVisualizers();
     }
 
@@ -32,7 +32,7 @@ public sealed class LevelGenerationExtender
         var instructionsList = new List<CodeInstruction>(instructions);
 
         // At the start of the function, ensure that TileSyncedObjects is cleared so that we don't have any old references.
-        instructionsList.InsertRange(0, new CodeInstruction[]
+        instructionsList.InsertRange(0, new[]
         {
             CodeInstruction.LoadField(typeof(LevelGenerationExtender), nameof(TileSyncedObjects)),
             new(OpCodes.Call, typeof(Dictionary<Tile, List<GameObject>>).GetMethod("Clear")),
@@ -47,7 +47,7 @@ public sealed class LevelGenerationExtender
         // Insert instructions to also
         //   LevelGenerationExtender.OnSyncedObjectSpawned(syncedObject, spawners[i]);
         // This allows us to track down renderers and lights for synced objects which are otherwise not in the hierarchy of a DunGen Tile.
-        instructionsList.InsertRange(instantiateObject + 1, new CodeInstruction[]
+        instructionsList.InsertRange(instantiateObject + 1, new[]
         {
             new(OpCodes.Dup),
             instructionsList[loadSyncedObject - 2],

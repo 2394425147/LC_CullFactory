@@ -1,53 +1,41 @@
 using System.Collections.Generic;
 using CullFactory.Data;
+using CullFactory.Services;
 using DunGen;
 using UnityEngine;
 
 namespace CullFactory.Behaviours.CullingMethods;
 
 /// <summary>
-///     DynamicCuller instances are tied to each moon
+///     DepthCuller instances are tied to each moon
 /// </summary>
-public sealed class DynamicCuller : MonoBehaviour
+public sealed class DepthCuller : CullingMethod
 {
-    private readonly List<TileContents> _visibleTilesThisFrame = [];
+    private readonly HashSet<TileContents> _visibleTiles = [];
 
     private float _lastUpdateTime;
 
-    private void SetTilesVisible(IEnumerable<TileContents> tiles, bool visible)
-    {
-        foreach (var tileContents in tiles)
-        {
-            foreach (var renderer in tileContents.renderers)
-                renderer.forceRenderingOff = !visible;
-            foreach (var light in tileContents.lights)
-                light.enabled = visible;
-        }
-    }
-
     private void OnEnable()
     {
-        SetTilesVisible(DungeonCullingInfo.AllTileContents, false);
-
-        _visibleTilesThisFrame.Clear();
+        DungeonCullingInfo.AllTileContents.SetVisible(false);
+        _visibleTiles.Clear();
     }
 
     public void LateUpdate()
     {
         if (StartOfRound.Instance.allPlayersDead ||
-            Time.time - _lastUpdateTime < 1 / Plugin.Configuration.UpdateFrequency.Value)
+            Time.time - _lastUpdateTime < 1 / Config.UpdateFrequency.Value)
             return;
 
         _lastUpdateTime = Time.time;
 
-        SetTilesVisible(_visibleTilesThisFrame, false);
-        _visibleTilesThisFrame.Clear();
+        _visibleTiles.Clear();
 
         foreach (var camera in Camera.allCameras)
         {
             if (camera.orthographic)
             {
-                DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(camera, _visibleTilesThisFrame);
+                _visibleTiles.FindFromCameraOrthographic(camera);
                 continue;
             }
 
@@ -57,12 +45,13 @@ public sealed class DynamicCuller : MonoBehaviour
             IncludeNearbyTiles(cameraTile.tile);
         }
 
-        SetTilesVisible(_visibleTilesThisFrame, true);
+        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+            _visibleTiles.SetVisible(_visibleTiles.Contains(tileContents));
     }
 
     private void IncludeNearbyTiles(Tile origin)
     {
-        var depthTarget = Plugin.Configuration.MaxBranchingDepth.Value - 1;
+        var depthTarget = Config.MaxBranchingDepth.Value - 1;
         // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.
         var depthTesterQueue = new Stack<TileDepthTester>(depthTarget * depthTarget);
         var traversedTiles = new HashSet<Tile>();
@@ -79,7 +68,7 @@ public sealed class DynamicCuller : MonoBehaviour
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            _visibleTilesThisFrame.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
+            _visibleTiles.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
             traversedTiles.Add(tileFrame.tile);
 
             if (tileFrame.iteration == depthTarget)
@@ -99,18 +88,12 @@ public sealed class DynamicCuller : MonoBehaviour
 
     private void OnDestroy()
     {
-        SetTilesVisible(DungeonCullingInfo.AllTileContents, true);
+        DungeonCullingInfo.AllTileContents.SetVisible(true);
     }
 }
 
-internal struct TileDepthTester
+internal struct TileDepthTester(Tile tile, int iteration)
 {
-    public readonly Tile tile;
-    public readonly int iteration;
-
-    public TileDepthTester(Tile tile, int iteration)
-    {
-        this.tile = tile;
-        this.iteration = iteration;
-    }
+    public readonly Tile tile = tile;
+    public readonly int iteration = iteration;
 }

@@ -39,12 +39,8 @@ public static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
     }
 
-    public static void UpdateInteriorsWithFallbackPortals(string configValue)
+    public static void UpdateInteriorsWithFallbackPortals()
     {
-        InteriorsWithFallbackPortals = configValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(name => name.Trim())
-                                                    .ToArray();
-
         if (AllPortals != null)
             OnLevelGenerated();
     }
@@ -120,8 +116,8 @@ public static class DungeonCullingInfo
             foreach (var adjacentTile in tile.GetAdjactedTiles())
                 builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers
                                                                               .Where(renderer =>
-                                                                                         renderer.bounds
-                                                                                             .Intersects(overlappingTileBounds)));
+                                                                                             renderer.bounds
+                                                                                                 .Intersects(overlappingTileBounds)));
         }
 
         // Collect all external lights that may influence the tiles that we know of:
@@ -214,17 +210,6 @@ public static class DungeonCullingInfo
         return closestTileContents;
     }
 
-    public static void CollectAllTilesWithinCameraFrustum(Camera camera, List<TileContents> intoList)
-    {
-        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
-
-        foreach (var tileContents in AllTileContents)
-        {
-            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
-                intoList.Add(tileContents);
-        }
-    }
-
     private const int MaxStackCapacity = 15;
     private static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
     private static readonly int[] IndexStack = new int[MaxStackCapacity];
@@ -296,8 +281,8 @@ public static class DungeonCullingInfo
         CallForEachLineOfSight(camera.transform.position, originTile, GeometryUtility.CalculateFrustumPlanes(camera), callback);
     }
 
-    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
+    private static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
     {
-        CallForEachLineOfSight(origin, originTile, new Plane[0], callback);
+        CallForEachLineOfSight(origin, originTile, Array.Empty<Plane>(), callback);
     }
 }

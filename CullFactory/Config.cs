@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using BepInEx.Configuration;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 
 namespace CullFactory;
@@ -6,9 +9,9 @@ namespace CullFactory;
 /// <summary>
 ///     Typed wrapper around the <see cref="BepInEx.Configuration.ConfigFile" /> class
 /// </summary>
-public sealed class Config
+public static class Config
 {
-    public Config(ConfigFile configFile)
+    public static void Initialize(ConfigFile configFile)
     {
         #region General
 
@@ -27,23 +30,17 @@ public sealed class Config
                                           "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
 
-        Culler.SettingChanged += (_, _) => Plugin.CreateCullingHandler();
-
         #endregion
 
         #region Portal Occlusion Culling
 
-        InteriorsWithFallbackPortals = configFile.Bind("Portal occlusion culling",
-                                                       "Use fallback portals for interiors",
-                                                       "CastleFlow, SewerFlow",
-                                                       "Use a more forgiving testing method for the specified interiors.\n" +
-                                                       "This is recommended for interiors with incorrect portal sizes.\n\n" +
-                                                       "Value:\n" +
-                                                       "A list of dungeon generators, separated by commas \",\".");
-
-        InteriorsWithFallbackPortals.SettingChanged += (_, _) =>
-            DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
-        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals(InteriorsWithFallbackPortals.Value);
+        InteriorsWithFallbackPortalsRaw = configFile.Bind("Portal occlusion culling",
+                                                          "Use fallback portals for interiors",
+                                                          "CastleFlow, SewerFlow",
+                                                          "Use a more forgiving testing method for the specified interiors.\n" +
+                                                          "This is recommended for interiors with incorrect portal sizes.\n\n" +
+                                                          "Value:\n" +
+                                                          "A list of dungeon generators, separated by commas \",\".");
 
         #endregion
 
@@ -118,16 +115,27 @@ public sealed class Config
                                   false,
                                   "View culling activity in the console.");
 
+        #endregion
+
+        Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
+        InteriorsWithFallbackPortalsRaw.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
-
-        #endregion
     }
 
-    public ConfigEntry<bool> Logging { get; private set; }
-    public ConfigEntry<CullingType> Culler { get; private set; }
-    public ConfigEntry<float> UpdateFrequency { get; private set; }
+    private static void UpdateInteriorsWithFallbackPortals()
+    {
+        InteriorsWithFallbackPortals = InteriorsWithFallbackPortalsRaw.Value
+                                                                      .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                                      .Select(name => name.Trim())
+                                                                      .ToArray();
+        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
+    }
+
+    public static ConfigEntry<bool> Logging { get; private set; }
+    public static ConfigEntry<CullingType> Culler { get; private set; }
+    public static ConfigEntry<float> UpdateFrequency { get; private set; }
 
     /// <summary>
     /// <para>
@@ -138,14 +146,16 @@ public sealed class Config
     /// Can prevent compatibility issues with mods that don't correctly set the size of their doorway sockets.
     /// </para>
     /// </summary>
-    public ConfigEntry<string> InteriorsWithFallbackPortals { get; private set; }
+    public static ConfigEntry<string> InteriorsWithFallbackPortalsRaw { get; private set; }
 
-    public ConfigEntry<int> MaxBranchingDepth { get; private set; }
-    public ConfigEntry<bool> CullDistanceEnabled { get; private set; }
-    public ConfigEntry<float> CullDistance { get; private set; }
-    public ConfigEntry<float> SurfaceCullDistance { get; private set; }
-    public ConfigEntry<string> OverrideMapSeed { get; private set; }
-    public ConfigEntry<bool> VisualizePortals { get; private set; }
-    public ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
-    public ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+    public static ConfigEntry<int> MaxBranchingDepth { get; private set; }
+    public static ConfigEntry<bool> CullDistanceEnabled { get; private set; }
+    public static ConfigEntry<float> CullDistance { get; private set; }
+    public static ConfigEntry<float> SurfaceCullDistance { get; private set; }
+    public static ConfigEntry<string> OverrideMapSeed { get; private set; }
+    public static ConfigEntry<bool> VisualizePortals { get; private set; }
+    public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
+    public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+
+    public static string[] InteriorsWithFallbackPortals { get; private set; }
 }

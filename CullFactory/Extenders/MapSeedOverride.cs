@@ -5,18 +5,14 @@ namespace CullFactory.Extenders;
 
 internal class MapSeedOverride
 {
-    [HarmonyPatch(typeof(StartOfRound), "Start")]
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start))]
     [HarmonyPostfix]
     private static void StartOfRound_StartPostfix(StartOfRound __instance)
     {
-        if (int.TryParse(Plugin.Configuration.OverrideMapSeed.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var seed))
-        {
-            __instance.overrideRandomSeed = true;
+        __instance.overrideRandomSeed = int.TryParse(Config.OverrideMapSeed.Value, NumberStyles.Any,
+                                                     CultureInfo.InvariantCulture, out var seed);
+
+        if (__instance.overrideRandomSeed)
             __instance.overrideSeedNumber = seed;
-        }
-        else
-        {
-            __instance.overrideRandomSeed = false;
-        }
     }
 }

@@ -1,8 +1,5 @@
 using BepInEx;
-using CullFactory.Behaviours;
-using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Behaviours.Visualization;
-using CullFactory.Data;
 using CullFactory.Extenders;
 using HarmonyLib;
 using UnityEngine;
@@ -17,12 +14,10 @@ public class Plugin : BaseUnityPlugin
     private const string Version = "0.7.2";
     public static Plugin Instance { get; private set; }
 
-    public static Config Configuration { get; private set; }
-
     private void Awake()
     {
         Instance = this;
-        Configuration = new Config(Config);
+        CullFactory.Config.Initialize(Config);
 
         var harmony = new Harmony(Guid);
         harmony.PatchAll(typeof(LevelGenerationExtender));
@@ -41,7 +36,7 @@ public class Plugin : BaseUnityPlugin
 
     public static void Log(string s)
     {
-        if (!Configuration.Logging.Value)
+        if (!CullFactory.Config.Logging.Value)
             return;
 
         AlwaysLog(s);
@@ -50,26 +45,6 @@ public class Plugin : BaseUnityPlugin
     public static void LogError(string s)
     {
         Instance.Logger.LogError(s);
-    }
-
-    public static void CreateCullingHandler()
-    {
-        if (RoundManager.Instance.dungeonGenerator == null)
-            return;
-
-        var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
-        Destroy(dungeonObject.GetComponent<DynamicCuller>());
-        Destroy(dungeonObject.GetComponent<PortalOcclusionCuller>());
-
-        switch (Configuration.Culler.Value)
-        {
-            case CullingType.PortalOcclusionCulling:
-                dungeonObject.AddComponent<PortalOcclusionCuller>();
-                break;
-            case CullingType.DepthCulling:
-                dungeonObject.AddComponent<DynamicCuller>();
-                break;
-        }
     }
 
     public static void CreateCullingVisualizers()
