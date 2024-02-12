@@ -43,6 +43,7 @@ public static class DungeonCullingInfo
     {
         InteriorsWithFallbackPortals = configValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                                     .Select(name => name.Trim())
+                                                    .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name)
                                                     .ToArray();
 
         if (AllPortals != null)
