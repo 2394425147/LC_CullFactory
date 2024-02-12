@@ -43,8 +43,6 @@ public sealed class TileContents(
             renderer.forceRenderingOff = !visible;
 
         _visible = visible;
-
-        Plugin.Log($"{(visible ? "Showing" : "Culling")} {tile.name}");
     }
 }
 

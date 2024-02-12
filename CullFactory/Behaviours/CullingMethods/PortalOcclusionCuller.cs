@@ -25,8 +25,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
         if ((camera.cullingMask & DungeonCullingInfo.TileLayerMasks) == 0)
             return;
 
-        Plugin.Log($"Culling for {camera}");
-
         VisibleTiles.SetVisible(false);
         VisibleTiles.Clear();
 
