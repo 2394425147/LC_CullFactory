@@ -22,18 +22,15 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
     {
         foreach (var tile in tileContents)
         {
-            foreach (var light in tile.externalLights)
-                light.enabled = false;
-            foreach (var renderer in tile.externalLightOccluders)
-                renderer.forceRenderingOff = true;
-        }
-
-        foreach (var tile in tileContents)
-        {
             foreach (var renderer in tile.renderers)
                 renderer.forceRenderingOff = true;
             foreach (var light in tile.lights)
                 light.enabled = false;
+
+            foreach (var light in tile.externalLights)
+                light.enabled = false;
+            foreach (var renderer in tile.externalLightOccluders)
+                renderer.forceRenderingOff = true;
         }
     }
 
@@ -41,23 +38,15 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
     {
         foreach (var tile in tileContents)
         {
+            foreach (var renderer in tile.renderers)
+                renderer.forceRenderingOff = false;
+            foreach (var light in tile.lights)
+                light.enabled = true;
+
             foreach (var light in tile.externalLights)
                 light.enabled = true;
             foreach (var renderer in tile.externalLightOccluders)
-            {
                 renderer.forceRenderingOff = false;
-                renderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
-            }
-        }
-        foreach (var tile in tileContents)
-        {
-            foreach (var renderer in tile.renderers)
-            {
-                renderer.forceRenderingOff = false;
-                renderer.shadowCastingMode = ShadowCastingMode.On;
-            }
-            foreach (var light in tile.lights)
-                light.enabled = true;
         }
     }
 
