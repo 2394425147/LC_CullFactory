@@ -14,7 +14,7 @@ public static class TeleportExtender
 
     public static void SetInitialFarClipPlane()
     {
-        if (!Plugin.Configuration.EnableCullDistanceOverride.Value)
+        if (!Plugin.Configuration.CullDistanceEnabled.Value)
             return;
 
         foreach (var player in StartOfRound.Instance.allPlayerScripts)
@@ -90,7 +90,7 @@ public static class TeleportExtender
 
     private static void UpdateFarPlane(PlayerControllerB player)
     {
-        if (!Plugin.Configuration.EnableCullDistanceOverride.Value)
+        if (!Plugin.Configuration.CullDistanceEnabled.Value)
             return;
 
         player.gameplayCamera.farClipPlane = player.isInsideFactory
