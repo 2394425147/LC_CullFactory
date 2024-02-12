@@ -41,11 +41,9 @@ public static class DungeonCullingInfo
 
     public static void UpdateFallbackPortalInteriors(string configValue)
     {
-        UseFallbackPortalsForInteriors = configValue
-                                             .Split(',')
-                                             .Where(name => name.Length > 0)
-                                             .Select(name => name[0] == ' ' ? name[1..] : name)
-                                             .ToArray();
+        UseFallbackPortalsForInteriors = configValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                    .Select(name => name.Trim())
+                                                    .ToArray();
 
         if (AllPortals != null)
             OnLevelGenerated();
@@ -116,14 +114,19 @@ public static class DungeonCullingInfo
             var builder = tileContentsBuilders[tile];
 
             var overlappingTileBounds = tile.Bounds;
-            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance);
+            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance,
+                                                         AdjacentTileIntrusionDistance);
 
             foreach (var adjacentTile in tile.GetAdjactedTiles())
-                builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers.Where(renderer => renderer.bounds.Intersects(overlappingTileBounds)));
+                builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers
+                                                                              .Where(renderer =>
+                                                                                         renderer.bounds
+                                                                                             .Intersects(overlappingTileBounds)));
         }
 
         // Collect all external lights that may influence the tiles that we know of:
-        foreach (var (builder, light) in tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
+        foreach (var (builder, light) in
+                 tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
         {
             var lightRangeSquared = light.range * light.range;
 
@@ -265,6 +268,7 @@ public static class DungeonCullingInfo
                     break;
                 }
             }
+
             if (outsideFrustum)
                 continue;
 
