@@ -292,6 +292,6 @@ public static class DungeonCullingInfo
 
     public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
     {
-        CallForEachLineOfSight(origin, originTile, new Plane[0], callback);
+        CallForEachLineOfSight(origin, originTile, [], callback);
     }
 }

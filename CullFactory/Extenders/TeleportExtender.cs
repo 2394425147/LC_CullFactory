@@ -10,7 +10,7 @@ namespace CullFactory.Extenders;
 public static class TeleportExtender
 {
     // Players' tracking transform is hierarchically different from that of a radar booster
-    private static readonly Dictionary<GameObject, Transform> ObjectsInsideFactory = new();
+    private static readonly Dictionary<GameObject, Transform> ObjectsInsideFactory = [];
 
     public static void SetInitialFarClipPlane()
     {

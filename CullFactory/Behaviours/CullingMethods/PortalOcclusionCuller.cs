@@ -8,7 +8,7 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
-    private readonly List<TileContents> _visibleTiles = new();
+    private readonly List<TileContents> _visibleTiles = [];
 
     private void OnEnable()
     {
