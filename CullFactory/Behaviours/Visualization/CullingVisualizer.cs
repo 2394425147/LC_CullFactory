@@ -62,7 +62,7 @@ namespace CullFactory.Behaviours.Visualization
                 SpawnPortalVisualizer(portalPrefab, doorwayConnection.B);
             }
 
-            Destroy(portalPrefab);
+            Destroy(portalPrefab.gameObject);
         }
 
         private void SpawnTileBoundsVisualizers()
@@ -85,7 +85,7 @@ namespace CullFactory.Behaviours.Visualization
                 tileBoundsVisualizer.material.color = ColorRotation[i % ColorRotation.Length];
             }
 
-            Destroy(tileBoundsPrefab);
+            Destroy(tileBoundsPrefab.gameObject);
         }
 
         private static Transform CreatePortalVisualizer()
