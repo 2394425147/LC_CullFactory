@@ -9,17 +9,7 @@ public static class TileContentsUtility
     public static void SetVisible(this IEnumerable<TileContents> tiles, bool visible)
     {
         foreach (var tile in tiles)
-        {
-            foreach (var renderer in tile.renderers)
-                renderer.forceRenderingOff = !visible;
-            foreach (var light in tile.lights)
-                light.enabled = visible;
-
-            foreach (var light in tile.externalLights)
-                light.enabled = visible;
-            foreach (var renderer in tile.externalLightOccluders)
-                renderer.forceRenderingOff = !visible;
-        }
+            tile.SetVisible(visible);
     }
 
     public static void FindFromCamera(this ICollection<TileContents> result, Camera camera)

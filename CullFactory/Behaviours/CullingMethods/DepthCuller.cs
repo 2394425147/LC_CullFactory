@@ -46,7 +46,7 @@ public sealed class DepthCuller : CullingMethod
         }
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
-            _visibleTiles.SetVisible(_visibleTiles.Contains(tileContents));
+            tileContents.SetVisible(_visibleTiles.Contains(tileContents));
     }
 
     private void IncludeNearbyTiles(Tile origin)
