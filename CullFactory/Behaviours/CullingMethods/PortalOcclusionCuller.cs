@@ -14,6 +14,8 @@ public sealed class PortalOcclusionCuller : MonoBehaviour
         HideTileContents(DungeonCullingInfo.AllTileContents);
 
         RenderPipelineManager.beginCameraRendering += CullForCamera;
+
+        _visibleTiles.Clear();
     }
 
     private static void HideTileContents(IEnumerable<TileContents> tileContents)

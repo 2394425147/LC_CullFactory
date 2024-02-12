@@ -10,9 +10,9 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// </summary>
 public sealed class DynamicCuller : MonoBehaviour
 {
-    private static readonly List<TileContents> VisibleTilesThisFrame = [];
+    private readonly List<TileContents> _visibleTilesThisFrame = [];
 
-    private static float _lastUpdateTime;
+    private float _lastUpdateTime;
 
     private void SetTilesVisible(IEnumerable<TileContents> tiles, bool visible)
     {
@@ -28,6 +28,8 @@ public sealed class DynamicCuller : MonoBehaviour
     private void OnEnable()
     {
         SetTilesVisible(DungeonCullingInfo.AllTileContents, false);
+
+        _visibleTilesThisFrame.Clear();
     }
 
     public void LateUpdate()
@@ -38,14 +40,14 @@ public sealed class DynamicCuller : MonoBehaviour
 
         _lastUpdateTime = Time.time;
 
-        SetTilesVisible(VisibleTilesThisFrame, false);
-        VisibleTilesThisFrame.Clear();
+        SetTilesVisible(_visibleTilesThisFrame, false);
+        _visibleTilesThisFrame.Clear();
 
         foreach (var camera in Camera.allCameras)
         {
             if (camera.orthographic)
             {
-                DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(camera, VisibleTilesThisFrame);
+                DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(camera, _visibleTilesThisFrame);
                 continue;
             }
 
@@ -55,10 +57,10 @@ public sealed class DynamicCuller : MonoBehaviour
             IncludeNearbyTiles(cameraTile.tile);
         }
 
-        SetTilesVisible(VisibleTilesThisFrame, true);
+        SetTilesVisible(_visibleTilesThisFrame, true);
     }
 
-    private static void IncludeNearbyTiles(Tile origin)
+    private void IncludeNearbyTiles(Tile origin)
     {
         var depthTarget = Plugin.Configuration.MaxBranchingDepth.Value - 1;
         // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.
@@ -77,7 +79,7 @@ public sealed class DynamicCuller : MonoBehaviour
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            VisibleTilesThisFrame.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
+            _visibleTilesThisFrame.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
             traversedTiles.Add(tileFrame.tile);
 
             if (tileFrame.iteration == depthTarget)
