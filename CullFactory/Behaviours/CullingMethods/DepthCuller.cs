@@ -37,7 +37,7 @@ public sealed class DepthCuller : CullingMethod
         {
             if (camera.orthographic)
             {
-                DungeonCullingInfo.CollectAllTilesWithinCameraFrustum(camera, _visibleTilesThisFrame);
+                _visibleTilesThisFrame.AddContentsWithinCameraFrustum(camera);
                 continue;
             }
 
@@ -93,14 +93,8 @@ public sealed class DepthCuller : CullingMethod
     }
 }
 
-internal struct TileDepthTester
+internal readonly struct TileDepthTester(Tile tile, int iteration)
 {
-    public readonly Tile tile;
-    public readonly int iteration;
-
-    public TileDepthTester(Tile tile, int iteration)
-    {
-        this.tile = tile;
-        this.iteration = iteration;
-    }
+    public readonly Tile tile = tile;
+    public readonly int iteration = iteration;
 }
