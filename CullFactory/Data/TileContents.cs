@@ -25,8 +25,13 @@ public sealed class TileContents(
     public readonly Light[] externalLights = externalLights;
     public readonly Renderer[] externalLightOccluders = externalLightOccluders;
 
+    private bool _visible = true;
+
     public void SetVisible(bool visible)
     {
+        if (visible == _visible)
+            return;
+
         foreach (var renderer in renderers)
             renderer.forceRenderingOff = !visible;
         foreach (var light in lights)
@@ -36,6 +41,8 @@ public sealed class TileContents(
             light.enabled = visible;
         foreach (var renderer in externalLightOccluders)
             renderer.forceRenderingOff = !visible;
+
+        _visible = visible;
     }
 }
 
