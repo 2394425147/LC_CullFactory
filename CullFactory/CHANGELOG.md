@@ -2,17 +2,17 @@
 
 ## Added
 
-- Added options to visualize the portals and tile bounds used to determine culling
+- Options to visualize the portals and tile bounds used to determine culling
 
 ## Changed
 
-- Changed the render distance option to be opt-in with the `[Distance culling] Enabled` option
+- The render distance option is now opt-in with the `[Distance culling] Enabled` option
 
 ## Fixed
 
-- Partially prevented the entrance room on Scoopy's Sewer interior from appearing invisible
-- Fixed depth culling sometimes allowing tiles to remain invisible on cameras
-- Fixed issues that could cause the render distance to be set to the interior value when outside or vice versa
+- The entrance room on Scoopy's Sewer interior would appear invisible at certain angles
+- Depth culling sometimes allowing tiles to remain invisible on cameras
+- The render distance would not be changed when entering or leaving on clients, or when using the ship teleporters
 
 # 0.7.1
 
