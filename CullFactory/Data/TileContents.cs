@@ -19,6 +19,19 @@ public sealed class TileContents(Tile tile, Renderer[] renderers, Light[] lights
 
     public readonly Light[] externalLights = externalLights;
     public readonly Renderer[] externalLightOccluders = externalLightOccluders;
+
+    public void SetVisible(bool visible)
+    {
+        foreach (var renderer in renderers)
+            renderer.forceRenderingOff = !visible;
+        foreach (var light in lights)
+            light.enabled = visible;
+
+        foreach (var light in externalLights)
+            light.enabled = visible;
+        foreach (var renderer in externalLightOccluders)
+            renderer.forceRenderingOff = !visible;
+    }
 }
 
 public sealed class TileContentsBuilder(Tile tile)
