@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CullFactory.Data;
 using CullFactory.Services;
@@ -8,7 +9,8 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
-    private readonly List<TileContents> _visibleTiles = [];
+    private static List<TileContents> _visibleTiles = [];
+    private static List<TileContents> _visibleTilesLastCall = [];
 
     private void OnEnable()
     {
@@ -19,22 +21,25 @@ public sealed class PortalOcclusionCuller : CullingMethod
         _visibleTiles.Clear();
     }
 
-    private void CullForCamera(ScriptableRenderContext context, Camera camera)
+    private static void CullForCamera(ScriptableRenderContext context, Camera camera)
     {
         if ((camera.cullingMask & DungeonCullingInfo.AllTileLayersMask) == 0)
             return;
 
-        _visibleTiles.SetVisible(false);
         _visibleTiles.Clear();
-
         _visibleTiles.AddContentsVisibleToCamera(camera);
+
+        foreach (var tileContent in _visibleTilesLastCall)
+            tileContent.SetVisible(_visibleTiles.Contains(tileContent));
+
         _visibleTiles.SetVisible(true);
+
+        (_visibleTilesLastCall, _visibleTiles) = (_visibleTiles, _visibleTilesLastCall);
     }
 
     private void OnDisable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(true);
-
         RenderPipelineManager.beginCameraRendering -= CullForCamera;
     }
 }
