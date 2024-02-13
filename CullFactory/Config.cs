@@ -126,6 +126,12 @@ public static class Config
                                   false,
                                   "View culling activity in the console.");
 
+        // Category begins with an underscore to place it last in all cases.
+        LastVersion = configFile.Bind("_Internal",
+                                      "Last version",
+                                      "",
+                                      "Used to track which version number to migrate settings from.");
+
         #endregion
 
         MigrateOldSettings();
@@ -142,9 +148,14 @@ public static class Config
 
     private static void MigrateOldSettings()
     {
+        if (!Version.TryParse(LastVersion.Value, out var lastVersion))
+            lastVersion = new Version(0, 0, 0);
+
         // Migrate the old value from version 1.8.0 by replacing the default value with the empty string.
-        if (InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
+        if (lastVersion < new Version(0, 8, 0) && InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
             InteriorsToUseFallbackPortals.Value = "";
+
+        LastVersion.Value = Plugin.Version;
     }
 
     private static IEnumerable<string> SplitCommaSeparatedStrings(this string input)
@@ -167,6 +178,7 @@ public static class Config
     public static ConfigEntry<bool> Logging { get; private set; }
     public static ConfigEntry<CullingType> Culler { get; private set; }
     public static ConfigEntry<float> UpdateFrequency { get; private set; }
+    public static ConfigEntry<string> LastVersion { get; private set; }
 
     /// <summary>
     /// <para>

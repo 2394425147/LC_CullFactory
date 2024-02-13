@@ -9,9 +9,9 @@ namespace CullFactory;
 [BepInPlugin(Guid, Name, Version)]
 public class Plugin : BaseUnityPlugin
 {
-    private const string Guid = "com.fumiko.CullFactory";
-    private const string Name = "CullFactory";
-    private const string Version = "0.8.0";
+    public const string Guid = "com.fumiko.CullFactory";
+    public const string Name = "CullFactory";
+    public const string Version = "0.8.0";
     public static Plugin Instance { get; private set; }
 
     private void Awake()
