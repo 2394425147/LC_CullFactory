@@ -14,7 +14,7 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
-    private static readonly Version PluginVersion = Version.Parse(Plugin.Version);
+    private static readonly Version DefaultVersion = Version.Parse("0.0.0");
     private static readonly Version FallbackVersion = Version.Parse("0.8.0");
     private static readonly string VersionFile = Path.Combine(BepInEx.Paths.PluginPath, "fumiko-CullFactory", "version");
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
@@ -150,9 +150,9 @@ public static class Config
     {
         var versionBeforeLaunch = File.Exists(VersionFile)
                                       ? Version.Parse(Encoding.UTF8.GetString(File.ReadAllBytes(VersionFile)))
-                                      : PluginVersion;
+                                      : DefaultVersion;
 
-        if (versionBeforeLaunch < FallbackVersion)
+        if (versionBeforeLaunch <= FallbackVersion)
             InteriorsToUseFallbackPortals.Value = InteriorsToUseFallbackPortals.Value.SplitByComma()
                                                                                .Except(BaseSetOfInteriorsToSkipFallbackPortals)
                                                                                .JoinByComma();
