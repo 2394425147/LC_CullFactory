@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
@@ -12,6 +14,7 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
+    private static readonly string VersionFile = Path.Combine(BepInEx.Paths.PluginPath, "fumiko-CullFactory", "version");
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
 
     public static void Initialize(ConfigFile configFile)
@@ -38,20 +41,20 @@ public static class Config
         #region Portal Occlusion Culling
 
         InteriorsToUseFallbackPortals = configFile.Bind("Portal occlusion culling",
-                                                          "Use fallback portals for interiors",
-                                                          "",
-                                                          "Use a more forgiving testing method for the specified interiors.\n" +
-                                                          "This is recommended for interiors with incorrect portal sizes.\n\n" +
-                                                          "Value:\n" +
-                                                          "A list of dungeon generators, separated by commas \",\".");
+                                                        "Use fallback portals for interiors",
+                                                        "",
+                                                        "Use a more forgiving testing method for the specified interiors.\n" +
+                                                        "This is recommended for interiors with incorrect portal sizes.\n\n" +
+                                                        "Value:\n" +
+                                                        "A list of dungeon generators, separated by commas \",\".");
 
         InteriorsToSkipFallbackPortals = configFile.Bind("Portal occlusion culling",
-                                                          "Skip fallback portals for interiors",
-                                                          "",
-                                                          "Skip using the more forgiving testing method for the specified interiors.\n" +
-                                                          "Can be enabled for interiors that are confirmed to have good portal sizes.\n\n" +
-                                                          "Value:\n" +
-                                                          "A list of dungeon generators, separated by commas \",\".");
+                                                         "Skip fallback portals for interiors",
+                                                         "",
+                                                         "Skip using the more forgiving testing method for the specified interiors.\n" +
+                                                         "Can be enabled for interiors that are confirmed to have good portal sizes.\n\n" +
+                                                         "Value:\n" +
+                                                         "A list of dungeon generators, separated by commas \",\".");
 
         #endregion
 
@@ -126,15 +129,9 @@ public static class Config
                                   false,
                                   "View culling activity in the console.");
 
-        // Category begins with an underscore to place it last in all cases.
-        LastVersion = configFile.Bind("_Internal",
-                                      "Last version",
-                                      "",
-                                      "Used to track which version number to migrate settings from.");
-
         #endregion
 
-        MigrateOldSettings();
+        MigrateSettings();
 
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
@@ -146,39 +143,38 @@ public static class Config
         UpdateInteriorsWithFallbackPortals();
     }
 
-    private static void MigrateOldSettings()
+    private static void MigrateSettings()
     {
-        if (!Version.TryParse(LastVersion.Value, out var lastVersion))
-            lastVersion = new Version(0, 0, 0);
+        var versionBeforeLaunch =
+            File.Exists(VersionFile) ? Encoding.UTF8.GetString(File.ReadAllBytes(VersionFile)) : Plugin.Version;
 
-        // Migrate the old value from version 1.8.0 by replacing the default value with the empty string.
-        if (lastVersion < new Version(0, 8, 0) && InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
+        if (versionBeforeLaunch != Plugin.Version && InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
             InteriorsToUseFallbackPortals.Value = "";
 
-        LastVersion.Value = Plugin.Version;
+        using var writer = File.Open(VersionFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        writer.Write(Encoding.UTF8.GetBytes(Plugin.Version));
     }
 
     private static IEnumerable<string> SplitCommaSeparatedStrings(this string input)
     {
         return input
-                   .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                   .Select(name => name.Trim())
-                   .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name);
+               .Split(',', StringSplitOptions.RemoveEmptyEntries)
+               .Select(name => name.Trim())
+               .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name);
     }
 
     private static void UpdateInteriorsWithFallbackPortals()
     {
         InteriorsWithFallbackPortals = BaseSetOfInteriorsToUseFallbackPortals
-                                           .Union(InteriorsToUseFallbackPortals.Value.SplitCommaSeparatedStrings())
-                                           .Except(InteriorsToSkipFallbackPortals.Value.SplitCommaSeparatedStrings())
-                                           .ToArray();
+                                       .Union(InteriorsToUseFallbackPortals.Value.SplitCommaSeparatedStrings())
+                                       .Except(InteriorsToSkipFallbackPortals.Value.SplitCommaSeparatedStrings())
+                                       .ToArray();
         DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
     }
 
     public static ConfigEntry<bool> Logging { get; private set; }
     public static ConfigEntry<CullingType> Culler { get; private set; }
     public static ConfigEntry<float> UpdateFrequency { get; private set; }
-    public static ConfigEntry<string> LastVersion { get; private set; }
 
     /// <summary>
     /// <para>
@@ -190,6 +186,7 @@ public static class Config
     /// </para>
     /// </summary>
     public static ConfigEntry<string> InteriorsToUseFallbackPortals { get; private set; }
+
     /// <summary>
     /// <para>
     /// A comma-separated list of interior names to be removed from the list of interiors to use maximum-sized
