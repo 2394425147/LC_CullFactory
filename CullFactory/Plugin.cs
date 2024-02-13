@@ -29,7 +29,7 @@ public class Plugin : BaseUnityPlugin
         Log($"Plugin {Name} is loaded!");
     }
 
-    public static void AlwaysLog(string s)
+    public static void LogAlways(string s)
     {
         Instance.Logger.LogInfo(s);
     }
@@ -39,7 +39,7 @@ public class Plugin : BaseUnityPlugin
         if (!CullFactory.Config.Logging.Value)
             return;
 
-        AlwaysLog(s);
+        LogAlways(s);
     }
 
     public static void LogError(string s)

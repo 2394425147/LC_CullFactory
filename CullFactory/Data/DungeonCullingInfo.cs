@@ -22,11 +22,11 @@ public static class DungeonCullingInfo
     public static void OnLevelGenerated()
     {
         var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
-        Plugin.AlwaysLog($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
+        Plugin.LogAlways($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
 
         var derivePortalBoundsFromTile = Array.IndexOf(Config.InteriorsWithFallbackPortals, interiorName) != -1;
         if (derivePortalBoundsFromTile)
-            Plugin.AlwaysLog($"Using tile bounds to determine the size of portals for {interiorName}.");
+            Plugin.LogAlways($"Using tile bounds to determine the size of portals for {interiorName}.");
 
         var startTime = Time.realtimeSinceStartupAsDouble;
         CreatePortals(derivePortalBoundsFromTile);
