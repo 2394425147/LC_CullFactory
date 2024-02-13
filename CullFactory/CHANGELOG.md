@@ -1,3 +1,13 @@
+# 0.8.1
+
+## Added
+
+- An option to disable compatibility mode on known problematic interiors
+
+## Fixed
+
+- An issue with changing the fallback lists during gameplay
+
 # 0.8.0
 
 ## Added
