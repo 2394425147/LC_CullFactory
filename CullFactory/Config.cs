@@ -54,8 +54,8 @@ public static class Config
         InteriorsToSkipFallbackPortals = configFile.Bind("Portal occlusion culling",
                                                          "Skip fallback portals for interiors",
                                                          "",
-                                                         "Skip using the more forgiving testing method for the specified interiors.\n" +
-                                                         "Can be enabled for interiors that are confirmed to have good portal sizes.\n\n" +
+                                                         "Skip using fallback portals on previously problematic interiors:\n" +
+                                                         $"{BaseSetOfInteriorsToSkipFallbackPortals.JoinByComma()}\n\n" +
                                                          "Value:\n" +
                                                          "A list of dungeon generators, separated by commas \",\".");
 
