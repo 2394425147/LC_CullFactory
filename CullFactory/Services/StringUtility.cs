@@ -12,4 +12,9 @@ public static class StringUtility
         return input.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(name => name.Trim(SpacerCharacters));
     }
+
+    public static string JoinByComma(this IEnumerable<string> input)
+    {
+        return string.Join(", ", input);
+    }
 }

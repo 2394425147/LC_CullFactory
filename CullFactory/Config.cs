@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,11 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
+    private static readonly Version PluginVersion = Version.Parse(Plugin.Version);
+    private static readonly Version FallbackVersion = Version.Parse("0.8.0");
     private static readonly string VersionFile = Path.Combine(BepInEx.Paths.PluginPath, "fumiko-CullFactory", "version");
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
+    private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
 
     public static void Initialize(ConfigFile configFile)
     {
@@ -144,11 +148,14 @@ public static class Config
 
     private static void MigrateSettings()
     {
-        var versionBeforeLaunch =
-            File.Exists(VersionFile) ? Encoding.UTF8.GetString(File.ReadAllBytes(VersionFile)) : Plugin.Version;
+        var versionBeforeLaunch = File.Exists(VersionFile)
+                                      ? Version.Parse(Encoding.UTF8.GetString(File.ReadAllBytes(VersionFile)))
+                                      : PluginVersion;
 
-        if (versionBeforeLaunch != Plugin.Version && InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
-            InteriorsToUseFallbackPortals.Value = "";
+        if (versionBeforeLaunch < FallbackVersion)
+            InteriorsToUseFallbackPortals.Value = InteriorsToUseFallbackPortals.Value.SplitByComma()
+                                                                               .Except(BaseSetOfInteriorsToSkipFallbackPortals)
+                                                                               .JoinByComma();
 
         using var writer = File.Open(VersionFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
         writer.Write(Encoding.UTF8.GetBytes(Plugin.Version));
