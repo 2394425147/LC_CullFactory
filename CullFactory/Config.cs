@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
@@ -11,6 +12,8 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
+    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
+
     public static void Initialize(ConfigFile configFile)
     {
         #region General
@@ -34,11 +37,19 @@ public static class Config
 
         #region Portal Occlusion Culling
 
-        InteriorsWithFallbackPortalsRaw = configFile.Bind("Portal occlusion culling",
+        InteriorsToUseFallbackPortals = configFile.Bind("Portal occlusion culling",
                                                           "Use fallback portals for interiors",
                                                           "",
                                                           "Use a more forgiving testing method for the specified interiors.\n" +
                                                           "This is recommended for interiors with incorrect portal sizes.\n\n" +
+                                                          "Value:\n" +
+                                                          "A list of dungeon generators, separated by commas \",\".");
+
+        InteriorsToSkipFallbackPortals = configFile.Bind("Portal occlusion culling",
+                                                          "Skip fallback portals for interiors",
+                                                          "",
+                                                          "Skip using the more forgiving testing method for the specified interiors.\n" +
+                                                          "Can be enabled for interiors that are confirmed to have good portal sizes.\n\n" +
                                                           "Value:\n" +
                                                           "A list of dungeon generators, separated by commas \",\".");
 
@@ -120,7 +131,8 @@ public static class Config
         MigrateOldSettings();
 
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
-        InteriorsWithFallbackPortalsRaw.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
+        InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
+        InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
@@ -131,17 +143,24 @@ public static class Config
     private static void MigrateOldSettings()
     {
         // Migrate the old value from version 1.8.0 by replacing the default value with the empty string.
-        if (InteriorsWithFallbackPortalsRaw.Value == "CastleFlow, SewerFlow")
-            InteriorsWithFallbackPortalsRaw.Value = "";
+        if (InteriorsToUseFallbackPortals.Value == "CastleFlow, SewerFlow")
+            InteriorsToUseFallbackPortals.Value = "";
+    }
+
+    private static IEnumerable<string> SplitCommaSeparatedStrings(this string input)
+    {
+        return input
+                   .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                   .Select(name => name.Trim())
+                   .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name);
     }
 
     private static void UpdateInteriorsWithFallbackPortals()
     {
-        InteriorsWithFallbackPortals = InteriorsWithFallbackPortalsRaw.Value
-                                                                      .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                                                      .Select(name => name.Trim())
-                                                                      .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name)
-                                                                      .ToArray();
+        InteriorsWithFallbackPortals = BaseSetOfInteriorsToUseFallbackPortals
+                                           .Union(InteriorsToUseFallbackPortals.Value.SplitCommaSeparatedStrings())
+                                           .Except(InteriorsToSkipFallbackPortals.Value.SplitCommaSeparatedStrings())
+                                           .ToArray();
         DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
     }
 
@@ -158,7 +177,17 @@ public static class Config
     /// Can prevent compatibility issues with mods that don't correctly set the size of their doorway sockets.
     /// </para>
     /// </summary>
-    public static ConfigEntry<string> InteriorsWithFallbackPortalsRaw { get; private set; }
+    public static ConfigEntry<string> InteriorsToUseFallbackPortals { get; private set; }
+    /// <summary>
+    /// <para>
+    /// A comma-separated list of interior names to be removed from the list of interiors to use maximum-sized
+    /// portals inside.
+    /// </para>
+    /// <para>
+    /// Allows interiors with properly-sized doorway sockets to utilize those sizes instead of the fallback.
+    /// </para>
+    /// </summary>
+    public static ConfigEntry<string> InteriorsToSkipFallbackPortals { get; private set; }
 
     public static ConfigEntry<int> MaxBranchingDepth { get; private set; }
     public static ConfigEntry<bool> CullDistanceEnabled { get; private set; }
