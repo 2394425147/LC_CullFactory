@@ -111,11 +111,16 @@ public static class DungeonCullingInfo
             overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance,
                                                          AdjacentTileIntrusionDistance);
 
-            foreach (var adjacentTile in tile.GetAdjactedTiles())
+            foreach (var doorway in tile.UsedDoorways)
+            {
+                var adjacentTile = doorway.connectedDoorway?.tile;
+                if (adjacentTile == null)
+                    continue;
                 builder.renderers.UnionWith(tileContentsBuilders[adjacentTile].renderers
                                                                               .Where(renderer =>
                                                                                          renderer.bounds
                                                                                              .Intersects(overlappingTileBounds)));
+            }
         }
 
         // Collect all external lights that may influence the tiles that we know of:
@@ -247,8 +252,11 @@ public static class DungeonCullingInfo
             }
 
             var doorway = tile.UsedDoorways[index];
+            var connectedTile = doorway.ConnectedDoorway?.Tile;
 
-            if (stackIndex > 0 && ReferenceEquals(doorway.ConnectedDoorway.Tile, TileStack[stackIndex - 1]))
+            if (connectedTile == null)
+                continue;
+            if (stackIndex > 0 && ReferenceEquals(connectedTile, TileStack[stackIndex - 1]))
                 continue;
 
             var portal = AllPortals[doorway];
@@ -273,7 +281,7 @@ public static class DungeonCullingInfo
                 break;
             }
 
-            TileStack[stackIndex] = doorway.ConnectedDoorway.Tile;
+            TileStack[stackIndex] = connectedTile;
             IndexStack[stackIndex] = 0;
 
             if (FrustumStack[stackIndex] is null)
