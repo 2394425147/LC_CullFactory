@@ -36,7 +36,7 @@ public static class Config
 
         InteriorsWithFallbackPortalsRaw = configFile.Bind("Portal occlusion culling",
                                                           "Use fallback portals for interiors",
-                                                          "CastleFlow, SewerFlow",
+                                                          "",
                                                           "Use a more forgiving testing method for the specified interiors.\n" +
                                                           "This is recommended for interiors with incorrect portal sizes.\n\n" +
                                                           "Value:\n" +
@@ -117,6 +117,8 @@ public static class Config
 
         #endregion
 
+        MigrateOldSettings();
+
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
         InteriorsWithFallbackPortalsRaw.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
@@ -124,6 +126,13 @@ public static class Config
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
 
         UpdateInteriorsWithFallbackPortals();
+    }
+
+    private static void MigrateOldSettings()
+    {
+        // Migrate the old value from version 1.8.0 by replacing the default value with the empty string.
+        if (InteriorsWithFallbackPortalsRaw.Value == "CastleFlow, SewerFlow")
+            InteriorsWithFallbackPortalsRaw.Value = "";
     }
 
     private static void UpdateInteriorsWithFallbackPortals()
