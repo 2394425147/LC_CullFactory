@@ -6,6 +6,7 @@ using System.Text;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
+using CullFactory.Services;
 
 namespace CullFactory;
 
@@ -155,19 +156,11 @@ public static class Config
         writer.Write(Encoding.UTF8.GetBytes(Plugin.Version));
     }
 
-    private static IEnumerable<string> SplitCommaSeparatedStrings(this string input)
-    {
-        return input
-               .Split(',', StringSplitOptions.RemoveEmptyEntries)
-               .Select(name => name.Trim())
-               .Select(name => name.StartsWith('"') && name.EndsWith('"') ? name[1..^1] : name);
-    }
-
     private static void UpdateInteriorsWithFallbackPortals()
     {
         InteriorsWithFallbackPortals = BaseSetOfInteriorsToUseFallbackPortals
-                                       .Union(InteriorsToUseFallbackPortals.Value.SplitCommaSeparatedStrings())
-                                       .Except(InteriorsToSkipFallbackPortals.Value.SplitCommaSeparatedStrings())
+                                       .Union(InteriorsToUseFallbackPortals.Value.SplitByComma())
+                                       .Except(InteriorsToSkipFallbackPortals.Value.SplitByComma())
                                        .ToArray();
         DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
     }
