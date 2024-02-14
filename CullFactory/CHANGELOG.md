@@ -1,3 +1,9 @@
+# 0.8.2
+
+## Fixed
+
+- Mod not being properly initialized when installed manually
+
 # 0.8.1
 
 ## Added
