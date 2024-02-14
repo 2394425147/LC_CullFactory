@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
@@ -14,10 +15,13 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
-    private static readonly Version DefaultVersion = Version.Parse("0.0.0");
+    private static readonly Version DefaultVersion  = Version.Parse("0.0.0");
     private static readonly Version FallbackVersion = Version.Parse("0.8.0");
-    private static readonly string VersionFile = Path.Combine(BepInEx.Paths.PluginPath, "fumiko-CullFactory", "version");
-    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
+
+    private static readonly string VersionFile =
+        Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
+
+    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals  = ["BunkerFlow"];
     private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
 
     public static void Initialize(ConfigFile configFile)
@@ -36,7 +40,7 @@ public static class Config
                                           "Update frequency",
                                           5f,
                                           "Higher values make culling more responsive at the cost of performance.\n" +
-                                          "Currently this has no effect when portal occlusion culling is used.\n" +
+                                          "Currently this has no effect when portal occlusion culling is used.\n"    +
                                           "Update interval: 1 / value (seconds)");
 
         #endregion
@@ -48,15 +52,15 @@ public static class Config
                                                         "",
                                                         "Use a more forgiving testing method for the specified interiors.\n" +
                                                         "This is recommended for interiors with incorrect portal sizes.\n\n" +
-                                                        "Value:\n" +
+                                                        "Value:\n"                                                           +
                                                         "A list of dungeon generators, separated by commas \",\".");
 
         InteriorsToSkipFallbackPortals = configFile.Bind("Portal occlusion culling",
                                                          "Skip fallback portals for interiors",
                                                          "",
                                                          "Skip using fallback portals on previously problematic interiors:\n" +
-                                                         $"{BaseSetOfInteriorsToSkipFallbackPortals.JoinByComma()}\n\n" +
-                                                         "Value:\n" +
+                                                         $"{BaseSetOfInteriorsToSkipFallbackPortals.JoinByComma()}\n\n"       +
+                                                         "Value:\n"                                                           +
                                                          "A list of dungeon generators, separated by commas \",\".");
 
         #endregion
@@ -75,23 +79,23 @@ public static class Config
         CullDistanceEnabled = configFile.Bind("Distance culling",
                                               "Enabled",
                                               false,
-                                              "Whether to override the camera's far plane distance. When " +
-                                              "this is false, the 'Cull distance' and 'Surface cull distance' " +
-                                              "options will have no effect.\n" +
+                                              "Whether to override the camera's far plane distance. When "            +
+                                              "this is false, the 'Cull distance' and 'Surface cull distance' "       +
+                                              "options will have no effect.\n"                                        +
                                               "If performance with portal occlusion culling enabled is insufficient " +
                                               "this may provide a small boost in performance.");
 
         CullDistance = configFile.Bind("Distance culling",
                                        "Cull distance",
                                        40f,
-                                       "The camera's far plane distance.\n" +
+                                       "The camera's far plane distance.\n"                          +
                                        "Objects that are this far from the player will be culled.\n" +
                                        "Vanilla value: 400");
 
         SurfaceCullDistance = configFile.Bind("Distance culling",
                                               "Surface cull distance",
                                               200f,
-                                              "The camera's far plane distance when **on the surface**.\n" +
+                                              "The camera's far plane distance when **on the surface**.\n"  +
                                               "Objects that are this far from the player will be culled.\n" +
                                               "Vanilla value: 400");
 
@@ -102,8 +106,8 @@ public static class Config
         VisualizePortals = configFile.Bind("Debug",
                                            "Visualize portals",
                                            false,
-                                           "Shows a rectangle representing the bounds of all portals that are used to " +
-                                           "determine visibility when portal occlusion culling is enabled. If the portal " +
+                                           "Shows a rectangle representing the bounds of all portals that are used to "        +
+                                           "determine visibility when portal occlusion culling is enabled. If the portal "     +
                                            "doesn't block the entirety of the visible portion of the next tile, then culling " +
                                            "will not be correct.");
 
@@ -124,7 +128,7 @@ public static class Config
                                           "Override map seed",
                                           "",
                                           "INTENDED FOR BENCHMARKING ONLY. Leave this empty if you are playing normally.\n" +
-                                          "This forces the map seed to be whatever is entered here, so that benchmarking " +
+                                          "This forces the map seed to be whatever is entered here, so that benchmarking "  +
                                           "numbers can remain as consistent as possible between runs.");
 
         Logging = configFile.Bind("Debug",
@@ -136,12 +140,12 @@ public static class Config
 
         MigrateSettings();
 
-        Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
-        InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
+        Culler.SettingChanged                         += (_, _) => CullingMethod.Initialize();
+        InteriorsToUseFallbackPortals.SettingChanged  += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
-        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
+        VisualizePortals.SettingChanged               += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
-        VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
+        VisualizeTileBounds.SettingChanged            += (_, _) => Plugin.CreateCullingVisualizers();
 
         UpdateInteriorsWithFallbackPortals();
     }
@@ -170,9 +174,9 @@ public static class Config
         DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
     }
 
-    public static ConfigEntry<bool> Logging { get; private set; }
-    public static ConfigEntry<CullingType> Culler { get; private set; }
-    public static ConfigEntry<float> UpdateFrequency { get; private set; }
+    public static ConfigEntry<bool>        Logging         { get; private set; }
+    public static ConfigEntry<CullingType> Culler          { get; private set; }
+    public static ConfigEntry<float>       UpdateFrequency { get; private set; }
 
     /// <summary>
     /// <para>
@@ -196,14 +200,14 @@ public static class Config
     /// </summary>
     public static ConfigEntry<string> InteriorsToSkipFallbackPortals { get; private set; }
 
-    public static ConfigEntry<int> MaxBranchingDepth { get; private set; }
-    public static ConfigEntry<bool> CullDistanceEnabled { get; private set; }
-    public static ConfigEntry<float> CullDistance { get; private set; }
-    public static ConfigEntry<float> SurfaceCullDistance { get; private set; }
-    public static ConfigEntry<string> OverrideMapSeed { get; private set; }
-    public static ConfigEntry<bool> VisualizePortals { get; private set; }
-    public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
-    public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+    public static ConfigEntry<int>    MaxBranchingDepth              { get; private set; }
+    public static ConfigEntry<bool>   CullDistanceEnabled            { get; private set; }
+    public static ConfigEntry<float>  CullDistance                   { get; private set; }
+    public static ConfigEntry<float>  SurfaceCullDistance            { get; private set; }
+    public static ConfigEntry<string> OverrideMapSeed                { get; private set; }
+    public static ConfigEntry<bool>   VisualizePortals               { get; private set; }
+    public static ConfigEntry<float>  VisualizedPortalOutsetDistance { get; private set; }
+    public static ConfigEntry<bool>   VisualizeTileBounds            { get; private set; }
 
     public static string[] InteriorsWithFallbackPortals { get; private set; }
 }
