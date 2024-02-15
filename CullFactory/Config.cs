@@ -6,6 +6,7 @@ using System.Text;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
+using CullFactory.Extenders;
 using CullFactory.Services;
 
 namespace CullFactory;
@@ -141,8 +142,14 @@ public static class Config
         MigrateSettings();
 
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
+
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
+
+        CullDistanceEnabled.SettingChanged += (_, _) => TeleportExtender.SetInitialFarClipPlane();
+        CullDistance.SettingChanged += (_, _) => TeleportExtender.SetInitialFarClipPlane();
+        SurfaceCullDistance.SettingChanged += (_, _) => TeleportExtender.SetInitialFarClipPlane();
+
         VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
