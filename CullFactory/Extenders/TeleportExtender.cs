@@ -21,14 +21,14 @@ public static class TeleportExtender
         {
             if (playerGameplayCameraFarPlanes == null)
                 return;
-            for (int i = 0; i < allPlayers.Length; i++)
+            for (var i = 0; i < allPlayers.Length; i++)
                 allPlayers[i].gameplayCamera.farClipPlane = playerGameplayCameraFarPlanes[i];
             return;
         }
 
         playerGameplayCameraFarPlanes = new float[allPlayers.Length];
 
-        for (int i = 0; i < allPlayers.Length; i++)
+        for (var i = 0; i < allPlayers.Length; i++)
         {
             var player = allPlayers[i];
             playerGameplayCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
