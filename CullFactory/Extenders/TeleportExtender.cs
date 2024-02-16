@@ -11,7 +11,7 @@ public static class TeleportExtender
     // Players' tracking transform is hierarchically different from that of a radar booster
     private static readonly Dictionary<GameObject, Transform> ObjectsInsideFactory = [];
 
-    private static float[] playerGameplayCameraFarPlanes;
+    private static float[] _playerGameplayCameraFarPlanes;
 
     public static void SetInitialFarClipPlane()
     {
@@ -19,19 +19,19 @@ public static class TeleportExtender
 
         if (!Config.CullDistanceEnabled.Value)
         {
-            if (playerGameplayCameraFarPlanes == null)
+            if (_playerGameplayCameraFarPlanes == null)
                 return;
             for (var i = 0; i < allPlayers.Length; i++)
-                allPlayers[i].gameplayCamera.farClipPlane = playerGameplayCameraFarPlanes[i];
+                allPlayers[i].gameplayCamera.farClipPlane = _playerGameplayCameraFarPlanes[i];
             return;
         }
 
-        playerGameplayCameraFarPlanes = new float[allPlayers.Length];
+        _playerGameplayCameraFarPlanes = new float[allPlayers.Length];
 
         for (var i = 0; i < allPlayers.Length; i++)
         {
             var player = allPlayers[i];
-            playerGameplayCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
+            _playerGameplayCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
             player.gameplayCamera.farClipPlane = player.isInsideFactory
                                                      ? Config.CullDistance.Value
                                                      : Config.SurfaceCullDistance.Value;
