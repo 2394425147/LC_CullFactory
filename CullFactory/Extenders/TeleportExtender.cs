@@ -6,7 +6,7 @@ namespace CullFactory.Extenders;
 [HarmonyPatch(typeof(EntranceTeleport))]
 public static class TeleportExtender
 {
-    private static float[] _playerGameplayCameraFarPlanes;
+    private static float[] _initialPlayerCameraFarPlanes;
 
     public static void SetInitialFarClipPlane()
     {
@@ -14,19 +14,19 @@ public static class TeleportExtender
 
         if (!Config.CullDistanceEnabled.Value)
         {
-            if (_playerGameplayCameraFarPlanes == null)
+            if (_initialPlayerCameraFarPlanes == null)
                 return;
             for (var i = 0; i < allPlayers.Length; i++)
-                allPlayers[i].gameplayCamera.farClipPlane = _playerGameplayCameraFarPlanes[i];
+                allPlayers[i].gameplayCamera.farClipPlane = _initialPlayerCameraFarPlanes[i];
             return;
         }
 
-        _playerGameplayCameraFarPlanes = new float[allPlayers.Length];
+        _initialPlayerCameraFarPlanes = new float[allPlayers.Length];
 
         for (var i = 0; i < allPlayers.Length; i++)
         {
             var player = allPlayers[i];
-            _playerGameplayCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
+            _initialPlayerCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
             player.gameplayCamera.farClipPlane = player.isInsideFactory
                                                      ? Config.CullDistance.Value
                                                      : Config.SurfaceCullDistance.Value;
