@@ -21,7 +21,7 @@ public static class TeleportExtender
             return;
         }
 
-        _initialPlayerCameraFarPlanes = new float[allPlayers.Length];
+        _initialPlayerCameraFarPlanes ??= new float[allPlayers.Length];
 
         for (var i = 0; i < allPlayers.Length; i++)
         {
@@ -75,6 +75,6 @@ public static class TeleportExtender
                                                  ? Config.CullDistance.Value
                                                  : Config.SurfaceCullDistance.Value;
 
-        Plugin.Log($"{player.playerUsername} is{(player.isInsideFactory ? "" : " not")} in the factory, set far plane distance to {player.gameplayCamera.farClipPlane}");
+        Plugin.Log($"{player.playerUsername} is{(player.isInsideFactory ? string.Empty : " not")} in the factory, set far plane distance to {player.gameplayCamera.farClipPlane}");
     }
 }
