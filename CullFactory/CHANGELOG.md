@@ -1,3 +1,9 @@
+# 0.8.3
+
+## Fixed
+
+- Far plane culling not responding to changed settings during gameplay
+
 # 0.8.2
 
 ## Fixed
