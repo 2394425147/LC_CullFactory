@@ -1,3 +1,9 @@
+# 0.8.5
+
+## Fixed
+
+- Removed benchmarking behaviour when B is pressed
+
 # 0.8.4
 
 ## Fixed
