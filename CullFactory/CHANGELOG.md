@@ -1,3 +1,9 @@
+# 0.8.4
+
+## Fixed
+
+- Camera stops rendering when a renderer or light is removed after level generation
+
 # 0.8.3
 
 ## Fixed
