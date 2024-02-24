@@ -1,5 +1,4 @@
 ﻿using DunGen;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CullFactory.Data;
@@ -10,7 +9,12 @@ namespace CullFactory.Data;
 ///     the Tile they are associated with. Children of doors are shared between the
 ///     both neighboring Tiles.
 /// </summary>
-public sealed class TileContents(Tile tile, Renderer[] renderers, Light[] lights, Light[] externalLights, Renderer[] externalLightOccluders)
+public sealed class TileContents(
+    Tile tile,
+    Renderer[] renderers,
+    Light[] lights,
+    Light[] externalLights,
+    Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
     public readonly Bounds bounds = tile.Bounds;
@@ -31,20 +35,5 @@ public sealed class TileContents(Tile tile, Renderer[] renderers, Light[] lights
             light.enabled = visible;
         foreach (var renderer in externalLightOccluders)
             renderer.forceRenderingOff = !visible;
-    }
-}
-
-public sealed class TileContentsBuilder(Tile tile)
-{
-    public readonly Tile tile = tile;
-    public readonly HashSet<Renderer> renderers = [];
-    public readonly HashSet<Light> lights = [];
-
-    public readonly HashSet<Light> externalLights = [];
-    public readonly HashSet<Renderer> externalLightOccluders = [];
-
-    public TileContents Build()
-    {
-        return new TileContents(tile, [.. renderers], [.. lights], [.. externalLights], [.. externalLightOccluders]);
     }
 }
