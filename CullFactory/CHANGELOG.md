@@ -1,3 +1,13 @@
+# 0.8.6
+
+## Changed
+
+- Print warning in console when a tile component is removed unexpectedly
+
+## Fixed
+
+- Tile being entirely excluded from rendering when only partial objects are problematic
+
 # 0.8.5
 
 ## Fixed
