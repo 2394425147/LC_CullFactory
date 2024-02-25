@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CullFactory.Extenders;
 using DunGen;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -62,10 +63,7 @@ public static class DungeonCullingInfo
 
         var syncedObjectSpawners = parent.GetComponentsInChildren<SpawnSyncedObject>();
         foreach (var spawner in syncedObjectSpawners)
-        {
-            builder.renderers.UnionWith(spawner.GetComponentsInChildren<Renderer>());
-            builder.lights.UnionWith(spawner.GetComponentsInChildren<Light>());
-        }
+            CollectContentsIntoTile(LevelGenerationExtender.TileSyncedObjects[spawner].transform, builder);
     }
 
     private static void CollectAllTileContents()
