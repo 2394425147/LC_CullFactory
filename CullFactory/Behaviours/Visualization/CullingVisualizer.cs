@@ -10,20 +10,7 @@ namespace CullFactory.Behaviours.Visualization
     {
         private const float TileBoundsInset = 0.00025f;
 
-        private static readonly Shader VisualizerShader = Shader.Find("HDRP/Unlit");
         private static readonly Color[] ColorRotation = [Color.red, Color.yellow, Color.green, Color.blue, Color.cyan, Color.grey];
-
-        private static readonly Material PortalVisualizerMaterial = new(VisualizerShader)
-        {
-            name = "PortalVisualizerMaterial",
-            color = Color.white,
-        };
-
-        private static readonly Material TileBoundsVisualizerMaterial = new(VisualizerShader)
-        {
-            name = "TileBoundsVisualizerMaterial",
-            color = Color.yellow,
-        };
 
         private GameObject _portalVisualizersRoot;
         private GameObject _tileBoundsVisualizersRoot;
@@ -98,7 +85,11 @@ namespace CullFactory.Behaviours.Visualization
             DestroyImmediate(portalPrefab.GetComponent<Collider>());
 
             var renderer = portalPrefab.GetComponent<Renderer>();
-            renderer.material = PortalVisualizerMaterial;
+            renderer.material = new(Shader.Find("HDRP/Unlit"))
+            {
+                name = "PortalVisualizerMaterial",
+                color = Color.white,
+            };
             renderer.shadowCastingMode = ShadowCastingMode.Off;
 
             var mesh = portalPrefab.GetComponent<MeshFilter>().mesh;
@@ -120,7 +111,11 @@ namespace CullFactory.Behaviours.Visualization
             DestroyImmediate(tileBoundsPrefab.GetComponent<Collider>());
 
             var renderer = tileBoundsPrefab.GetComponent<Renderer>();
-            renderer.material = TileBoundsVisualizerMaterial;
+            renderer.material = new(Shader.Find("HDRP/Unlit"))
+            {
+                name = "TileBoundsVisualizerMaterial",
+                color = Color.yellow,
+            };
             renderer.shadowCastingMode = ShadowCastingMode.Off;
 
             var mesh = tileBoundsPrefab.GetComponent<MeshFilter>().sharedMesh;
