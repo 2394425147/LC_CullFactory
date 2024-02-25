@@ -42,6 +42,11 @@ public class Plugin : BaseUnityPlugin
         LogAlways(s);
     }
 
+    public static void LogWarning(string s)
+    {
+        Instance.Logger.LogWarning(s);
+    }
+
     public static void LogError(string s)
     {
         Instance.Logger.LogError(s);

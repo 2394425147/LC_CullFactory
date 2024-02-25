@@ -31,7 +31,7 @@ public sealed class TileContents(
         if (obj == null)
         {
             if (!_warnedNullObject)
-                Plugin.LogError($"A {obj.GetType().Name} in {tile.name} was unexpectedly destroyed.");
+                Plugin.LogWarning($"A {obj.GetType().Name} in {tile.name} was unexpectedly destroyed.");
             _warnedNullObject = true;
 
             return true;
