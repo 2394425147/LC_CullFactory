@@ -53,7 +53,7 @@ public static class Config
 
         UpdateFrequency = configFile.Bind("General",
                                           "Update frequency",
-                                          5f,
+                                          0f,
                                           "Higher values make culling more responsive at the cost of performance.\n" +
                                           "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
@@ -185,6 +185,9 @@ public static class Config
             InteriorsToUseFallbackPortals.Value = InteriorsToUseFallbackPortals.Value.SplitByComma()
                                                                                .Except(BaseSetOfInteriorsToSkipFallbackPortals)
                                                                                .JoinByComma();
+
+        if (versionBeforeLaunch <= new Version(0, 8, 6))
+            UpdateFrequency.Value = (float)UpdateFrequency.DefaultValue;
 
         using var writer = File.Open(VersionFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
         writer.Write(Encoding.UTF8.GetBytes(Plugin.Version));
