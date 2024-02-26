@@ -158,6 +158,7 @@ public static class Config
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
         InteriorsToBlockCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
         InteriorsToForceCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
+        UpdateFrequency.SettingChanged += (_, _) => CullingMethod.Initialize();
 
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();

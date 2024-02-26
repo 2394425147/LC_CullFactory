@@ -10,6 +10,7 @@ public abstract class CullingMethod : MonoBehaviour
 {
     private static CullingMethod Instance { get; set; }
 
+    private float _updateInterval;
     private float _lastUpdateTime;
 
     private List<TileContents> _visibleTiles = [];
@@ -45,6 +46,11 @@ public abstract class CullingMethod : MonoBehaviour
 
         if (Instance == null)
             return;
+
+        if (Config.UpdateFrequency.Value > 0)
+            Instance._updateInterval = 1 / Config.UpdateFrequency.Value;
+        else
+            Instance._updateInterval = 0;
     }
 
     private void OnEnable()
@@ -56,7 +62,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (Time.time - _lastUpdateTime < 1 / Config.UpdateFrequency.Value)
+        if (Time.time - _lastUpdateTime < _updateInterval)
             return;
 
         _lastUpdateTime = Time.time;
