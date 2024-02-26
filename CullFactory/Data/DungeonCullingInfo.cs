@@ -132,12 +132,13 @@ public static class DungeonCullingInfo
                 var lightDistanceSquared = bounds.SqrDistance(light.transform.position);
                 if (lightDistanceSquared > lightRangeSquared)
                     continue;
+                if (hasShadows && !lightPassesThroughWalls)
+                    continue;
 
                 // If the light has no shadows or if the shadows don't fully occlude light,
                 // it can pass through walls. Add it to the list of external lights affecting
                 // all tiles in its range.
-                if (!hasShadows || lightPassesThroughWalls)
-                    tileContentsBuilder.externalLights.Add(light);
+                tileContentsBuilder.externalLights.Add(light);
 
                 // If the light casts shadows but still passes through walls, then it will
                 // be enabled when this tile is visible. However, since the room it is in
