@@ -1,3 +1,9 @@
+# 0.8.7
+
+## Fixed
+
+- Removed network-synced object spawn tracking (This should allow door codes to function again)
+
 # 0.8.6
 
 ## Changed
