@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours.CullingMethods;
 
@@ -14,22 +13,23 @@ public sealed class PortalOcclusionCuller : CullingMethod
     private void OnEnable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(false);
-
-        RenderPipelineManager.beginCameraRendering += CullForCamera;
-
-        _visibleTiles.Clear();
     }
 
-    private static void CullForCamera(ScriptableRenderContext context, Camera camera)
+    private void LateUpdate()
     {
-        if ((camera.cullingMask & DungeonCullingInfo.AllTileLayersMask) == 0)
-            return;
-
         _visibleTiles.Clear();
-        _visibleTiles.AddContentsVisibleToCamera(camera);
+        foreach (var camera in Camera.allCameras)
+        {
+            if ((camera.cullingMask & DungeonCullingInfo.AllTileLayersMask) == 0)
+                continue;
+            _visibleTiles.AddContentsVisibleToCamera(camera);
+        }
 
         foreach (var tileContent in _visibleTilesLastCall)
-            tileContent.SetVisible(_visibleTiles.Contains(tileContent));
+        {
+            if (!_visibleTiles.Contains(tileContent))
+                tileContent.SetVisible(false);
+        }
 
         _visibleTiles.SetVisible(true);
 
@@ -39,6 +39,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
     private void OnDisable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(true);
-        RenderPipelineManager.beginCameraRendering -= CullForCamera;
+        _visibleTiles.Clear();
     }
 }
