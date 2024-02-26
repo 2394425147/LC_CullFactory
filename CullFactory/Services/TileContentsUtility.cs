@@ -24,7 +24,7 @@ public static class TileContentsUtility
 
         if (currentTileContents != null)
             DungeonCullingInfo.CallForEachLineOfSight(camera, currentTileContents.tile,
-                                                      (tiles, index) =>
+                                                      (tiles, frustums, index) =>
                                                           result.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]));
     }
 
