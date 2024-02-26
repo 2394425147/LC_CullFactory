@@ -60,10 +60,6 @@ public static class DungeonCullingInfo
     {
         builder.renderers.UnionWith(parent.GetComponentsInChildren<Renderer>());
         builder.lights.UnionWith(parent.GetComponentsInChildren<Light>());
-
-        var syncedObjectSpawners = parent.GetComponentsInChildren<SpawnSyncedObject>();
-        foreach (var spawner in syncedObjectSpawners)
-            CollectContentsIntoTile(LevelGenerationExtender.TileSyncedObjects[spawner].transform, builder);
     }
 
     private static void CollectAllTileContents()
