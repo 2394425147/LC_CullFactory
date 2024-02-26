@@ -8,6 +8,7 @@ using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 using CullFactory.Extenders;
 using CullFactory.Services;
+using DunGen.Graph;
 
 namespace CullFactory;
 
@@ -21,6 +22,8 @@ public static class Config
 
     private static readonly string VersionFile =
         Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
+
+    private static readonly string[] DefaultFlowsToBlockCulling = ["OfficeDungeonFlow"];
 
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
     private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
@@ -36,6 +39,17 @@ public static class Config
                                  "Options:\n" +
                                  "\"PortalOcclusionCulling\": Hides all the rooms that aren't visible to the camera (Recommended)\n" +
                                  "\"DepthCulling\": Hides rooms that aren't adjacent to the player's current room");
+
+        InteriorsToBlockCulling = configFile.Bind("General",
+                                                  "Disable culling for interiors",
+                                                  "",
+                                                  "A list of dungeon flows to disable culling on, separated by commas, i.e.\n" +
+                                                  "\"Level1Flow, Level2Flow\"");
+
+        InteriorsToForceCulling = configFile.Bind("General",
+                                                  "Force enable culling for interiors",
+                                                  "",
+                                                  "A list of dungeon flows to ignore the blacklists and enable culling on, also separated by commas");
 
         UpdateFrequency = configFile.Bind("General",
                                           "Update frequency",
@@ -142,6 +156,8 @@ public static class Config
         MigrateSettings();
 
         Culler.SettingChanged += (_, _) => CullingMethod.Initialize();
+        InteriorsToBlockCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
+        InteriorsToForceCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
 
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
@@ -154,6 +170,7 @@ public static class Config
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
         VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
 
+        UpdateInteriorsWithDisabledCulling();
         UpdateInteriorsWithFallbackPortals();
     }
 
@@ -172,6 +189,22 @@ public static class Config
         writer.Write(Encoding.UTF8.GetBytes(Plugin.Version));
     }
 
+    private static void UpdateInteriorsWithDisabledCulling()
+    {
+        InteriorsWithDisabledCulling = DefaultFlowsToBlockCulling
+                                       .Union(InteriorsToBlockCulling.Value.SplitByComma())
+                                       .Except(InteriorsToForceCulling.Value.SplitByComma())
+                                       .ToArray();
+        CullingMethod.Initialize();
+    }
+
+    public static CullingType GetCullingType(DungeonFlow dungeonFlow)
+    {
+        if (InteriorsWithDisabledCulling.Contains(dungeonFlow.name))
+            return CullingType.None;
+        return Culler.Value;
+    }
+
     private static void UpdateInteriorsWithFallbackPortals()
     {
         InteriorsWithFallbackPortals = BaseSetOfInteriorsToUseFallbackPortals
@@ -182,7 +215,13 @@ public static class Config
     }
 
     public static ConfigEntry<bool> Logging { get; private set; }
-    public static ConfigEntry<CullingType> Culler { get; private set; }
+
+    private static ConfigEntry<CullingType> Culler;
+
+    private static ConfigEntry<string> InteriorsToBlockCulling;
+
+    private static ConfigEntry<string> InteriorsToForceCulling;
+
     public static ConfigEntry<float> UpdateFrequency { get; private set; }
 
     /// <summary>
@@ -215,6 +254,8 @@ public static class Config
     public static ConfigEntry<bool> VisualizePortals { get; private set; }
     public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
     public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+
+    public static string[] InteriorsWithDisabledCulling = [];
 
     public static string[] InteriorsWithFallbackPortals { get; private set; }
 }

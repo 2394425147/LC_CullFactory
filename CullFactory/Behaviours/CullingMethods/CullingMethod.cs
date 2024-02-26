@@ -16,12 +16,13 @@ public abstract class CullingMethod : MonoBehaviour
             Instance = null;
         }
 
-        if (RoundManager.Instance.dungeonGenerator == null)
+        if (RoundManager.Instance?.dungeonGenerator == null)
             return;
 
-        var dungeon = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
+        var generator = RoundManager.Instance.dungeonGenerator.Generator;
+        var dungeon = generator.CurrentDungeon.gameObject;
 
-        switch (Config.Culler.Value)
+        switch (Config.GetCullingType(generator.DungeonFlow))
         {
             case CullingType.PortalOcclusionCulling:
                 Instance = dungeon.AddComponent<PortalOcclusionCuller>();
