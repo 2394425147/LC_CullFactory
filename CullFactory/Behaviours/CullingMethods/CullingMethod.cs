@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CullFactory.Data;
+using CullFactory.Services;
 using UnityEngine;
 
 namespace CullFactory.Behaviours.CullingMethods;
@@ -7,6 +9,11 @@ namespace CullFactory.Behaviours.CullingMethods;
 public abstract class CullingMethod : MonoBehaviour
 {
     private static CullingMethod Instance { get; set; }
+
+    private float _lastUpdateTime;
+
+    private List<TileContents> _visibleTiles = [];
+    private List<TileContents> _visibleTilesLastCall = [];
 
     public static void Initialize()
     {
@@ -16,7 +23,7 @@ public abstract class CullingMethod : MonoBehaviour
             Instance = null;
         }
 
-        if (RoundManager.Instance?.dungeonGenerator == null)
+        if (RoundManager.Instance == null || RoundManager.Instance.dungeonGenerator == null)
             return;
 
         var generator = RoundManager.Instance.dungeonGenerator.Generator;
@@ -34,6 +41,71 @@ public abstract class CullingMethod : MonoBehaviour
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+
+        if (Instance == null)
+            return;
+    }
+
+    private void OnEnable()
+    {
+        DungeonCullingInfo.AllTileContents.SetVisible(false);
+    }
+
+    protected abstract void AddVisibleTiles(List<TileContents> visibleTiles);
+
+    private void LateUpdate()
+    {
+        if (Time.time - _lastUpdateTime < 1 / Config.UpdateFrequency.Value)
+            return;
+
+        _lastUpdateTime = Time.time;
+
+        _visibleTiles.Clear();
+        AddVisibleTiles(_visibleTiles);
+
+        foreach (var tileContent in _visibleTilesLastCall)
+        {
+            if (!_visibleTiles.Contains(tileContent))
+                tileContent.SetVisible(false);
+        }
+
+        _visibleTiles.SetVisible(true);
+
+        (_visibleTilesLastCall, _visibleTiles) = (_visibleTiles, _visibleTilesLastCall);
+    }
+
+    private void OnDisable()
+    {
+        DungeonCullingInfo.AllTileContents.SetVisible(true);
+        _visibleTiles.Clear();
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_visibleTilesLastCall.Count > 0)
+        {
+            Gizmos.color = Color.green;
+            var contents = _visibleTilesLastCall[0];
+            Gizmos.DrawWireCube(contents.bounds.center, contents.bounds.size);
+
+            Gizmos.color = Color.green;
+            foreach (var renderer in contents.renderers)
+            {
+                var bounds = renderer.bounds;
+                Gizmos.DrawWireCube(bounds.center, bounds.size);
+            }
+            foreach (var light in contents.lights)
+                Gizmos.DrawWireSphere(light.transform.position, light.range);
+
+            Gizmos.color = Color.blue;
+            foreach (var externalLight in contents.externalLights)
+                Gizmos.DrawWireSphere(externalLight.transform.position, externalLight.range);
+            foreach (var externalLightOccluder in contents.externalLightOccluders)
+            {
+                var bounds = externalLightOccluder.bounds;
+                Gizmos.DrawWireCube(bounds.center, bounds.size);
+            }
         }
     }
 }

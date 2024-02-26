@@ -11,46 +11,24 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// </summary>
 public sealed class DepthCuller : CullingMethod
 {
-    private readonly List<TileContents> _visibleTilesThisFrame = [];
-
-    private float _lastUpdateTime;
-
-    private void OnEnable()
+    protected override void AddVisibleTiles(List<TileContents> visibleTiles)
     {
-        DungeonCullingInfo.AllTileContents.SetVisible(false);
-
-        _visibleTilesThisFrame.Clear();
-    }
-
-    public void LateUpdate()
-    {
-        if (StartOfRound.Instance.allPlayersDead ||
-            Time.time - _lastUpdateTime < 1 / Config.UpdateFrequency.Value)
-            return;
-
-        _lastUpdateTime = Time.time;
-
-        _visibleTilesThisFrame.SetVisible(false);
-        _visibleTilesThisFrame.Clear();
-
         foreach (var camera in Camera.allCameras)
         {
             if (camera.orthographic)
             {
-                _visibleTilesThisFrame.AddContentsWithinCameraFrustum(camera);
+                visibleTiles.AddContentsWithinCameraFrustum(camera);
                 continue;
             }
 
             var cameraTile = camera.transform.position.GetTileContents();
             if (cameraTile == null)
                 continue;
-            IncludeNearbyTiles(cameraTile.tile);
+            IncludeNearbyTiles(cameraTile.tile, visibleTiles);
         }
-
-        _visibleTilesThisFrame.SetVisible(true);
     }
 
-    private void IncludeNearbyTiles(Tile origin)
+    private void IncludeNearbyTiles(Tile origin, List<TileContents> visibleTiles)
     {
         var depthTarget = Config.MaxBranchingDepth.Value - 1;
         // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.
@@ -69,7 +47,7 @@ public sealed class DepthCuller : CullingMethod
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            _visibleTilesThisFrame.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
+            visibleTiles.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
             traversedTiles.Add(tileFrame.tile);
 
             if (tileFrame.iteration == depthTarget)
@@ -85,11 +63,6 @@ public sealed class DepthCuller : CullingMethod
                 depthTesterQueue.Push(new TileDepthTester(neighborTile, tileFrame.iteration + 1));
             }
         }
-    }
-
-    private void OnDestroy()
-    {
-        DungeonCullingInfo.AllTileContents.SetVisible(true);
     }
 }
 
