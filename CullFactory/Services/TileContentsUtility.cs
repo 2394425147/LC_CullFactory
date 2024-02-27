@@ -23,9 +23,9 @@ public static class TileContentsUtility
         var currentTileContents = camera.transform.position.GetTileContents();
 
         if (currentTileContents != null)
-            DungeonCullingInfo.CallForEachLineOfSight(camera, currentTileContents.tile,
-                                                      (tiles, frustums, index) =>
-                                                          result.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]));
+            VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents.tile,
+                                                     (tiles, frustums, index) =>
+                                                         result.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]));
     }
 
     public static void AddContentsWithinCameraFrustum(this ICollection<TileContents> result, Camera camera)

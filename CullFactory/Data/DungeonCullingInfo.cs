@@ -143,7 +143,7 @@ public static class DungeonCullingInfo
             if (!hasShadows)
                 continue;
 
-            CallForEachLineOfSight(light.transform.position, builder.tile, (tiles, frustums, index) =>
+            VisibilityTesting.CallForEachLineOfSight(light.transform.position, builder.tile, (tiles, frustums, index) =>
             {
                 if (index < 1)
                     return;
@@ -166,16 +166,7 @@ public static class DungeonCullingInfo
                         if (!light.Affects(occluderBounds))
                             continue;
 
-                        var isInFrustums = true;
-                        for (var frustumIndex = 0; frustumIndex <= previousTileIndex; frustumIndex++)
-                        {
-                            if (!GeometryUtility.TestPlanesAABB(frustums[frustumIndex], occluderBounds))
-                            {
-                                isInFrustums = false;
-                                break;
-                            }
-                        }
-                        if (!isInFrustums)
+                        if (!occluderBounds.IntersectsFrustums(frustums, previousTileIndex))
                             continue;
                         currentTileBuilder.externalLightOccluders.Add(renderer);
                     }
@@ -228,84 +219,5 @@ public static class DungeonCullingInfo
             if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
                 intoList.Add(tileContents);
         }
-    }
-
-    private const int MaxStackCapacity = 15;
-    private static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
-    private static readonly int[] IndexStack = new int[MaxStackCapacity];
-    private static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
-
-    public delegate void LineOfSightCallback(Tile[] tileStack, Plane[][] frustumStack, int stackIndex);
-
-    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, Plane[] frustum, LineOfSightCallback callback)
-    {
-        TileStack[0] = originTile;
-        IndexStack[0] = 0;
-        FrustumStack[0] = frustum;
-        var stackIndex = 0;
-
-        callback(TileStack, FrustumStack, stackIndex);
-
-        while (stackIndex >= 0)
-        {
-            var tile = TileStack[stackIndex];
-            var index = IndexStack[stackIndex]++;
-
-            if (index >= tile.UsedDoorways.Count)
-            {
-                stackIndex--;
-                continue;
-            }
-
-            var doorway = tile.UsedDoorways[index];
-            var connectedTile = doorway.ConnectedDoorway?.Tile;
-
-            if (connectedTile == null)
-                continue;
-            if (stackIndex > 0 && ReferenceEquals(connectedTile, TileStack[stackIndex - 1]))
-                continue;
-
-            var portal = AllPortals[doorway];
-
-            var outsideFrustum = false;
-            for (var i = 0; i <= stackIndex; i++)
-            {
-                if (!GeometryUtility.TestPlanesAABB(FrustumStack[i], portal.Bounds))
-                {
-                    outsideFrustum = true;
-                    break;
-                }
-            }
-
-            if (outsideFrustum)
-                continue;
-
-            stackIndex++;
-            if (stackIndex >= MaxStackCapacity)
-            {
-                Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}");
-                break;
-            }
-
-            TileStack[stackIndex] = connectedTile;
-            IndexStack[stackIndex] = 0;
-
-            if (FrustumStack[stackIndex] is null)
-                FrustumStack[stackIndex] = portal.GetFrustumPlanes(origin);
-            else
-                portal.GetFrustumPlanesNonAlloc(origin, FrustumStack[stackIndex]);
-
-            callback(TileStack, FrustumStack, stackIndex);
-        }
-    }
-
-    public static void CallForEachLineOfSight(Camera camera, Tile originTile, LineOfSightCallback callback)
-    {
-        CallForEachLineOfSight(camera.transform.position, originTile, GeometryUtility.CalculateFrustumPlanes(camera), callback);
-    }
-
-    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
-    {
-        CallForEachLineOfSight(origin, originTile, [], callback);
     }
 }
