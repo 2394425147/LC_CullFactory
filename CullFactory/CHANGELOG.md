@@ -1,3 +1,15 @@
+# 0.9.0
+
+## Changed
+
+- The default/recommended culling frequency is now 0 (Updates every game cycle)
+- Light culling is now more accurate
+
+## Fixed
+
+- Portal occlusion culling now accurately reads objects' visibility states from the previous frame.
+- Errors occurred when using CullFactory should no longer cause the game to freeze
+
 # 0.8.7
 
 ## Fixed
