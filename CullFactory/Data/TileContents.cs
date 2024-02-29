@@ -1,4 +1,5 @@
 ﻿using DunGen;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace CullFactory.Data;
@@ -13,19 +14,24 @@ public sealed class TileContents(
     Tile tile,
     Renderer[] renderers,
     Light[] lights,
+    int[] lightCullingMasks,
     Light[] externalLights,
+    int[] externalLightCullingMasks,
     Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
     public readonly Bounds bounds = tile.Bounds;
     public readonly Renderer[] renderers = renderers;
     public readonly Light[] lights = lights;
+    public readonly int[] lightCullingMasks = lightCullingMasks;
 
     public readonly Light[] externalLights = externalLights;
+    public readonly int[] externalLightCullingMasks = externalLightCullingMasks;
     public readonly Renderer[] externalLightOccluders = externalLightOccluders;
 
     private static bool _warnedNullObject = false;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsInvalid(Component obj)
     {
         if (obj == null)
@@ -39,7 +45,8 @@ public sealed class TileContents(
         return false;
     }
 
-    public void SetVisible(bool visible)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetVisible(Renderer[] renderers, bool visible)
     {
         foreach (var renderer in renderers)
         {
@@ -48,29 +55,27 @@ public sealed class TileContents(
 
             renderer.forceRenderingOff = !visible;
         }
+    }
 
-        foreach (var light in lights)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetVisible(Light[] lights, int[] cullingMasks, bool visible)
+    {
+        var lightCount = lights.Length;
+        for (var i = 0; i < lightCount; i++)
         {
+            var light = lights[i];
             if (IsInvalid(light))
                 continue;
 
-            light.enabled = visible;
+            light.cullingMask = visible ? cullingMasks[i] : 0;
         }
+    }
 
-        foreach (var light in externalLights)
-        {
-            if (IsInvalid(light))
-                continue;
-
-            light.enabled = visible;
-        }
-
-        foreach (var renderer in externalLightOccluders)
-        {
-            if (IsInvalid(renderer))
-                continue;
-
-            renderer.forceRenderingOff = !visible;
-        }
+    public void SetVisible(bool visible)
+    {
+        SetVisible(renderers, visible);
+        SetVisible(lights, lightCullingMasks, visible);
+        SetVisible(externalLights, externalLightCullingMasks, visible);
+        SetVisible(externalLightOccluders, visible);
     }
 }

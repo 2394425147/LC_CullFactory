@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DunGen;
 using UnityEngine;
 
@@ -15,6 +16,10 @@ public sealed class TileContentsBuilder(Tile tile)
 
     public TileContents Build()
     {
-        return new TileContents(tile, [.. renderers], [.. lights], [.. externalLights], [.. externalLightOccluders]);
+        return new TileContents(tile,
+                                [.. renderers],
+                                [.. lights], [.. lights.Select(light => light.cullingMask)],
+                                [.. externalLights], [.. externalLights.Select(light => light.cullingMask)],
+                                [.. externalLightOccluders]);
     }
 }
