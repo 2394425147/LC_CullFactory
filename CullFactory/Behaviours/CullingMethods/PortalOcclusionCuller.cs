@@ -15,5 +15,30 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
             visibleTiles.AddContentsVisibleToCamera(camera);
         }
+
+        foreach (var dynamicLight in DynamicObjects.AllLightsInInterior)
+        {
+            if (dynamicLight == null)
+                continue;
+            if (!dynamicLight.isActiveAndEnabled)
+                continue;
+            if (!dynamicLight.Affects(visibleTiles))
+                continue;
+
+            var dynamicLightPosition = dynamicLight.transform.position;
+            var lightTileContents = dynamicLightPosition.GetTileContents();
+            if (lightTileContents == null)
+                continue;
+
+            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents.tile, visibleTiles, (tiles, frustums, lastIndex) =>
+            {
+                for (var i = 0; i < lastIndex; i++)
+                {
+                    var tileContents = DungeonCullingInfo.TileContentsForTile[tiles[i]];
+                    if (!visibleTiles.Contains(tileContents))
+                        visibleTiles.Add(tileContents);
+                }
+            });
+        }
     }
 }

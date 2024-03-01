@@ -16,9 +16,14 @@ public static class DungeonCullingInfo
     private const float AdjacentTileIntrusionDistance = 0.2f;
 
     public static Dictionary<Doorway, Portal> AllPortals;
+
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
     public static int AllTileLayersMask = 0;
+
+    public static Light[] AllLightsInDungeon { get; private set; }
+
+    public static Bounds DungeonBounds;
 
     public static void OnLevelGenerated()
     {
@@ -36,6 +41,8 @@ public static class DungeonCullingInfo
         startTime = Time.realtimeSinceStartupAsDouble;
         CollectAllTileContents();
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
+
+        DynamicObjects.CollectAllTrackedObjects();
     }
 
     public static void UpdateInteriorsWithFallbackPortals()
@@ -69,6 +76,10 @@ public static class DungeonCullingInfo
         AllTileLayersMask = 0;
 
         var tileContentsBuilders = new Dictionary<Tile, TileContentsBuilder>();
+        var lightsInDungeon = new List<Light>();
+
+        var dungeonMin = Vector3.positiveInfinity;
+        var dungeonMax = Vector3.negativeInfinity;
 
         foreach (var tile in tiles)
         {
@@ -93,7 +104,14 @@ public static class DungeonCullingInfo
             }
 
             tileContentsBuilders[tile] = builder;
+            lightsInDungeon.AddRange(builder.lights);
+            dungeonMin = Vector3.Min(dungeonMin, builder.bounds.min);
+            dungeonMax = Vector3.Max(dungeonMax, builder.bounds.max);
         }
+
+        AllLightsInDungeon = [.. lightsInDungeon];
+        DungeonBounds.min = dungeonMin;
+        DungeonBounds.max = dungeonMax;
 
         // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
         // but floor decals in the factory interior can as well.

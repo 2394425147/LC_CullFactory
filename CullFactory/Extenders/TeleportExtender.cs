@@ -1,3 +1,4 @@
+using CullFactory.Data;
 using GameNetcodeStuff;
 using HarmonyLib;
 
@@ -35,6 +36,21 @@ public static class TeleportExtender
     }
 
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
+    private static void LocalPlayerTookControl()
+    {
+        SetInitialFarClipPlane();
+        DynamicObjects.CollectAllPlayerLights();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.Start))]
+    private static void GrabbableObjectStarted(GrabbableObject __instance)
+    {
+        DynamicObjects.RefreshGrabbableObject(__instance);
+    }
+
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.TeleportPlayer))]
     private static void OnTeleportPlayerController(PlayerControllerB __instance)
     {
@@ -64,6 +80,7 @@ public static class TeleportExtender
     private static void OnPlayerTeleported(PlayerControllerB player)
     {
         UpdateFarPlane(player);
+        DynamicObjects.OnPlayerTeleported(player);
     }
 
     private static void UpdateFarPlane(PlayerControllerB player)
