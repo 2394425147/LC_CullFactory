@@ -12,6 +12,7 @@ namespace CullFactory.Data;
 /// </summary>
 public sealed class TileContents(
     Tile tile,
+    Bounds bounds,
     Renderer[] renderers,
     Light[] lights,
     int[] lightCullingMasks,
@@ -20,9 +21,7 @@ public sealed class TileContents(
     Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
-    public readonly Bounds bounds = tile.OverrideAutomaticTileBounds
-                                        ? tile.Bounds
-                                        : tile.transform.parent.TransformBounds(tile.Placement.Bounds);
+    public readonly Bounds bounds = bounds;
     public readonly Renderer[] renderers = renderers;
     public readonly Light[] lights = lights;
     public readonly int[] lightCullingMasks = lightCullingMasks;

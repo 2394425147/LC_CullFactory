@@ -17,9 +17,15 @@ public sealed class LevelGenerationExtender
     private static void OnLevelGenerated()
     {
         DungeonCullingInfo.OnLevelGenerated();
-        TeleportExtender.SetInitialFarClipPlane();
 
         CullingMethod.Initialize();
         Plugin.CreateCullingVisualizers();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
+    private static void OnPropsDespawned()
+    {
+        DynamicObjects.CollectAllTrackedObjects();
     }
 }

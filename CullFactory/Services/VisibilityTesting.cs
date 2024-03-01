@@ -1,5 +1,8 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using DunGen;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace CullFactory.Services;
@@ -23,6 +26,50 @@ public static class VisibilityTesting
 
     public delegate void LineOfSightCallback(Tile[] tileStack, Plane[][] frustumStack, int stackIndex);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool AdvanceToNextTile(Vector3 origin, ref int stackIndex)
+    {
+        var tile = TileStack[stackIndex];
+        var index = IndexStack[stackIndex]++;
+
+        if (index >= tile.UsedDoorways.Count)
+        {
+            stackIndex--;
+            return false;
+        }
+
+        var doorway = tile.UsedDoorways[index];
+        var connectedTile = doorway.ConnectedDoorway?.Tile;
+
+        if (connectedTile == null)
+            return false;
+        if (stackIndex > 0 && ReferenceEquals(connectedTile, TileStack[stackIndex - 1]))
+            return false;
+
+        var portal = DungeonCullingInfo.AllPortals[doorway];
+
+        if (!portal.Bounds.IntersectsFrustums(FrustumStack, stackIndex))
+            return false;
+
+        stackIndex++;
+        if (stackIndex >= MaxStackCapacity)
+        {
+            stackIndex--;
+            Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}");
+            return false;
+        }
+
+        TileStack[stackIndex] = connectedTile;
+        IndexStack[stackIndex] = 0;
+
+        if (FrustumStack[stackIndex] is null)
+            FrustumStack[stackIndex] = portal.GetFrustumPlanes(origin);
+        else
+            portal.GetFrustumPlanesNonAlloc(origin, FrustumStack[stackIndex]);
+
+        return true;
+    }
+
     public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, Plane[] frustum, LineOfSightCallback callback)
     {
         TileStack[0] = originTile;
@@ -34,42 +81,8 @@ public static class VisibilityTesting
 
         while (stackIndex >= 0)
         {
-            var tile = TileStack[stackIndex];
-            var index = IndexStack[stackIndex]++;
-
-            if (index >= tile.UsedDoorways.Count)
-            {
-                stackIndex--;
+            if (!AdvanceToNextTile(origin, ref stackIndex))
                 continue;
-            }
-
-            var doorway = tile.UsedDoorways[index];
-            var connectedTile = doorway.ConnectedDoorway?.Tile;
-
-            if (connectedTile == null)
-                continue;
-            if (stackIndex > 0 && ReferenceEquals(connectedTile, TileStack[stackIndex - 1]))
-                continue;
-
-            var portal = DungeonCullingInfo.AllPortals[doorway];
-
-            if (!portal.Bounds.IntersectsFrustums(FrustumStack, stackIndex))
-                continue;
-
-            stackIndex++;
-            if (stackIndex >= MaxStackCapacity)
-            {
-                Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}");
-                break;
-            }
-
-            TileStack[stackIndex] = connectedTile;
-            IndexStack[stackIndex] = 0;
-
-            if (FrustumStack[stackIndex] is null)
-                FrustumStack[stackIndex] = portal.GetFrustumPlanes(origin);
-            else
-                portal.GetFrustumPlanesNonAlloc(origin, FrustumStack[stackIndex]);
 
             callback(TileStack, FrustumStack, stackIndex);
         }
@@ -83,5 +96,46 @@ public static class VisibilityTesting
     public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
     {
         CallForEachLineOfSight(origin, originTile, [], callback);
+    }
+
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, Tile originTile, Plane[] frustum, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    {
+        TileStack[0] = originTile;
+        IndexStack[0] = 0;
+        FrustumStack[0] = frustum;
+        var stackIndex = 0;
+
+        if (goalTiles.Any(tileContents => tileContents.tile == originTile))
+            callback(TileStack, FrustumStack, stackIndex);
+
+        while (stackIndex >= 0)
+        {
+            if (!AdvanceToNextTile(origin, ref stackIndex))
+                continue;
+
+            var frustumContainsGoalTile = false;
+            foreach (var goalTile in goalTiles)
+            {
+                if (GeometryUtility.TestPlanesAABB(FrustumStack[stackIndex], goalTile.bounds))
+                {
+                    frustumContainsGoalTile = true;
+                    break;
+                }
+            }
+            if (!frustumContainsGoalTile)
+            {
+                stackIndex--;
+                continue;
+            }
+
+            var currentTile = TileStack[stackIndex];
+            if (goalTiles.Any(tileContents => tileContents.tile == currentTile))
+                callback(TileStack, FrustumStack, stackIndex);
+        }
+    }
+
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, Tile originTile, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    {
+        CallForEachLineOfSightToTiles(origin, originTile, [], goalTiles, callback);
     }
 }

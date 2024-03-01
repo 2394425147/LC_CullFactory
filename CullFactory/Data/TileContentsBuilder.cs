@@ -8,6 +8,9 @@ namespace CullFactory.Data;
 public sealed class TileContentsBuilder(Tile tile)
 {
     public readonly Tile tile = tile;
+    public readonly Bounds bounds = tile.OverrideAutomaticTileBounds
+                                            ? tile.Bounds
+                                            : tile.transform.parent.TransformBounds(tile.Placement.Bounds);
     public readonly HashSet<Renderer> renderers = [];
     public readonly HashSet<Light> lights = [];
 
@@ -17,6 +20,7 @@ public sealed class TileContentsBuilder(Tile tile)
     public TileContents Build()
     {
         return new TileContents(tile,
+                                bounds,
                                 [.. renderers],
                                 [.. lights], [.. lights.Select(light => light.cullingMask)],
                                 [.. externalLights], [.. externalLights.Select(light => light.cullingMask)],
