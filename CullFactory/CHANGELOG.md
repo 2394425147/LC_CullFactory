@@ -1,3 +1,9 @@
+# 0.9.1
+
+## Fixed
+
+- Static lights should no longer shine through walls
+
 # 0.9.0
 
 ## Changed
