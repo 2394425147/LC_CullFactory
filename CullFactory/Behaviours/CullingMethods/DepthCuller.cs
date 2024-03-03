@@ -11,7 +11,7 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// </summary>
 public sealed class DepthCuller : CullingMethod
 {
-    protected override void AddVisibleTiles(List<TileContents> visibleTiles)
+    protected override void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
     {
         foreach (var camera in Camera.allCameras)
         {
@@ -20,14 +20,29 @@ public sealed class DepthCuller : CullingMethod
 
             if (camera.orthographic)
             {
-                visibleTiles.AddContentsWithinCameraFrustum(camera);
+                AddAllObjectsWithinOrthographicCamera(camera, visibleTiles, visibleItems, visibleDynamicLights);
                 continue;
             }
 
             var cameraTile = camera.transform.position.GetTileContents();
             if (cameraTile == null)
+            {
+                visibleItems.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
+                visibleDynamicLights.AddRange(DynamicObjects.AllLightsOutside);
                 continue;
+            }
             IncludeNearbyTiles(cameraTile.tile, visibleTiles);
+
+            foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
+            {
+                if (item.IsWithin(visibleTiles))
+                    visibleItems.Add(item);
+            }
+            foreach (var light in DynamicObjects.AllLightsInInterior)
+            {
+                if (light.Affects(visibleTiles))
+                    visibleDynamicLights.Add(light);
+            }
         }
     }
 
