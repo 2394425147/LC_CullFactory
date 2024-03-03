@@ -22,8 +22,8 @@ public sealed class TileContentsBuilder(Tile tile)
         return new TileContents(tile,
                                 bounds,
                                 [.. renderers],
-                                [.. lights], [.. lights.Select(light => light.cullingMask)],
-                                [.. externalLights], [.. externalLights.Select(light => light.cullingMask)],
+                                [.. lights],
+                                [.. externalLights],
                                 [.. externalLightOccluders]);
     }
 }

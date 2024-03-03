@@ -1,4 +1,4 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,6 +29,20 @@ namespace CullFactory.Services
                     return true;
             }
             return false;
+        }
+
+        public static void SetVisible(this Light light, bool visible)
+        {
+            if (light.cullingMask != -1 && light.cullingMask != 0)
+                Plugin.LogWarning($"Light {light.name}'s culling mask was an unexpected value of {light.cullingMask}.");
+
+            light.cullingMask = visible ? -1 : 0;
+        }
+
+        public static void SetVisible(this IEnumerable<Light> lights, bool visible)
+        {
+            foreach (var light in lights)
+                light.SetVisible(visible);
         }
     }
 }
