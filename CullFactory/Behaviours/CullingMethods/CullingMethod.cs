@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CullFactory.Data;
 using CullFactory.Services;
@@ -8,7 +8,7 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public abstract class CullingMethod : MonoBehaviour
 {
-    private static CullingMethod Instance { get; set; }
+    public static CullingMethod Instance { get; private set; }
 
     private float _updateInterval;
     private float _lastUpdateTime;
@@ -29,14 +29,15 @@ public abstract class CullingMethod : MonoBehaviour
 
         var generator = RoundManager.Instance.dungeonGenerator.Generator;
         var dungeon = generator.CurrentDungeon.gameObject;
+        CullingMethod instance = null;
 
         switch (Config.GetCullingType(generator.DungeonFlow))
         {
             case CullingType.PortalOcclusionCulling:
-                Instance = dungeon.AddComponent<PortalOcclusionCuller>();
+                instance = dungeon.AddComponent<PortalOcclusionCuller>();
                 break;
             case CullingType.DepthCulling:
-                Instance = dungeon.AddComponent<DepthCuller>();
+                instance = dungeon.AddComponent<DepthCuller>();
                 break;
             case CullingType.None:
                 break;
@@ -44,13 +45,18 @@ public abstract class CullingMethod : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (Instance == null)
+        if (instance == null)
             return;
 
         if (Config.UpdateFrequency.Value > 0)
-            Instance._updateInterval = 1 / Config.UpdateFrequency.Value;
+            instance._updateInterval = 1 / Config.UpdateFrequency.Value;
         else
-            Instance._updateInterval = 0;
+            instance._updateInterval = 0;
+    }
+
+    private void Awake()
+    {
+        Instance = this;
     }
 
     private void OnEnable()
@@ -84,7 +90,11 @@ public abstract class CullingMethod : MonoBehaviour
     private void OnDisable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(true);
-        _visibleTiles.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     private void OnDrawGizmos()
