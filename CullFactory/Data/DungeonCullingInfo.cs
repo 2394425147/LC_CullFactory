@@ -139,6 +139,10 @@ public static class DungeonCullingInfo
         foreach (var (builder, light) in
                  tileContentsBuilders.Values.SelectMany(builder => builder.lights.Select(light => (builder, light))))
         {
+            // Check activeInHierarchy, because isActiveAndEnabled is always false after generation.
+            if (!light.gameObject.activeInHierarchy)
+                continue;
+
             var hasShadows = light.shadows != LightShadows.None;
             var lightPassesThroughWalls = !hasShadows || light.GetComponent<HDAdditionalLightData>() is { shadowDimmer: < 1 };
 
