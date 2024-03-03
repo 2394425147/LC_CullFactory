@@ -1,6 +1,7 @@
 using CullFactory.Data;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Services
 {
@@ -29,6 +30,16 @@ namespace CullFactory.Services
                     return true;
             }
             return false;
+        }
+
+        public static bool HasShadows(this Light light)
+        {
+            return light.shadows != LightShadows.None;
+        }
+
+        public static bool PassesThroughOccluders(this Light light)
+        {
+            return !light.HasShadows() || light.GetComponent<HDAdditionalLightData>() is { shadowDimmer: < 1 };
         }
 
         public static void SetVisible(this Light light, bool visible)

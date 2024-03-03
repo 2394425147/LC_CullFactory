@@ -4,7 +4,6 @@ using System.Linq;
 using CullFactory.Services;
 using DunGen;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Data;
 
@@ -135,8 +134,8 @@ public static class DungeonCullingInfo
             if (!light.gameObject.activeInHierarchy)
                 continue;
 
-            var hasShadows = light.shadows != LightShadows.None;
-            var lightPassesThroughWalls = !hasShadows || light.GetComponent<HDAdditionalLightData>() is { shadowDimmer: < 1 };
+            var hasShadows = light.HasShadows();
+            var lightPassesThroughWalls = light.PassesThroughOccluders();
 
             if (lightPassesThroughWalls)
             {
