@@ -11,7 +11,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
     {
         foreach (var camera in Camera.allCameras)
         {
-            if ((camera.cullingMask & DungeonCullingInfo.AllTileLayersMask) == 0)
+            if (camera == _hudCamera)
                 continue;
             visibleTiles.AddContentsVisibleToCamera(camera);
         }

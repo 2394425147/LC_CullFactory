@@ -15,6 +15,9 @@ public sealed class DepthCuller : CullingMethod
     {
         foreach (var camera in Camera.allCameras)
         {
+            if (camera == _hudCamera)
+                continue;
+
             if (camera.orthographic)
             {
                 visibleTiles.AddContentsWithinCameraFrustum(camera);
