@@ -65,8 +65,8 @@ public static class DungeonCullingInfo
 
     private static void CollectContentsIntoTile(Component parent, TileContentsBuilder builder)
     {
-        builder.renderers.UnionWith(parent.GetComponentsInChildren<Renderer>());
-        builder.lights.UnionWith(parent.GetComponentsInChildren<Light>());
+        builder.renderers.UnionWith(parent.GetComponentsInChildren<Renderer>(includeInactive: true));
+        builder.lights.UnionWith(parent.GetComponentsInChildren<Light>(includeInactive: true));
     }
 
     private static void CollectAllTileContents()
