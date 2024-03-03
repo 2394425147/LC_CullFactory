@@ -1,4 +1,5 @@
-﻿using DunGen;
+using CullFactory.Services;
+using DunGen;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -15,19 +16,15 @@ public sealed class TileContents(
     Bounds bounds,
     Renderer[] renderers,
     Light[] lights,
-    int[] lightCullingMasks,
     Light[] externalLights,
-    int[] externalLightCullingMasks,
     Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
     public readonly Bounds bounds = bounds;
     public readonly Renderer[] renderers = renderers;
     public readonly Light[] lights = lights;
-    public readonly int[] lightCullingMasks = lightCullingMasks;
 
     public readonly Light[] externalLights = externalLights;
-    public readonly int[] externalLightCullingMasks = externalLightCullingMasks;
     public readonly Renderer[] externalLightOccluders = externalLightOccluders;
 
     private static bool _warnedNullObject = false;
@@ -59,7 +56,7 @@ public sealed class TileContents(
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetVisible(Light[] lights, int[] cullingMasks, bool visible)
+    private void SetVisible(Light[] lights, bool visible)
     {
         var lightCount = lights.Length;
         for (var i = 0; i < lightCount; i++)
@@ -68,15 +65,15 @@ public sealed class TileContents(
             if (IsInvalid(light))
                 continue;
 
-            light.cullingMask = visible ? cullingMasks[i] : 0;
+            light.SetVisible(visible);
         }
     }
 
     public void SetVisible(bool visible)
     {
         SetVisible(renderers, visible);
-        SetVisible(lights, lightCullingMasks, visible);
-        SetVisible(externalLights, externalLightCullingMasks, visible);
+        SetVisible(lights, visible);
+        SetVisible(externalLights, visible);
         SetVisible(externalLightOccluders, visible);
     }
 }
