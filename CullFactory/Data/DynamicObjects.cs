@@ -1,3 +1,4 @@
+﻿using CullFactory.Behaviours.CullingMethods;
 using GameNetcodeStuff;
 using System;
 using System.Collections.Generic;
@@ -120,5 +121,7 @@ public static class DynamicObjects
 
         foreach (var item in UnityEngine.Object.FindObjectsByType<GrabbableObject>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             RefreshGrabbableObject(item);
+
+        CullingMethod.Instance?.OnDynamicLightsCollected();
     }
 }

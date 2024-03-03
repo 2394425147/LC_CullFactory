@@ -1,4 +1,4 @@
-using CullFactory.Services;
+﻿using CullFactory.Services;
 using DunGen;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -75,5 +75,12 @@ public sealed class TileContents(
         SetVisible(lights, visible);
         SetVisible(externalLights, visible);
         SetVisible(externalLightOccluders, visible);
+    }
+
+    public override string ToString()
+    {
+        if (tile == null)
+            return "Destroyed";
+        return tile.name;
     }
 }

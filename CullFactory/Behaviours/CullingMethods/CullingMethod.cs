@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
@@ -17,6 +18,12 @@ public abstract class CullingMethod : MonoBehaviour
 
     private List<TileContents> _visibleTiles = [];
     private List<TileContents> _visibleTilesLastCall = [];
+
+    private List<GrabbableObjectContents> _visibleItems = [];
+    private List<GrabbableObjectContents> _visibleItemsLastCall = [];
+
+    private List<Light> _visibleDynamicLights = [];
+    private List<Light> _visibleDynamicLightsLastCall = [];
 
     public static void Initialize()
     {
@@ -66,9 +73,56 @@ public abstract class CullingMethod : MonoBehaviour
     private void OnEnable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(false);
+        DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(false);
+        DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(false);
+        DynamicObjects.AllLightsOutside.SetVisible(false);
+        DynamicObjects.AllLightsInInterior.SetVisible(false);
     }
 
-    protected abstract void AddVisibleTiles(List<TileContents> visibleTiles);
+    internal void OnDynamicLightsCollected()
+    {
+        DynamicObjects.AllLightsOutside.SetVisible(false);
+        DynamicObjects.AllLightsInInterior.SetVisible(false);
+        _visibleDynamicLightsLastCall.SetVisible(true);
+    }
+
+    internal void OnItemCreatedOrChanged(GrabbableObjectContents item)
+    {
+        if (!_visibleItemsLastCall.Contains(item))
+            item.SetVisible(false);
+    }
+
+    protected abstract void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights);
+
+    protected void AddAllObjectsWithinOrthographicCamera(Camera camera, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
+    {
+        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+
+        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+        {
+            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+                visibleTiles.Add(tileContents);
+        }
+
+        foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+        {
+            if (itemContents.IsVisible(frustum))
+                visibleItems.Add(itemContents);
+        }
+
+        foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsOutside)
+        {
+            if (itemContents.IsVisible(frustum))
+                visibleItems.Add(itemContents);
+        }
+
+        visibleDynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+        foreach (var interiorDynamicLight in DynamicObjects.AllLightsInInterior)
+        {
+            if (interiorDynamicLight.Affects(visibleTiles))
+                visibleDynamicLights.Add(interiorDynamicLight);
+        }
+    }
 
     private void LateUpdate()
     {
@@ -78,22 +132,42 @@ public abstract class CullingMethod : MonoBehaviour
         _lastUpdateTime = Time.time;
 
         _visibleTiles.Clear();
-        AddVisibleTiles(_visibleTiles);
+        _visibleItems.Clear();
+        _visibleDynamicLights.Clear();
+        AddVisibleObjects(_visibleTiles, _visibleItems, _visibleDynamicLights);
 
+        // Update culling for tiles.
         foreach (var tileContent in _visibleTilesLastCall)
         {
             if (!_visibleTiles.Contains(tileContent))
                 tileContent.SetVisible(false);
         }
-
         _visibleTiles.SetVisible(true);
 
+        // Update culling for items.
+        _visibleItemsLastCall.Except(_visibleItems).SetVisible(false);
+        _visibleItems.Except(_visibleItemsLastCall).SetVisible(true);
+
+        // Update culling for lights.
+        _visibleDynamicLightsLastCall.Except(_visibleDynamicLights).SetVisible(false);
+        _visibleDynamicLights.Except(_visibleDynamicLightsLastCall).SetVisible(true);
+
         (_visibleTilesLastCall, _visibleTiles) = (_visibleTiles, _visibleTilesLastCall);
+        (_visibleItemsLastCall, _visibleItems) = (_visibleItems, _visibleItemsLastCall);
+        (_visibleDynamicLightsLastCall, _visibleDynamicLights) = (_visibleDynamicLights, _visibleDynamicLightsLastCall);
     }
 
     private void OnDisable()
     {
         DungeonCullingInfo.AllTileContents.SetVisible(true);
+        DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(true);
+        DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(true);
+        DynamicObjects.AllLightsOutside.SetVisible(true);
+        DynamicObjects.AllLightsInInterior.SetVisible(true);
+
+        _visibleTilesLastCall.Clear();
+        _visibleItemsLastCall.Clear();
+        _visibleDynamicLightsLastCall.Clear();
     }
 
     private void OnDestroy()
