@@ -10,6 +10,8 @@ public abstract class CullingMethod : MonoBehaviour
 {
     public static CullingMethod Instance { get; private set; }
 
+    protected Camera _hudCamera;
+
     private float _updateInterval;
     private float _lastUpdateTime;
 
@@ -57,6 +59,8 @@ public abstract class CullingMethod : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        _hudCamera = GameObject.Find("Systems/UI/UICamera").GetComponent<Camera>();
     }
 
     private void OnEnable()
