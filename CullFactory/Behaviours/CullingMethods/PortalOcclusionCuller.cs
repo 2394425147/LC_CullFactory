@@ -8,6 +8,8 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
+    private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
+
     protected override void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleLights)
     {
         foreach (var camera in Camera.allCameras)
@@ -78,13 +80,15 @@ public sealed class PortalOcclusionCuller : CullingMethod
                         visibleTiles.Add(tileContents);
                 }
 
+                tiles[lastIndex].Bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
+
                 foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
                 {
                     if (visibleItems.Contains(itemContents))
                         continue;
                     if (!itemContents.IsVisible(frustums, lastIndex))
                         continue;
-                    if (!itemContents.IsWithin(tiles.Take(lastIndex + 1).Select(tile => DungeonCullingInfo.TileContentsForTile[tile])))
+                    if (!itemContents.IsVisible(_withinTileTestingPlanes))
                         continue;
 
                     visibleItems.Add(itemContents);
