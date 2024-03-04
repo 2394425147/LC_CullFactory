@@ -173,6 +173,8 @@ public static class DungeonCullingInfo
                 if (!light.Affects(currentTile.Bounds))
                     return;
 
+                bool influencesARenderer = false;
+
                 // Store any tiles that may occlude the light on its path to the current tile.
                 for (var previousTileIndex = index - 1; previousTileIndex >= 0; previousTileIndex--)
                 {
@@ -187,9 +189,14 @@ public static class DungeonCullingInfo
 
                         if (!occluderBounds.IntersectsFrustums(frustums, previousTileIndex))
                             continue;
+
+                        influencesARenderer = true;
                         currentTileBuilder.externalLightOccluders.Add(renderer);
                     }
                 }
+
+                if (!influencesARenderer)
+                    return;
 
                 // If the light can't pass through walls, then it hasn't been added to the
                 // list of external lights affecting this tile yet. Add it now.
