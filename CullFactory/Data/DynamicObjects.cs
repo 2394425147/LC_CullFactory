@@ -1,4 +1,4 @@
-﻿using CullFactory.Behaviours.CullingMethods;
+using CullFactory.Behaviours.CullingMethods;
 using GameNetcodeStuff;
 using System;
 using System.Collections.Generic;
@@ -119,6 +119,7 @@ public static class DynamicObjects
         AllLightsInInterior.Clear();
 
         AllGrabbableObjectContentsOutside.Clear();
+        AllGrabbableObjectContentsInInterior.Clear();
         GrabbableObjectToContents.Clear();
 
         var allLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).Except(DungeonCullingInfo.AllLightsInDungeon);
