@@ -136,6 +136,12 @@ public static class DungeonCullingInfo
                     // it can pass through walls. Add it to the list of external lights affecting
                     // all tiles in its range.
                     tileContentsBuilder.externalLights.Add(light);
+
+                    // If we're adding the light to external lights above but it has shadows,
+                    // we need to occlude its light fully so that it only shines through its
+                    // portals, or it will shine through walls brightly.
+                    if (hasShadows)
+                        tileContentsBuilder.externalLightOccluders.UnionWith(builder.renderers);
                 }
             }
 
