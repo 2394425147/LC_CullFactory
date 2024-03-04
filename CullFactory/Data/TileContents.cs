@@ -18,7 +18,8 @@ public sealed class TileContents(
     Renderer[] renderers,
     Light[] lights,
     Light[] externalLights,
-    Renderer[] externalLightOccluders)
+    Renderer[] externalLightOccluders,
+    Plane[][] externalLightLinesOfSight)
 {
     public readonly Tile tile = tile;
     public readonly Bounds bounds = bounds;
@@ -27,6 +28,7 @@ public sealed class TileContents(
 
     public readonly Light[] externalLights = externalLights;
     public readonly Renderer[] externalLightOccluders = externalLightOccluders;
+    public readonly Plane[][] externalLightLinesOfSight = externalLightLinesOfSight;
 
     private static bool _warnedNullObject = false;
 

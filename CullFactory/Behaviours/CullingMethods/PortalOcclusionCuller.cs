@@ -49,6 +49,24 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
+        // Make any objects that should occlude light shining into the directly visible tiles also visible.
+        foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+        {
+            foreach (var visibleTile in visibleTiles)
+            {
+                foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
+                {
+                    if (visibleItems.Contains(itemContents))
+                        continue;
+                    if (!itemContents.IsVisible(externalLightLineOfSight))
+                        continue;
+
+                    visibleItems.Add(itemContents);
+                }
+            }
+        }
+
+        // Make tiles visible that occlude light from any dynamic lights that shine into the directly visible tiles.
         foreach (var dynamicLight in DynamicObjects.AllLightsInInterior)
         {
             if (dynamicLight == null)
