@@ -25,7 +25,13 @@ public static class DynamicObjects
         allPlayerLights = new Light[playerCount][];
 
         for (var i = 0; i < playerCount; i++)
+        {
+            // This is only necessary because MoreCompany calls TeleportPlayer() before all the expanded lobby
+            // is instantiated.
+            if (players[i] == null)
+                continue;
             allPlayerLights[i] = players[i].GetComponentsInChildren<Light>(includeInactive: true);
+        }
     }
 
     internal static void RefreshGrabbableObject(GrabbableObject item)
@@ -80,10 +86,13 @@ public static class DynamicObjects
     {
         // This function will be called at the start of the game, so
         // populate the arrays of lights for all players.
-        if (allPlayerLights == null)
-            CollectAllPlayerLights();
+        CollectAllPlayerLights();
 
-        var playerLights = allPlayerLights[Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player)];
+        var playerIndex = Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player);
+        if (playerIndex == -1)
+            return;
+
+        var playerLights = allPlayerLights[playerIndex];
         if (player.isInsideFactory)
         {
             AllLightsOutside.ExceptWith(playerLights);
