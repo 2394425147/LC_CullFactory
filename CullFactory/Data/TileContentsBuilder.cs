@@ -14,6 +14,7 @@ public sealed class TileContentsBuilder
 
     public readonly HashSet<Light> externalLights = [];
     public readonly HashSet<Renderer> externalLightOccluders = [];
+    public readonly List<Plane[]> externalLightLinesOfSight = [];
 
     public TileContentsBuilder(Tile tile)
     {
@@ -45,6 +46,7 @@ public sealed class TileContentsBuilder
                                 [.. renderers],
                                 [.. lights],
                                 [.. externalLights],
-                                [.. externalLightOccluders]);
+                                [.. externalLightOccluders],
+                                [.. externalLightLinesOfSight]);
     }
 }

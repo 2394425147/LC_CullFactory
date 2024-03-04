@@ -162,7 +162,8 @@ public static class DungeonCullingInfo
             if (!hasShadows)
                 continue;
 
-            VisibilityTesting.CallForEachLineOfSight(light.transform.position, builder.tile, (tiles, frustums, index) =>
+            var lightOrigin = light.transform.position;
+            VisibilityTesting.CallForEachLineOfSight(lightOrigin, builder.tile, (tiles, frustums, index) =>
             {
                 if (index < 1)
                     return;
@@ -197,6 +198,12 @@ public static class DungeonCullingInfo
 
                 if (!influencesARenderer)
                     return;
+
+                var lineOfSight = new List<Plane>();
+                for (var i = 1; i <= index; i++)
+                    lineOfSight.AddRange(frustums[i]);
+                lineOfSight.AddRange(currentTileBuilder.bounds.GetFarthestPlanes(lightOrigin));
+                currentTileBuilder.externalLightLinesOfSight.Add([.. lineOfSight]);
 
                 // If the light can't pass through walls, then it hasn't been added to the
                 // list of external lights affecting this tile yet. Add it now.
