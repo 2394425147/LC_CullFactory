@@ -56,12 +56,11 @@ public class Portal
         planes[1] = new Plane(Corners[1], Corners[2], origin);
         planes[2] = new Plane(Corners[2], Corners[3], origin);
         planes[3] = new Plane(Corners[3], Corners[0], origin);
-        planes[4] = new Plane(Corners[0], Corners[1], Corners[3]);
     }
 
     internal Plane[] GetFrustumPlanes(Vector3 origin)
     {
-        var planes = new Plane[5];
+        var planes = new Plane[4];
         GetFrustumPlanesNonAlloc(origin, planes);
         return planes;
     }
