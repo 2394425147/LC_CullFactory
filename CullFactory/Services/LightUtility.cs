@@ -1,4 +1,4 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -53,7 +53,11 @@ namespace CullFactory.Services
         public static void SetVisible(this IEnumerable<Light> lights, bool visible)
         {
             foreach (var light in lights)
+            {
+                if (light == null)
+                    continue;
                 light.SetVisible(visible);
+            }
         }
     }
 }
