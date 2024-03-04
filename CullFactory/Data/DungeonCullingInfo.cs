@@ -39,8 +39,15 @@ public static class DungeonCullingInfo
         startTime = Time.realtimeSinceStartupAsDouble;
         CollectAllTileContents();
         Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
+    }
 
-        DynamicObjects.CollectAllTrackedObjects();
+    public static void ClearAll()
+    {
+        AllPortals.Clear();
+        AllTileContents = [];
+        TileContentsForTile.Clear();
+        AllLightsInDungeon = [];
+        DungeonBounds = default;
     }
 
     public static void UpdateInteriorsWithFallbackPortals()
