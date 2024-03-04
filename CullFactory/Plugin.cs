@@ -23,6 +23,7 @@ public class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(LevelGenerationExtender));
         harmony.PatchAll(typeof(TeleportExtender));
         harmony.PatchAll(typeof(MapSeedOverride));
+        harmony.PatchAll(typeof(GrabbableObjectExtender));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
 

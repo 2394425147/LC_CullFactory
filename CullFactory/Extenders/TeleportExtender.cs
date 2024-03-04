@@ -44,13 +44,6 @@ public static class TeleportExtender
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.Start))]
-    private static void GrabbableObjectStarted(GrabbableObject __instance)
-    {
-        DynamicObjects.RefreshGrabbableObject(__instance);
-    }
-
-    [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.TeleportPlayer))]
     private static void OnTeleportPlayerController(PlayerControllerB __instance)
     {
