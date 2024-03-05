@@ -10,9 +10,9 @@ public sealed class PortalOcclusionCuller : CullingMethod
 {
     private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
 
-    protected override void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleLights)
+    protected override void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleLights)
     {
-        foreach (var camera in Camera.allCameras)
+        foreach (var camera in cameras)
         {
             if (camera == _hudCamera)
                 continue;

@@ -11,9 +11,9 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// </summary>
 public sealed class DepthCuller : CullingMethod
 {
-    protected override void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
+    protected override void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
     {
-        foreach (var camera in Camera.allCameras)
+        foreach (var camera in cameras)
         {
             if (camera == _hudCamera)
                 continue;
