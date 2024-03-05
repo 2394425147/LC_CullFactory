@@ -8,7 +8,7 @@ public sealed class GrabbableObjectContents
     public readonly GrabbableObject item;
     public Renderer[] renderers;
     public Light[] lights;
-    public Bounds localBounds;
+    public Bounds bounds;
 
     public GrabbableObjectContents(GrabbableObject item)
     {
@@ -22,8 +22,10 @@ public sealed class GrabbableObjectContents
         lights = item.GetComponentsInChildren<Light>();
     }
 
-    public bool IsVisible(Plane[] planes)
+    public void CalculateBounds()
     {
+        bounds = new Bounds(item.transform.position, Vector3.zero);
+
         foreach (var renderer in renderers)
         {
             if (renderer == null)
@@ -32,10 +34,13 @@ public sealed class GrabbableObjectContents
                 continue;
             if (!renderer.gameObject.activeInHierarchy)
                 continue;
-            if (GeometryUtility.TestPlanesAABB(planes, renderer.bounds))
-                return true;
+            bounds.Encapsulate(renderer.bounds);
         }
-        return false;
+    }
+
+    public bool IsVisible(Plane[] planes)
+    {
+        return GeometryUtility.TestPlanesAABB(planes, bounds);
     }
 
     public bool IsVisible(Plane[][] planes, int lastIndex)
@@ -50,18 +55,7 @@ public sealed class GrabbableObjectContents
 
     public bool IsWithin(Bounds bounds)
     {
-        foreach (var renderer in renderers)
-        {
-            if (renderer == null)
-                continue;
-            if (!renderer.enabled)
-                continue;
-            if (!renderer.gameObject.activeInHierarchy)
-                continue;
-            if (renderer.bounds.Intersects(bounds))
-                return true;
-        }
-        return false;
+        return this.bounds.Intersects(bounds);
     }
 
     public bool IsWithin(TileContents tile)

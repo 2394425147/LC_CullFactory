@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
@@ -26,17 +25,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             {
                 VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents.tile, (tiles, frustums, index) =>
                 {
-                    var tile = DungeonCullingInfo.TileContentsForTile[tiles[index]];
-                    visibleTiles.Add(tile);
-
-                    foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
-                    {
-                        if (visibleItems.Contains(itemContents))
-                            continue;
-                        if (!itemContents.IsWithin(tile.bounds))
-                            continue;
-                        visibleItems.Add(itemContents);
-                    }
+                    visibleTiles.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]);
                 });
             }
             else
@@ -46,15 +35,21 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
-        // Make any objects that should occlude light shining into the directly visible tiles also visible.
+        // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
+            itemContents.CalculateBounds();
+
             foreach (var visibleTile in visibleTiles)
             {
+                if (itemContents.IsWithin(visibleTile.bounds))
+                {
+                    visibleItems.Add(itemContents);
+                    continue;
+                }
+
                 foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
                 {
-                    if (visibleItems.Contains(itemContents))
-                        continue;
                     if (!itemContents.IsVisible(externalLightLineOfSight))
                         continue;
 
