@@ -14,9 +14,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
     {
         foreach (var camera in cameras)
         {
-            if (camera == _hudCamera)
-                continue;
-
             if (camera.orthographic)
             {
                 AddAllObjectsWithinOrthographicCamera(camera, visibleTiles, visibleItems, visibleLights);

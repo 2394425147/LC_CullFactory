@@ -15,9 +15,6 @@ public sealed class DepthCuller : CullingMethod
     {
         foreach (var camera in cameras)
         {
-            if (camera == _hudCamera)
-                continue;
-
             if (camera.orthographic)
             {
                 AddAllObjectsWithinOrthographicCamera(camera, visibleTiles, visibleItems, visibleDynamicLights);
