@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CullFactory.Data;
@@ -88,7 +88,16 @@ public abstract class CullingMethod : MonoBehaviour
 
     internal void OnItemCreatedOrChanged(GrabbableObjectContents item)
     {
-        if (!_visibleItemsLastCall.Contains(item))
+        bool wasVisible = false;
+        for (var i = 0; i < _visibleItemsLastCall.Count; i++)
+        {
+            if (_visibleItemsLastCall[i].item == item.item)
+            {
+                _visibleItemsLastCall[i] = item;
+                wasVisible = true;
+            }
+        }
+        if (!wasVisible)
             item.SetVisible(false);
     }
 
