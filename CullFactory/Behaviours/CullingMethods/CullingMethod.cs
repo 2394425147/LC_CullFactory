@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CullFactory.Behaviours.CullingMethods;
 
@@ -77,6 +78,8 @@ public abstract class CullingMethod : MonoBehaviour
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(false);
         DynamicObjects.AllLightsOutside.SetVisible(false);
         DynamicObjects.AllLightsInInterior.SetVisible(false);
+
+        RenderPipelineManager.beginContextRendering += DoCulling;
     }
 
     internal void OnDynamicLightsCollected()
@@ -101,7 +104,7 @@ public abstract class CullingMethod : MonoBehaviour
             item.SetVisible(false);
     }
 
-    protected abstract void AddVisibleObjects(List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights);
+    protected abstract void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights);
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
     {
@@ -133,7 +136,7 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    private void DoCulling(ScriptableRenderContext context, List<Camera> cameras)
     {
         if (Time.time - _lastUpdateTime < _updateInterval)
             return;
@@ -143,7 +146,7 @@ public abstract class CullingMethod : MonoBehaviour
         _visibleTiles.Clear();
         _visibleItems.Clear();
         _visibleDynamicLights.Clear();
-        AddVisibleObjects(_visibleTiles, _visibleItems, _visibleDynamicLights);
+        AddVisibleObjects(cameras, _visibleTiles, _visibleItems, _visibleDynamicLights);
 
         // Update culling for tiles.
         foreach (var tileContent in _visibleTilesLastCall)
@@ -177,6 +180,8 @@ public abstract class CullingMethod : MonoBehaviour
         _visibleTilesLastCall.Clear();
         _visibleItemsLastCall.Clear();
         _visibleDynamicLightsLastCall.Clear();
+
+        RenderPipelineManager.beginContextRendering -= DoCulling;
     }
 
     private void OnDestroy()
