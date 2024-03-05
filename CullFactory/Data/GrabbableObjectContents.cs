@@ -10,8 +10,6 @@ public sealed class GrabbableObjectContents
     public Light[] lights;
     public Bounds localBounds;
 
-    private bool _wasVisible = true;
-
     public GrabbableObjectContents(GrabbableObject item)
     {
         this.item = item;
@@ -83,17 +81,12 @@ public sealed class GrabbableObjectContents
 
     public void SetVisible(bool visible)
     {
-        if (_wasVisible == visible)
-            return;
-
         foreach (var renderer in renderers)
         {
             if (renderer == null)
                 continue;
             renderer.forceRenderingOff = !visible;
         }
-
-        _wasVisible = visible;
     }
 
     public override string ToString()
