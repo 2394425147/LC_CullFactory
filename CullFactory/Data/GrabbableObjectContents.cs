@@ -20,6 +20,7 @@ public sealed class GrabbableObjectContents
     {
         renderers = item.GetComponentsInChildren<Renderer>();
         lights = item.GetComponentsInChildren<Light>();
+        CalculateBounds();
     }
 
     public void CalculateBounds()
