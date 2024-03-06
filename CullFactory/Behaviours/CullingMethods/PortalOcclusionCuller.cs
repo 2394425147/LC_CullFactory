@@ -92,8 +92,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
                 foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
                 {
-                    if (visibleItems.Contains(itemContents))
-                        continue;
                     if (!itemContents.IsVisible(frustums, lastIndex))
                         continue;
                     if (!itemContents.IsVisible(_withinTileTestingPlanes))
