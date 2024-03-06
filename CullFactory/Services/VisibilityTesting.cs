@@ -24,6 +24,8 @@ public static class VisibilityTesting
     private static readonly int[] IndexStack = new int[MaxStackCapacity];
     private static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
 
+    private static bool warnedThatStackWasExceeded = false;
+
     public delegate void LineOfSightCallback(Tile[] tileStack, Plane[][] frustumStack, int stackIndex);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,7 +57,11 @@ public static class VisibilityTesting
         if (stackIndex >= MaxStackCapacity)
         {
             stackIndex--;
-            Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity} at {stackIndex}");
+            if (!warnedThatStackWasExceeded)
+            {
+                Plugin.LogWarning($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}.");
+                warnedThatStackWasExceeded = true;
+            }
             return false;
         }
 
