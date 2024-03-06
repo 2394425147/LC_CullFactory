@@ -25,6 +25,12 @@ public sealed class GrabbableObjectContents
 
     public void CalculateBounds()
     {
+        if (item == null)
+        {
+            bounds = default;
+            return;
+        }
+
         bounds = new Bounds(item.transform.position, Vector3.zero);
 
         foreach (var renderer in renderers)
