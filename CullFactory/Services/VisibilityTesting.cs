@@ -19,7 +19,7 @@ public static class VisibilityTesting
         return true;
     }
 
-    private const int MaxStackCapacity = 15;
+    private const int MaxStackCapacity = 16;
     private static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
     private static readonly int[] IndexStack = new int[MaxStackCapacity];
     private static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
@@ -55,7 +55,7 @@ public static class VisibilityTesting
         if (stackIndex >= MaxStackCapacity)
         {
             stackIndex--;
-            Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}");
+            Plugin.LogError($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity} at {stackIndex}");
             return false;
         }
 
