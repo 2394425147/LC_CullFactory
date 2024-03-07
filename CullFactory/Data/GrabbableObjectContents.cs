@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using CullFactory.Services;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CullFactory.Data;
@@ -8,6 +9,7 @@ public sealed class GrabbableObjectContents
     public readonly GrabbableObject item;
     public Renderer[] renderers;
     public Light[] lights;
+    public Vector3[] boundingVertices;
     public Bounds bounds;
 
     public GrabbableObjectContents(GrabbableObject item)
@@ -20,6 +22,35 @@ public sealed class GrabbableObjectContents
     {
         renderers = item.GetComponentsInChildren<Renderer>();
         lights = item.GetComponentsInChildren<Light>();
+        CalculateLocalBounds();
+    }
+
+    private void CalculateLocalBounds()
+    {
+        if (item == null)
+        {
+            boundingVertices = [Vector3.zero];
+            return;
+        }
+
+        var min = Vector3.positiveInfinity;
+        var max = Vector3.negativeInfinity;
+
+        foreach (var renderer in renderers)
+        {
+            if (renderer == null)
+                continue;
+            if (!renderer.enabled)
+                continue;
+            if (!renderer.gameObject.activeInHierarchy)
+                continue;
+            var rendererBounds = renderer.bounds;
+            min = Vector3.Min(min, rendererBounds.min);
+            max = Vector3.Max(max, rendererBounds.max);
+        }
+
+        boundingVertices = BoundsUtility.GetVertices(min, max);
+        item.transform.InverseTransformPoints(boundingVertices);
         CalculateBounds();
     }
 
@@ -31,18 +62,7 @@ public sealed class GrabbableObjectContents
             return;
         }
 
-        bounds = new Bounds(item.transform.position, Vector3.zero);
-
-        foreach (var renderer in renderers)
-        {
-            if (renderer == null)
-                continue;
-            if (!renderer.enabled)
-                continue;
-            if (!renderer.gameObject.activeInHierarchy)
-                continue;
-            bounds.Encapsulate(renderer.bounds);
-        }
+        bounds = GeometryUtility.CalculateBounds(boundingVertices, item.transform.localToWorldMatrix);
     }
 
     public bool IsVisible(Plane[] planes)
