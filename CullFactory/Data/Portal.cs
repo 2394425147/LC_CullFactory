@@ -5,10 +5,11 @@ namespace CullFactory.Data;
 
 public class Portal
 {
-    public Vector3[] Corners { get; private set; }
-    public Bounds Bounds { get; private set; }
+    public readonly Vector3[] Corners;
+    public readonly Bounds Bounds;
+    public readonly TileContents NextTile;
 
-    public Portal(Doorway doorway, bool useTileBounds = false)
+    public Portal(Doorway doorway, bool useTileBounds, TileContents nextTile)
     {
         var doorwayTransform = doorway.transform;
         var horizontalExtent = doorway.Socket.Size.x / 2;
@@ -48,6 +49,8 @@ public class Portal
             min = min,
             max = max
         };
+
+        NextTile = nextTile;
     }
 
     internal void GetFrustumPlanesNonAlloc(Vector3 origin, Plane[] planes)

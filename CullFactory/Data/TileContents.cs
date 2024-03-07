@@ -1,5 +1,6 @@
-﻿using CullFactory.Services;
+using CullFactory.Services;
 using DunGen;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -11,25 +12,58 @@ namespace CullFactory.Data;
 ///     the Tile they are associated with. Children of doors are shared between the
 ///     both neighboring Tiles.
 /// </summary>
-public sealed class TileContents(
-    Tile tile,
-    Bounds bounds,
-    Renderer[] renderers,
-    Light[] lights,
-    Light[] externalLights,
-    Renderer[] externalLightOccluders,
-    Plane[][] externalLightLinesOfSight)
+public sealed class TileContents
 {
-    public readonly Tile tile = tile;
-    public readonly Bounds bounds = bounds;
-    public readonly Renderer[] renderers = renderers;
-    public readonly Light[] lights = lights;
+    public readonly Tile tile;
+    public readonly Bounds bounds;
+    public readonly Renderer[] renderers;
+    public readonly Light[] lights;
 
-    public readonly Light[] externalLights = externalLights;
-    public readonly Renderer[] externalLightOccluders = externalLightOccluders;
-    public readonly Plane[][] externalLightLinesOfSight = externalLightLinesOfSight;
+    public Portal[] portals;
+
+    public Renderer[] externalRenderers = [];
+    public Light[] externalLights = [];
+    public Plane[][] externalLightLinesOfSight = [];
 
     private static bool _warnedNullObject = false;
+
+    public TileContents(Tile tile)
+    {
+        this.tile = tile;
+        // Tile.Bounds is correct until the tile is scaled, so we have to work around some issues here.
+        if (tile.OverrideAutomaticTileBounds)
+        {
+            // For overridden tile bounds, the sides that are set by the author will set in such a way
+            // that they must have the local scale of the tile applied to be correct.
+            // However, any sides that have doors will be pre-scaled, so by applying the scale we are
+            // pushing them away from the origin. Therefore, we must re-condense them the same way
+            // DunGen does initially.
+            bounds = UnityUtil.CondenseBounds(tile.Bounds, tile.GetComponentsInChildren<Doorway>());
+        }
+        else
+        {
+            // For automatic tile bounds, all sides of the bounding box are already in pre-scaled,
+            // so we just want to apply the parent transform to the bounds that have been transformed
+            // into the dungeon's local space.
+            bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
+        }
+
+        var renderersList = new List<Renderer>(tile.GetComponentsInChildren<Renderer>(includeInactive: true));
+        var lightsList = new List<Light>(tile.GetComponentsInChildren<Light>(includeInactive: true));
+
+        // Get the doors that this tile is connected to. Otherwise, they may pop in and out when the edge of the view
+        // frustum is at the edge of the portal.
+        foreach (var doorway in tile.UsedDoorways)
+        {
+            if (doorway.doorComponent == null)
+                continue;
+            renderersList.AddRange(doorway.GetComponentsInChildren<Renderer>(includeInactive: true));
+            lightsList.AddRange(doorway.GetComponentsInChildren<Light>(includeInactive: true));
+        }
+
+        renderers = [.. renderersList];
+        lights = [.. lightsList];
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsInvalid(Component obj)
@@ -75,8 +109,8 @@ public sealed class TileContents(
     {
         SetVisible(renderers, visible);
         SetVisible(lights, visible);
+        SetVisible(externalRenderers, visible);
         SetVisible(externalLights, visible);
-        SetVisible(externalLightOccluders, visible);
     }
 
     public override string ToString()
