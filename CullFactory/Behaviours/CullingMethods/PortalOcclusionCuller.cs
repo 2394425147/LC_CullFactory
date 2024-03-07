@@ -11,6 +11,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
     protected override void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleLights)
     {
+        var camerasStart = Time.realtimeSinceStartupAsDouble;
+
         foreach (var camera in cameras)
         {
             if (camera.orthographic)
@@ -35,13 +37,23 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
+        var camerasTime = Time.realtimeSinceStartupAsDouble - camerasStart;
+
+        var itemBoundsTime = 0d;
+        var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
+
         // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
+            var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
             itemContents.CalculateBounds();
+            itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
 
-            foreach (var visibleTile in visibleTiles)
+            var visibleTileCount = visibleTiles.Count;
+            for (var i = 0; i < visibleTileCount; i++)
             {
+                var visibleTile = visibleTiles[i];
+
                 if (itemContents.IsWithin(visibleTile.bounds))
                 {
                     visibleItems.Add(itemContents);
@@ -50,13 +62,20 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
                 foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
                 {
-                    if (!itemContents.IsVisible(externalLightLineOfSight))
-                        continue;
-
-                    visibleItems.Add(itemContents);
+                    if (itemContents.IsVisible(externalLightLineOfSight))
+                    {
+                        visibleItems.Add(itemContents);
+                        i = visibleTileCount;
+                        break;
+                    }
                 }
             }
         }
+
+        var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
+
+        var dynamicLightsStart = Time.realtimeSinceStartupAsDouble;
+        var dynamicLightsLineOfSightTime = 0d;
 
         // Make tiles visible that occlude light from any dynamic lights that shine into the directly visible tiles.
         foreach (var dynamicLight in DynamicObjects.AllLightsInInterior)
@@ -79,6 +98,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (lightTileContents == null)
                 continue;
 
+            var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
             VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents.tile, visibleTiles, (tiles, frustums, lastIndex) =>
             {
                 for (var i = 0; i < lastIndex; i++)
@@ -103,6 +123,12 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 if (!lightPassesThroughOccluders)
                     visibleLights.Add(dynamicLight);
             });
+            dynamicLightsLineOfSightTime += Time.realtimeSinceStartupAsDouble - dynamicLightsLineOfSightStart;
         }
+
+        var dynamicLightsTime = Time.realtimeSinceStartupAsDouble - dynamicLightsStart;
+
+        var totalTime = camerasTime + itemShadowsTime + dynamicLightsTime;
+        Plugin.Log($"Total time {totalTime * 1000000} microseconds, cameras took {camerasTime * 1000000} microseconds, calculating item bounds took {itemBoundsTime * 1000000} microseconds, item shadows took {(itemShadowsTime - itemBoundsTime) * 1000000} microseconds, dynamic lights line of sight checks took {dynamicLightsLineOfSightTime * 1000000} microseconds, dynamic lights took {(dynamicLightsTime - dynamicLightsLineOfSightTime) * 1000000} microseconds.");
     }
 }
