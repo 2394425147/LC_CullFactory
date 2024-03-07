@@ -35,4 +35,23 @@ public static class BoundsUtility
         bounds.GetFarthestPlanesNonAlloc(point, planes);
         return planes;
     }
+
+    public static Vector3[] GetVertices(Vector3 min, Vector3 max)
+    {
+        return [
+            new Vector3(min.x, min.y, min.z),
+            new Vector3(max.x, min.y, min.z),
+            new Vector3(min.x, max.y, min.z),
+            new Vector3(max.x, max.y, min.z),
+            new Vector3(min.x, min.y, max.z),
+            new Vector3(max.x, min.y, max.z),
+            new Vector3(min.x, max.y, max.z),
+            new Vector3(max.x, max.y, max.z)
+        ];
+    }
+
+    public static Vector3[] GetVertices(this Bounds bounds)
+    {
+        return GetVertices(bounds.min, bounds.max);
+    }
 }
