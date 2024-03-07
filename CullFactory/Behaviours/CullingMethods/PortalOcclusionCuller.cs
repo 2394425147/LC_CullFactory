@@ -25,9 +25,9 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
             if (currentTileContents != null)
             {
-                VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents.tile, (tiles, frustums, index) =>
+                VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents, (tiles, frustums, index) =>
                 {
-                    visibleTiles.Add(DungeonCullingInfo.TileContentsForTile[tiles[index]]);
+                    visibleTiles.Add(tiles[index]);
                 });
             }
             else
@@ -99,16 +99,16 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
 
             var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
-            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents.tile, visibleTiles, (tiles, frustums, lastIndex) =>
+            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibleTiles, (tiles, frustums, lastIndex) =>
             {
                 for (var i = 0; i < lastIndex; i++)
                 {
-                    var tileContents = DungeonCullingInfo.TileContentsForTile[tiles[i]];
+                    var tileContents = tiles[i];
                     if (!visibleTiles.Contains(tileContents))
                         visibleTiles.Add(tileContents);
                 }
 
-                tiles[lastIndex].Bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
+                tiles[lastIndex].bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
 
                 foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
                 {

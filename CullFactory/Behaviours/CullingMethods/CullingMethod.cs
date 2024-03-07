@@ -221,7 +221,7 @@ public abstract class CullingMethod : MonoBehaviour
             Gizmos.color = Color.blue;
             foreach (var externalLight in contents.externalLights)
                 Gizmos.DrawWireSphere(externalLight.transform.position, externalLight.range);
-            foreach (var externalLightOccluder in contents.externalLightOccluders)
+            foreach (var externalLightOccluder in contents.externalRenderers)
             {
                 var bounds = externalLightOccluder.bounds;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);

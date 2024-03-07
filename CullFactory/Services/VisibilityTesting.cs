@@ -20,13 +20,13 @@ public static class VisibilityTesting
     }
 
     private const int MaxStackCapacity = 16;
-    private static readonly Tile[] TileStack = new Tile[MaxStackCapacity];
+    private static readonly TileContents[] TileStack = new TileContents[MaxStackCapacity];
     private static readonly int[] IndexStack = new int[MaxStackCapacity];
     private static readonly Plane[][] FrustumStack = new Plane[MaxStackCapacity][];
 
     private static bool warnedThatStackWasExceeded = false;
 
-    public delegate void LineOfSightCallback(Tile[] tileStack, Plane[][] frustumStack, int stackIndex);
+    public delegate void LineOfSightCallback(TileContents[] tileStack, Plane[][] frustumStack, int stackIndex);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool AdvanceToNextTile(Vector3 origin, ref int stackIndex)
@@ -34,21 +34,19 @@ public static class VisibilityTesting
         var tile = TileStack[stackIndex];
         var index = IndexStack[stackIndex]++;
 
-        if (index >= tile.UsedDoorways.Count)
+        if (index >= tile.portals.Length)
         {
             stackIndex--;
             return false;
         }
 
-        var doorway = tile.UsedDoorways[index];
-        var connectedTile = doorway.ConnectedDoorway?.Tile;
+        var portal = tile.portals[index];
+        var connectedTile = portal.NextTile;
 
         if (connectedTile == null)
             return false;
         if (stackIndex > 0 && ReferenceEquals(connectedTile, TileStack[stackIndex - 1]))
             return false;
-
-        var portal = DungeonCullingInfo.AllPortals[doorway];
 
         if (!portal.Bounds.IntersectsFrustums(FrustumStack, stackIndex))
             return false;
@@ -76,7 +74,7 @@ public static class VisibilityTesting
         return true;
     }
 
-    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, Plane[] frustum, LineOfSightCallback callback)
+    public static void CallForEachLineOfSight(Vector3 origin, TileContents originTile, Plane[] frustum, LineOfSightCallback callback)
     {
         TileStack[0] = originTile;
         IndexStack[0] = 0;
@@ -94,24 +92,24 @@ public static class VisibilityTesting
         }
     }
 
-    public static void CallForEachLineOfSight(Camera camera, Tile originTile, LineOfSightCallback callback)
+    public static void CallForEachLineOfSight(Camera camera, TileContents originTile, LineOfSightCallback callback)
     {
         CallForEachLineOfSight(camera.transform.position, originTile, GeometryUtility.CalculateFrustumPlanes(camera), callback);
     }
 
-    public static void CallForEachLineOfSight(Vector3 origin, Tile originTile, LineOfSightCallback callback)
+    public static void CallForEachLineOfSight(Vector3 origin, TileContents originTile, LineOfSightCallback callback)
     {
         CallForEachLineOfSight(origin, originTile, [], callback);
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, Tile originTile, Plane[] frustum, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, Plane[] frustum, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
     {
         TileStack[0] = originTile;
         IndexStack[0] = 0;
         FrustumStack[0] = frustum;
         var stackIndex = 0;
 
-        if (goalTiles.Any(tileContents => tileContents.tile == originTile))
+        if (goalTiles.Any(tileContents => tileContents == originTile))
             callback(TileStack, FrustumStack, stackIndex);
 
         while (stackIndex >= 0)
@@ -135,12 +133,12 @@ public static class VisibilityTesting
             }
 
             var currentTile = TileStack[stackIndex];
-            if (goalTiles.Any(tileContents => tileContents.tile == currentTile))
+            if (goalTiles.Any(tileContents => tileContents == currentTile))
                 callback(TileStack, FrustumStack, stackIndex);
         }
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, Tile originTile, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
     {
         CallForEachLineOfSightToTiles(origin, originTile, [], goalTiles, callback);
     }
