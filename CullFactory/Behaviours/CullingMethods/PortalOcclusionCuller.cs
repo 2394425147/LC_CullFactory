@@ -13,6 +13,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
     {
         var camerasStart = Time.realtimeSinceStartupAsDouble;
 
+        var interiorIsVisible = false;
+
         foreach (var camera in cameras)
         {
             if (camera.orthographic)
@@ -25,6 +27,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
             if (currentTileContents != null)
             {
+                interiorIsVisible = true;
+
                 VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents, (tiles, frustums, index) =>
                 {
                     visibleTiles.Add(tiles[index]);
@@ -38,6 +42,9 @@ public sealed class PortalOcclusionCuller : CullingMethod
         }
 
         var camerasTime = Time.realtimeSinceStartupAsDouble - camerasStart;
+
+        if (!interiorIsVisible)
+            return;
 
         var itemBoundsTime = 0d;
         var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
