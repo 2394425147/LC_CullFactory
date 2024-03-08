@@ -37,6 +37,9 @@ public static class DungeonCullingInfo
 
     public static void ClearAll()
     {
+        if (AllTileContents == null)
+            return;
+
         AllTileContents = [];
         TileContentsForTile.Clear();
         AllLightsInDungeon = [];
