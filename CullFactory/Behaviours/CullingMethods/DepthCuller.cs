@@ -11,34 +11,34 @@ namespace CullFactory.Behaviours.CullingMethods;
 /// </summary>
 public sealed class DepthCuller : CullingMethod
 {
-    protected override void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
+    protected override void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility)
     {
         foreach (var camera in cameras)
         {
             if (camera.orthographic)
             {
-                AddAllObjectsWithinOrthographicCamera(camera, visibleTiles, visibleItems, visibleDynamicLights);
+                AddAllObjectsWithinOrthographicCamera(camera, visibility);
                 continue;
             }
 
             var cameraTile = camera.transform.position.GetTileContents();
             if (cameraTile == null)
             {
-                visibleItems.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
-                visibleDynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+                visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
+                visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
                 continue;
             }
-            IncludeNearbyTiles(cameraTile.tile, visibleTiles);
+            IncludeNearbyTiles(cameraTile.tile, visibility.tiles);
 
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
             {
-                if (item.IsWithin(visibleTiles))
-                    visibleItems.Add(item);
+                if (item.IsWithin(visibility.tiles))
+                    visibility.items.Add(item);
             }
             foreach (var light in DynamicObjects.AllLightsInInterior)
             {
-                if (light.Affects(visibleTiles))
-                    visibleDynamicLights.Add(light);
+                if (light.Affects(visibility.tiles))
+                    visibility.dynamicLights.Add(light);
             }
         }
     }

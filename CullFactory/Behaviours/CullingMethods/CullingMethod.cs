@@ -10,6 +10,24 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public abstract class CullingMethod : MonoBehaviour
 {
+    public readonly struct VisibilitySets
+    {
+        public readonly List<TileContents> tiles = [];
+        public readonly List<GrabbableObjectContents> items = [];
+        public readonly List<Light> dynamicLights = [];
+
+        public VisibilitySets()
+        {
+        }
+
+        public void ClearAll()
+        {
+            tiles.Clear();
+            items.Clear();
+            dynamicLights.Clear();
+        }
+    }
+
     public static CullingMethod Instance { get; private set; }
 
     protected Camera _hudCamera;
@@ -17,14 +35,8 @@ public abstract class CullingMethod : MonoBehaviour
     private float _updateInterval;
     private float _lastUpdateTime;
 
-    private List<TileContents> _visibleTiles = [];
-    private List<TileContents> _visibleTilesLastCall = [];
-
-    private List<GrabbableObjectContents> _visibleItems = [];
-    private List<GrabbableObjectContents> _visibleItemsLastCall = [];
-
-    private List<Light> _visibleDynamicLights = [];
-    private List<Light> _visibleDynamicLightsLastCall = [];
+    private VisibilitySets _visibility = new();
+    private VisibilitySets _visibilityLastCall = new();
 
     public static void Initialize()
     {
@@ -86,17 +98,17 @@ public abstract class CullingMethod : MonoBehaviour
     {
         DynamicObjects.AllLightsOutside.SetVisible(false);
         DynamicObjects.AllLightsInInterior.SetVisible(false);
-        _visibleDynamicLightsLastCall.SetVisible(true);
+        _visibilityLastCall.dynamicLights.SetVisible(true);
     }
 
     internal void OnItemCreatedOrChanged(GrabbableObjectContents item)
     {
         bool wasVisible = false;
-        for (var i = 0; i < _visibleItemsLastCall.Count; i++)
+        for (var i = 0; i < _visibilityLastCall.items.Count; i++)
         {
-            if (_visibleItemsLastCall[i].item == item.item)
+            if (_visibilityLastCall.items[i].item == item.item)
             {
-                _visibleItemsLastCall[i] = item;
+                _visibilityLastCall.items[i] = item;
                 wasVisible = true;
             }
         }
@@ -104,35 +116,35 @@ public abstract class CullingMethod : MonoBehaviour
             item.SetVisible(false);
     }
 
-    protected abstract void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights);
+    protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
-    protected void AddAllObjectsWithinOrthographicCamera(Camera camera, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleDynamicLights)
+    protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
     {
         var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
             if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
-                visibleTiles.Add(tileContents);
+                visibility.tiles.Add(tileContents);
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
             if (itemContents.IsVisible(frustum))
-                visibleItems.Add(itemContents);
+                visibility.items.Add(itemContents);
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsOutside)
         {
             if (itemContents.IsVisible(frustum))
-                visibleItems.Add(itemContents);
+                visibility.items.Add(itemContents);
         }
 
-        visibleDynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+        visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
         foreach (var interiorDynamicLight in DynamicObjects.AllLightsInInterior)
         {
-            if (interiorDynamicLight.Affects(visibleTiles))
-                visibleDynamicLights.Add(interiorDynamicLight);
+            if (interiorDynamicLight.Affects(_visibility.tiles))
+                visibility.dynamicLights.Add(interiorDynamicLight);
         }
     }
 
@@ -155,30 +167,27 @@ public abstract class CullingMethod : MonoBehaviour
 
         _lastUpdateTime = Time.time;
 
-        _visibleTiles.Clear();
-        _visibleItems.Clear();
-        _visibleDynamicLights.Clear();
-        AddVisibleObjects(cameras, _visibleTiles, _visibleItems, _visibleDynamicLights);
+        _visibility.ClearAll();
+
+        AddVisibleObjects(cameras, _visibility);
 
         // Update culling for tiles.
-        foreach (var tileContent in _visibleTilesLastCall)
+        foreach (var tileContent in _visibilityLastCall.tiles)
         {
-            if (!_visibleTiles.Contains(tileContent))
+            if (!_visibility.tiles.Contains(tileContent))
                 tileContent.SetVisible(false);
         }
-        _visibleTiles.SetVisible(true);
+        _visibility.tiles.SetVisible(true);
 
         // Update culling for items.
-        _visibleItemsLastCall.Except(_visibleItems).SetVisible(false);
-        _visibleItems.Except(_visibleItemsLastCall).SetVisible(true);
+        _visibilityLastCall.items.Except(_visibility.items).SetVisible(false);
+        _visibility.items.Except(_visibilityLastCall.items).SetVisible(true);
 
         // Update culling for lights.
-        _visibleDynamicLightsLastCall.Except(_visibleDynamicLights).SetVisible(false);
-        _visibleDynamicLights.Except(_visibleDynamicLightsLastCall).SetVisible(true);
+        _visibilityLastCall.dynamicLights.Except(_visibility.dynamicLights).SetVisible(false);
+        _visibility.dynamicLights.Except(_visibilityLastCall.dynamicLights).SetVisible(true);
 
-        (_visibleTilesLastCall, _visibleTiles) = (_visibleTiles, _visibleTilesLastCall);
-        (_visibleItemsLastCall, _visibleItems) = (_visibleItems, _visibleItemsLastCall);
-        (_visibleDynamicLightsLastCall, _visibleDynamicLights) = (_visibleDynamicLights, _visibleDynamicLightsLastCall);
+        (_visibilityLastCall, _visibility) = (_visibility, _visibilityLastCall);
     }
 
     private void OnDisable()
@@ -189,9 +198,7 @@ public abstract class CullingMethod : MonoBehaviour
         DynamicObjects.AllLightsOutside.SetVisible(true);
         DynamicObjects.AllLightsInInterior.SetVisible(true);
 
-        _visibleTilesLastCall.Clear();
-        _visibleItemsLastCall.Clear();
-        _visibleDynamicLightsLastCall.Clear();
+        _visibilityLastCall.ClearAll();
 
         RenderPipelineManager.beginContextRendering -= DoCulling;
     }
@@ -203,10 +210,10 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (_visibleTilesLastCall.Count > 0)
+        if (_visibilityLastCall.tiles.Count > 0)
         {
             Gizmos.color = Color.green;
-            var contents = _visibleTilesLastCall[0];
+            var contents = _visibilityLastCall.tiles[0];
             Gizmos.DrawWireCube(contents.bounds.center, contents.bounds.size);
 
             Gizmos.color = Color.green;

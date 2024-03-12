@@ -9,7 +9,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
 {
     private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
 
-    protected override void AddVisibleObjects(List<Camera> cameras, List<TileContents> visibleTiles, List<GrabbableObjectContents> visibleItems, List<Light> visibleLights)
+    protected override void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility)
     {
         var camerasStart = Time.realtimeSinceStartupAsDouble;
 
@@ -19,7 +19,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
         {
             if (camera.orthographic)
             {
-                AddAllObjectsWithinOrthographicCamera(camera, visibleTiles, visibleItems, visibleLights);
+                AddAllObjectsWithinOrthographicCamera(camera, visibility);
                 continue;
             }
 
@@ -31,13 +31,13 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
                 VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents, (tiles, frustums, index) =>
                 {
-                    visibleTiles.Add(tiles[index]);
+                    visibility.tiles.Add(tiles[index]);
                 });
             }
             else
             {
-                visibleItems.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
-                visibleLights.AddRange(DynamicObjects.AllLightsOutside);
+                visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
+                visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
             }
         }
 
@@ -56,14 +56,14 @@ public sealed class PortalOcclusionCuller : CullingMethod
             itemContents.CalculateBounds();
             itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
 
-            var visibleTileCount = visibleTiles.Count;
+            var visibleTileCount = visibility.tiles.Count;
             for (var i = 0; i < visibleTileCount; i++)
             {
-                var visibleTile = visibleTiles[i];
+                var visibleTile = visibility.tiles[i];
 
                 if (itemContents.IsWithin(visibleTile.bounds))
                 {
-                    visibleItems.Add(itemContents);
+                    visibility.items.Add(itemContents);
                     continue;
                 }
 
@@ -71,7 +71,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 {
                     if (itemContents.IsVisible(externalLightLineOfSight))
                     {
-                        visibleItems.Add(itemContents);
+                        visibility.items.Add(itemContents);
                         i = visibleTileCount;
                         break;
                     }
@@ -91,12 +91,12 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
             if (!dynamicLight.isActiveAndEnabled)
                 continue;
-            if (!dynamicLight.Affects(visibleTiles))
+            if (!dynamicLight.Affects(visibility.tiles))
                 continue;
 
             bool lightPassesThroughOccluders = dynamicLight.PassesThroughOccluders();
             if (lightPassesThroughOccluders)
-                visibleLights.Add(dynamicLight);
+                visibility.dynamicLights.Add(dynamicLight);
             if (!dynamicLight.HasShadows())
                 continue;
 
@@ -106,13 +106,13 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
 
             var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
-            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibleTiles, (tiles, frustums, lastIndex) =>
+            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibility.tiles, (tiles, frustums, lastIndex) =>
             {
                 for (var i = 0; i < lastIndex; i++)
                 {
                     var tileContents = tiles[i];
-                    if (!visibleTiles.Contains(tileContents))
-                        visibleTiles.Add(tileContents);
+                    if (!visibility.tiles.Contains(tileContents))
+                        visibility.tiles.Add(tileContents);
                 }
 
                 tiles[lastIndex].bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
@@ -124,11 +124,11 @@ public sealed class PortalOcclusionCuller : CullingMethod
                     if (!itemContents.IsVisible(_withinTileTestingPlanes))
                         continue;
 
-                    visibleItems.Add(itemContents);
+                    visibility.items.Add(itemContents);
                 }
 
                 if (!lightPassesThroughOccluders)
-                    visibleLights.Add(dynamicLight);
+                    visibility.dynamicLights.Add(dynamicLight);
             });
             dynamicLightsLineOfSightTime += Time.realtimeSinceStartupAsDouble - dynamicLightsLineOfSightStart;
         }
