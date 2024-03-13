@@ -20,7 +20,9 @@ public sealed class TileContents(
     Renderer[] externalLightOccluders)
 {
     public readonly Tile tile = tile;
-    public readonly Bounds bounds = tile.Bounds;
+    public readonly Bounds bounds = tile.OverrideAutomaticTileBounds
+                                        ? tile.Bounds
+                                        : tile.transform.parent.TransformBounds(tile.Placement.Bounds);
     public readonly Renderer[] renderers = renderers;
     public readonly Light[] lights = lights;
     public readonly int[] lightCullingMasks = lightCullingMasks;
