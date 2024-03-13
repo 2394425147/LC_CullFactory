@@ -1,3 +1,14 @@
+# 0.9.2
+
+## Changed
+
+- Use fallback portals on SleepsDungeon "School"
+
+## Fixed
+
+- Shadow-casting lights shining through walls when they shouldn't
+- Incorrectly inferred room sizes when tile bounds are automatically calculated
+
 # 0.9.1
 
 ## Fixed
