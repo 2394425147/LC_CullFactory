@@ -25,7 +25,7 @@ public static class Config
 
     private static readonly string[] DefaultFlowsToBlockCulling = [];
 
-    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
+    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow", "School"];
     private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
 
     public static void Initialize(ConfigFile configFile)
