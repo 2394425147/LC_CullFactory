@@ -150,17 +150,20 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void DoCulling(ScriptableRenderContext context, List<Camera> cameras)
     {
-        if (cameras.Count == 1)
+        bool needsCulling = false;
+        foreach (var camera in cameras)
         {
-            var theCamera = cameras[0];
-            if (ReferenceEquals(theCamera, _hudCamera))
-                return;
+            if (ReferenceEquals(camera, _hudCamera))
+                continue;
             // Skip the Unity editor's scene view and UnityExplorer's freecam to allow inspecting the current culling from third person.
-            if (theCamera.name == "UE_Freecam")
-                return;
-            if (theCamera.name == "SceneCamera")
-                return;
+            if (camera.name == "UE_Freecam")
+                continue;
+            if (camera.name == "SceneCamera")
+                continue;
+            needsCulling = true;
         }
+        if (!needsCulling)
+            return;
 
         if (Time.time - _lastUpdateTime < _updateInterval)
             return;
