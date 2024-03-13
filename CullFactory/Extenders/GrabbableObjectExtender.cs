@@ -18,4 +18,11 @@ internal class GrabbableObjectExtender
     {
         DynamicObjects.RefreshGrabbableObject(__instance);
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.EnableItemMeshes))]
+    private static void GrabbableObjectShownOrHidden(GrabbableObject __instance)
+    {
+        DynamicObjects.RefreshGrabbableObject(__instance);
+    }
 }
