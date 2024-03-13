@@ -23,9 +23,9 @@ public static class Config
     private static readonly string VersionFile =
         Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
 
-    private static readonly string[] DefaultFlowsToBlockCulling = ["School"];
+    private static readonly string[] DefaultFlowsToBlockCulling = [];
 
-    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow"];
+    private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow", "School"];
     private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
 
     public static void Initialize(ConfigFile configFile)
