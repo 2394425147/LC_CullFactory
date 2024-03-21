@@ -117,20 +117,8 @@ public static class VisibilityTesting
             if (!AdvanceToNextTile(origin, ref stackIndex))
                 continue;
 
-            var frustumContainsGoalTile = false;
-            foreach (var goalTile in goalTiles)
-            {
-                if (GeometryUtility.TestPlanesAABB(FrustumStack[stackIndex], goalTile.bounds))
-                {
-                    frustumContainsGoalTile = true;
-                    break;
-                }
-            }
-            if (!frustumContainsGoalTile)
-            {
-                stackIndex--;
-                continue;
-            }
+            // TODO: Create a plane for portals and use that to determine whether we're
+            //       moving in the right direction.
 
             var currentTile = TileStack[stackIndex];
             if (goalTiles.Any(tileContents => tileContents == currentTile))
