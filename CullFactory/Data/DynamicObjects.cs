@@ -56,7 +56,10 @@ public static class DynamicObjects
         {
             // GrabbableObject.isInFactory is not reliable for items that are in the ship
             // at the start of the game.
-            isInFactory = contents.IsWithin(DungeonCullingInfo.DungeonBounds);
+            if (item.GetComponentInChildren<ScanNodeProperties>() is ScanNodeProperties scanNode)
+                isInFactory = DungeonCullingInfo.DungeonBounds.Contains(scanNode.transform.position);
+            else
+                isInFactory = DungeonCullingInfo.DungeonBounds.Contains(item.transform.position);
         }
         else
         {
