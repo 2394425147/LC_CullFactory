@@ -14,6 +14,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
         var camerasStart = Time.realtimeSinceStartupAsDouble;
 
         var interiorIsVisible = false;
+        var exteriorIsVisible = false;
 
         foreach (var camera in cameras)
         {
@@ -34,10 +35,11 @@ public sealed class PortalOcclusionCuller : CullingMethod
                     visibility.tiles.Add(tiles[index]);
                 });
             }
-            else
+            else if (!exteriorIsVisible)
             {
                 visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
                 visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+                exteriorIsVisible = true;
             }
         }
 
