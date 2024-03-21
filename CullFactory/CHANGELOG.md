@@ -1,5 +1,11 @@
 # 0.9.2
 
+## Fixed
+
+- Better compatibility with DunGen's automatic tile bounds
+
+# 0.9.2
+
 ## Changed
 
 - Use fallback portals on SleepsDungeon "School"
