@@ -73,6 +73,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (cameraTile != null)
             {
                 interiorIsVisible = true;
+                visibility.debugTile ??= cameraTile;
 
                 var visibilityStart = Time.realtimeSinceStartupAsDouble;
                 VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
@@ -83,8 +84,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
             else if (!exteriorIsVisible)
             {
-                visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
-                visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+                visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsOutside);
+                visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
                 exteriorIsVisible = true;
             }
         }
@@ -106,32 +107,33 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 itemContents.CalculateBounds();
                 itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
 
-                var visibleTileCount = visibility.tiles.Count;
-                for (var i = 0; i < visibleTileCount; i++)
+                foreach (var visibleTile in visibility.tiles)
                 {
-                    var visibleTile = visibility.tiles[i];
-
                     if (itemContents.IsWithin(visibleTile.bounds))
                     {
                         visibility.items.Add(itemContents);
                         continue;
                     }
 
+                    bool addedItem = false;
                     foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
                     {
                         if (itemContents.IsVisible(externalLightLineOfSight))
                         {
                             visibility.items.Add(itemContents);
-                            i = visibleTileCount;
+                            addedItem = true;
                             break;
                         }
                     }
+
+                    if (addedItem)
+                        break;
                 }
             }
         }
         else
         {
-            visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsInInterior);
+            visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsInInterior);
         }
 
         var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
@@ -164,11 +166,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibility.tiles, (tiles, frustums, lastIndex) =>
             {
                 for (var i = 0; i < lastIndex; i++)
-                {
-                    var tileContents = tiles[i];
-                    if (!visibility.tiles.Contains(tileContents))
-                        visibility.tiles.Add(tileContents);
-                }
+                    visibility.tiles.Add(tiles[i]);
 
                 tiles[lastIndex].bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
 

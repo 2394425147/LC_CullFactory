@@ -11,11 +11,12 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public abstract class CullingMethod : MonoBehaviour
 {
-    public readonly struct VisibilitySets
+    public struct VisibilitySets
     {
-        public readonly List<TileContents> tiles = [];
-        public readonly List<GrabbableObjectContents> items = [];
-        public readonly List<Light> dynamicLights = [];
+        public TileContents debugTile = null;
+        public readonly HashSet<TileContents> tiles = [];
+        public readonly HashSet<GrabbableObjectContents> items = [];
+        public readonly HashSet<Light> dynamicLights = [];
 
         public VisibilitySets()
         {
@@ -23,6 +24,7 @@ public abstract class CullingMethod : MonoBehaviour
 
         public void ClearAll()
         {
+            debugTile = null;
             tiles.Clear();
             items.Clear();
             dynamicLights.Clear();
@@ -109,17 +111,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     internal void OnItemCreatedOrChanged(GrabbableObjectContents item)
     {
-        bool wasVisible = false;
-        for (var i = 0; i < _visibilityLastCall.items.Count; i++)
-        {
-            if (_visibilityLastCall.items[i].item == item.item)
-            {
-                _visibilityLastCall.items[i] = item;
-                wasVisible = true;
-            }
-        }
-        if (!wasVisible)
-            item.SetVisible(false);
+        item.SetVisible(_visibilityLastCall.items.Contains(item));
     }
 
     protected virtual void BenchmarkEnded()
@@ -168,7 +160,7 @@ public abstract class CullingMethod : MonoBehaviour
                 visibility.items.Add(itemContents);
         }
 
-        visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+        visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
         foreach (var interiorDynamicLight in DynamicObjects.AllLightsInInterior)
         {
             if (interiorDynamicLight.Affects(_visibility.tiles))
@@ -246,10 +238,10 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (_visibilityLastCall.tiles.Count > 0)
+        if (_visibilityLastCall.debugTile is not null)
         {
             Gizmos.color = Color.green;
-            var contents = _visibilityLastCall.tiles[0];
+            var contents = _visibilityLastCall.debugTile;
             Gizmos.DrawWireCube(contents.bounds.center, contents.bounds.size);
 
             Gizmos.color = Color.green;
