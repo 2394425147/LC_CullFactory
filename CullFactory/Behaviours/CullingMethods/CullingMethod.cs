@@ -219,7 +219,7 @@ public abstract class CullingMethod : MonoBehaviour
         // Update culling for lights.
         foreach (var light in _visibilityLastCall.dynamicLights)
         {
-            if (!_visibility.dynamicLights.Contains(light))
+            if (light != null && !_visibility.dynamicLights.Contains(light))
                 light.SetVisible(false);
         }
         foreach (var light in _visibility.dynamicLights)
