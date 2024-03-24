@@ -8,6 +8,8 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
+    private static bool itemVisibilityCulling = false;
+
     private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
 
     private double _camerasTime = 0;
@@ -96,33 +98,40 @@ public sealed class PortalOcclusionCuller : CullingMethod
         var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
 
         // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
-        foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+        if (itemVisibilityCulling)
         {
-            var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
-            itemContents.CalculateBounds();
-            itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
-
-            var visibleTileCount = visibility.tiles.Count;
-            for (var i = 0; i < visibleTileCount; i++)
+            foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
             {
-                var visibleTile = visibility.tiles[i];
+                var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
+                itemContents.CalculateBounds();
+                itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
 
-                if (itemContents.IsWithin(visibleTile.bounds))
+                var visibleTileCount = visibility.tiles.Count;
+                for (var i = 0; i < visibleTileCount; i++)
                 {
-                    visibility.items.Add(itemContents);
-                    continue;
-                }
+                    var visibleTile = visibility.tiles[i];
 
-                foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
-                {
-                    if (itemContents.IsVisible(externalLightLineOfSight))
+                    if (itemContents.IsWithin(visibleTile.bounds))
                     {
                         visibility.items.Add(itemContents);
-                        i = visibleTileCount;
-                        break;
+                        continue;
+                    }
+
+                    foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
+                    {
+                        if (itemContents.IsVisible(externalLightLineOfSight))
+                        {
+                            visibility.items.Add(itemContents);
+                            i = visibleTileCount;
+                            break;
+                        }
                     }
                 }
             }
+        }
+        else
+        {
+            visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsInInterior);
         }
 
         var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
@@ -163,14 +172,17 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
                 tiles[lastIndex].bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
 
-                foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+                if (itemVisibilityCulling)
                 {
-                    if (!itemContents.IsVisible(frustums, lastIndex))
-                        continue;
-                    if (!itemContents.IsVisible(_withinTileTestingPlanes))
-                        continue;
+                    foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+                    {
+                        if (!itemContents.IsVisible(frustums, lastIndex))
+                            continue;
+                        if (!itemContents.IsVisible(_withinTileTestingPlanes))
+                            continue;
 
-                    visibility.items.Add(itemContents);
+                        visibility.items.Add(itemContents);
+                    }
                 }
 
                 if (!lightPassesThroughOccluders)
