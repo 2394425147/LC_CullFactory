@@ -9,48 +9,44 @@ namespace CullFactory.Behaviours.CullingMethods;
 public sealed class PortalOcclusionCuller : CullingMethod
 {
     private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
-    private bool _benchmarking = false;
+
     private double _camerasTime = 0;
     private double _visibilityTime = 0;
     private double _itemBoundsTime = 0;
     private double _itemShadowsTime = 0;
     private double _dynamicLightsLineOfSightTime = 0;
     private double _dynamicLightsTime = 0;
-    private long _totalCalls = 0;
+
+    protected override void BenchmarkEnded()
+    {
+        base.BenchmarkEnded();
+
+        var avgCamerasTime = _camerasTime / _totalCalls;
+        var avgVisibilityTime = _visibilityTime / _totalCalls;
+        var avgItemBoundsTime = _itemBoundsTime / _totalCalls;
+        var avgItemShadowsTime = _itemShadowsTime / _totalCalls;
+        var avgDynamicLightsLineOfSightTime = _dynamicLightsLineOfSightTime / _totalCalls;
+        var avgDynamicLightsTime = _dynamicLightsTime / _totalCalls;
+        var avgTotalTime = avgCamerasTime + avgItemShadowsTime + avgDynamicLightsTime;
+        Plugin.Log($"Total portal occlusion culling time {avgTotalTime * 1000000:0.####} microseconds.\n" +
+            $"    Cameras took {avgCamerasTime * 1000000:0.####} microseconds.\n" +
+            $"    Direct visibility testing took {avgVisibilityTime * 1000000:0.####} microseconds.\n" +
+            $"    Calculating item bounds took {avgItemBoundsTime * 1000000:0.####} microseconds.\n" +
+            $"    Item shadows took {(avgItemShadowsTime - avgItemBoundsTime) * 1000000:0.####} microseconds.\n" +
+            $"    Dynamic lights line of sight checks took {avgDynamicLightsLineOfSightTime * 1000000:0.####} microseconds.\n" +
+            $"    Dynamic light influence checks took {(avgDynamicLightsTime - avgDynamicLightsLineOfSightTime) * 1000000:0.####} microseconds.");
+
+        _camerasTime = 0;
+        _visibilityTime = 0;
+        _itemBoundsTime = 0;
+        _itemShadowsTime = 0;
+        _dynamicLightsLineOfSightTime = 0;
+        _dynamicLightsTime = 0;
+        _totalCalls = 0;
+    }
 
     protected override void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility)
     {
-        if (UnityInput.Current.GetKey("LeftAlt") && UnityInput.Current.GetKeyUp("B"))
-        {
-            _benchmarking = !_benchmarking;
-
-            if (!_benchmarking)
-            {
-                var avgCamerasTime = _camerasTime / _totalCalls;
-                var avgVisibilityTime = _visibilityTime / _totalCalls;
-                var avgItemBoundsTime = _itemBoundsTime / _totalCalls;
-                var avgItemShadowsTime = _itemShadowsTime / _totalCalls;
-                var avgDynamicLightsLineOfSightTime = _dynamicLightsLineOfSightTime / _totalCalls;
-                var avgDynamicLightsTime = _dynamicLightsTime / _totalCalls;
-                var avgTotalTime = avgCamerasTime + avgItemShadowsTime + avgDynamicLightsTime;
-                Plugin.Log($"Total time {avgTotalTime * 1000000:0.####} microseconds.\n" +
-                    $"    Cameras took {avgCamerasTime * 1000000:0.####} microseconds.\n" +
-                    $"    Direct visibility testing took {avgVisibilityTime * 1000000:0.####} microseconds.\n" +
-                    $"    Calculating item bounds took {avgItemBoundsTime * 1000000:0.####} microseconds.\n" +
-                    $"    Item shadows took {(avgItemShadowsTime - avgItemBoundsTime) * 1000000:0.####} microseconds.\n" +
-                    $"    Dynamic lights line of sight checks took {avgDynamicLightsLineOfSightTime * 1000000:0.####} microseconds.\n" +
-                    $"    Dynamic light influence checks took {(avgDynamicLightsTime - avgDynamicLightsLineOfSightTime) * 1000000:0.####} microseconds.");
-
-                _camerasTime = 0;
-                _visibilityTime = 0;
-                _itemBoundsTime = 0;
-                _itemShadowsTime = 0;
-                _dynamicLightsLineOfSightTime = 0;
-                _dynamicLightsTime = 0;
-                _totalCalls = 0;
-            }
-        }
-
         var camerasStart = Time.realtimeSinceStartupAsDouble;
 
         var interiorIsVisible = false;
@@ -191,6 +187,5 @@ public sealed class PortalOcclusionCuller : CullingMethod
         _itemShadowsTime += itemShadowsTime;
         _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
         _dynamicLightsTime += dynamicLightsTime;
-        _totalCalls++;
     }
 }

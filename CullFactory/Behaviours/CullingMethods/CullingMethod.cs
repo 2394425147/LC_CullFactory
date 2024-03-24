@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
@@ -32,11 +33,16 @@ public abstract class CullingMethod : MonoBehaviour
 
     protected Camera _hudCamera;
 
+    protected bool _benchmarking = false;
+    protected long _totalCalls = 0;
+
     private float _updateInterval;
     private float _lastUpdateTime;
 
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
+
+    private double _cullingTime = 0;
 
     public static void Initialize()
     {
@@ -116,6 +122,28 @@ public abstract class CullingMethod : MonoBehaviour
             item.SetVisible(false);
     }
 
+    protected virtual void BenchmarkEnded()
+    {
+        var avgCullingTime = _cullingTime / _totalCalls;
+        Plugin.Log($"Total culling time {avgCullingTime * 1000000:0.####} microseconds.");
+
+        _cullingTime = 0;
+    }
+
+    private void Update()
+    {
+        if (UnityInput.Current.GetKey("LeftAlt") && UnityInput.Current.GetKeyUp("B"))
+        {
+            _benchmarking = !_benchmarking;
+
+            if (!_benchmarking)
+            {
+                BenchmarkEnded();
+                _totalCalls = 0;
+            }
+        }
+    }
+
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
@@ -168,11 +196,14 @@ public abstract class CullingMethod : MonoBehaviour
         if (Time.time - _lastUpdateTime < _updateInterval)
             return;
 
+        var startTime = Time.realtimeSinceStartupAsDouble;
+
         _lastUpdateTime = Time.time;
 
         _visibility.ClearAll();
 
         AddVisibleObjects(cameras, _visibility);
+        _totalCalls++;
 
         // Update culling for tiles.
         foreach (var tileContent in _visibilityLastCall.tiles)
@@ -191,6 +222,8 @@ public abstract class CullingMethod : MonoBehaviour
         _visibility.dynamicLights.Except(_visibilityLastCall.dynamicLights).SetVisible(true);
 
         (_visibilityLastCall, _visibility) = (_visibility, _visibilityLastCall);
+
+        _cullingTime += Time.realtimeSinceStartupAsDouble - startTime;
     }
 
     private void OnDisable()
