@@ -70,14 +70,14 @@ public sealed class PortalOcclusionCuller : CullingMethod
             var getCameraPositionStart = Time.realtimeSinceStartupAsDouble;
             var cameraPosition = camera.transform.position;
             getCameraPositionTime += Time.realtimeSinceStartupAsDouble - getCameraPositionStart;
-            var currentTileContents = cameraPosition.GetTileContents();
+            var cameraTile = cameraPosition.GetTileContents();
 
-            if (currentTileContents != null)
+            if (cameraTile != null)
             {
                 interiorIsVisible = true;
 
                 var visibilityStart = Time.realtimeSinceStartupAsDouble;
-                VisibilityTesting.CallForEachLineOfSight(camera, currentTileContents, (tiles, frustums, index) =>
+                VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
                 {
                     visibility.tiles.Add(tiles[index]);
                 });
