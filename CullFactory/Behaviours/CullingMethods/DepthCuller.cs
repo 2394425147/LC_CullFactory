@@ -24,10 +24,11 @@ public sealed class DepthCuller : CullingMethod
             var cameraTile = camera.transform.position.GetTileContents();
             if (cameraTile == null)
             {
-                visibility.items.AddRange(DynamicObjects.AllGrabbableObjectContentsOutside);
-                visibility.dynamicLights.AddRange(DynamicObjects.AllLightsOutside);
+                visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsOutside);
+                visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
                 continue;
             }
+            visibility.debugTile ??= cameraTile;
             IncludeNearbyTiles(cameraTile.tile, visibility.tiles);
 
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
@@ -43,7 +44,7 @@ public sealed class DepthCuller : CullingMethod
         }
     }
 
-    private void IncludeNearbyTiles(Tile origin, List<TileContents> visibleTiles)
+    private void IncludeNearbyTiles(Tile origin, HashSet<TileContents> visibleTiles)
     {
         var depthTarget = Config.MaxBranchingDepth.Value - 1;
         // Guess that there will be 2 used doors per tile on average. Maybe a bit excessive.

@@ -116,4 +116,16 @@ public sealed class GrabbableObjectContents
             return "Destroyed";
         return item.name;
     }
+
+    public override int GetHashCode()
+    {
+        return item.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is GrabbableObjectContents contents)
+            return item.Equals(contents.item);
+        return false;
+    }
 }

@@ -102,14 +102,14 @@ public static class VisibilityTesting
         CallForEachLineOfSight(origin, originTile, [], callback);
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, Plane[] frustum, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, Plane[] frustum, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
     {
         TileStack[0] = originTile;
         IndexStack[0] = 0;
         FrustumStack[0] = frustum;
         var stackIndex = 0;
 
-        if (goalTiles.Any(tileContents => tileContents == originTile))
+        if (goalTiles.Contains(originTile))
             callback(TileStack, FrustumStack, stackIndex);
 
         while (stackIndex >= 0)
@@ -121,12 +121,12 @@ public static class VisibilityTesting
             //       moving in the right direction.
 
             var currentTile = TileStack[stackIndex];
-            if (goalTiles.Any(tileContents => tileContents == currentTile))
+            if (goalTiles.Contains(currentTile))
                 callback(TileStack, FrustumStack, stackIndex);
         }
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, IEnumerable<TileContents> goalTiles, LineOfSightCallback callback)
+    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
     {
         CallForEachLineOfSightToTiles(origin, originTile, [], goalTiles, callback);
     }
