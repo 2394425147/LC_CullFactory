@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx;
 using CullFactory.Data;
 using CullFactory.Services;
@@ -206,12 +205,28 @@ public abstract class CullingMethod : MonoBehaviour
         _visibility.tiles.SetVisible(true);
 
         // Update culling for items.
-        _visibilityLastCall.items.Except(_visibility.items).SetVisible(false);
-        _visibility.items.Except(_visibilityLastCall.items).SetVisible(true);
+        foreach (var item in _visibilityLastCall.items)
+        {
+            if (!_visibility.items.Contains(item))
+                item.SetVisible(false);
+        }
+        foreach (var item in _visibility.items)
+        {
+            if (!_visibilityLastCall.items.Contains(item))
+                item.SetVisible(true);
+        }
 
         // Update culling for lights.
-        _visibilityLastCall.dynamicLights.Except(_visibility.dynamicLights).SetVisible(false);
-        _visibility.dynamicLights.Except(_visibilityLastCall.dynamicLights).SetVisible(true);
+        foreach (var light in _visibilityLastCall.dynamicLights)
+        {
+            if (!_visibility.dynamicLights.Contains(light))
+                light.SetVisible(false);
+        }
+        foreach (var light in _visibility.dynamicLights)
+        {
+            if (!_visibilityLastCall.dynamicLights.Contains(light))
+                light.SetVisible(true);
+        }
 
         (_visibilityLastCall, _visibility) = (_visibility, _visibilityLastCall);
 
