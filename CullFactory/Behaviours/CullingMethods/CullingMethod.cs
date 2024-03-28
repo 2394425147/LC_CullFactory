@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using BepInEx;
 using CullFactory.Data;
@@ -194,7 +194,6 @@ public abstract class CullingMethod : MonoBehaviour
         _visibility.ClearAll();
 
         AddVisibleObjects(cameras, _visibility);
-        _totalCalls++;
 
         // Update culling for tiles.
         foreach (var tileContent in _visibilityLastCall.tiles)
@@ -230,7 +229,11 @@ public abstract class CullingMethod : MonoBehaviour
 
         (_visibilityLastCall, _visibility) = (_visibility, _visibilityLastCall);
 
-        _cullingTime += Time.realtimeSinceStartupAsDouble - startTime;
+        if (_benchmarking)
+        {
+            _totalCalls++;
+            _cullingTime += Time.realtimeSinceStartupAsDouble - startTime;
+        }
     }
 
     private void OnDisable()

@@ -191,11 +191,14 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         var dynamicLightsTime = Time.realtimeSinceStartupAsDouble - dynamicLightsStart;
 
-        _camerasTime += camerasTime - getCameraPositionTime;
-        _visibilityTime += visibilityTime;
-        _itemBoundsTime += itemBoundsTime;
-        _itemShadowsTime += itemShadowsTime;
-        _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
-        _dynamicLightsTime += dynamicLightsTime;
+        if (_benchmarking)
+        {
+            _camerasTime += camerasTime - getCameraPositionTime;
+            _visibilityTime += visibilityTime;
+            _itemBoundsTime += itemBoundsTime;
+            _itemShadowsTime += itemShadowsTime;
+            _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
+            _dynamicLightsTime += dynamicLightsTime;
+        }
     }
 }
