@@ -7,10 +7,6 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
-    private static bool itemVisibilityCulling = false;
-
-    private readonly Plane[] _withinTileTestingPlanes = new Plane[3];
-
     private double _camerasTime = 0;
     private double _visibilityTime = 0;
     private double _itemBoundsTime = 0;
@@ -33,9 +29,9 @@ public sealed class PortalOcclusionCuller : CullingMethod
             $"    Cameras took {avgCamerasTime * 1000000:0.####} microseconds.\n" +
             $"    Direct visibility testing took {avgVisibilityTime * 1000000:0.####} microseconds.\n" +
             $"    Calculating item bounds took {avgItemBoundsTime * 1000000:0.####} microseconds.\n" +
-            $"    Item shadows took {(avgItemShadowsTime - avgItemBoundsTime) * 1000000:0.####} microseconds.\n" +
             $"    Dynamic lights line of sight checks took {avgDynamicLightsLineOfSightTime * 1000000:0.####} microseconds.\n" +
-            $"    Dynamic light influence checks took {(avgDynamicLightsTime - avgDynamicLightsLineOfSightTime) * 1000000:0.####} microseconds.");
+            $"    Dynamic light influence checks took {(avgDynamicLightsTime - avgDynamicLightsLineOfSightTime) * 1000000:0.####} microseconds.\n" +
+            $"    Item shadows took {(avgItemShadowsTime - avgItemBoundsTime) * 1000000:0.####} microseconds.");
 
         _camerasTime = 0;
         _visibilityTime = 0;
@@ -94,49 +90,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
         if (!interiorIsVisible)
             return;
 
-        var itemBoundsTime = 0d;
-        var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
-
-        // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
-        if (itemVisibilityCulling)
-        {
-            foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
-            {
-                var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
-                itemContents.CalculateBounds();
-                itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
-
-                foreach (var visibleTile in visibility.tiles)
-                {
-                    if (itemContents.IsWithin(visibleTile.bounds))
-                    {
-                        visibility.items.Add(itemContents);
-                        continue;
-                    }
-
-                    bool addedItem = false;
-                    foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
-                    {
-                        if (itemContents.IsVisible(externalLightLineOfSight))
-                        {
-                            visibility.items.Add(itemContents);
-                            addedItem = true;
-                            break;
-                        }
-                    }
-
-                    if (addedItem)
-                        break;
-                }
-            }
-        }
-        else
-        {
-            visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsInInterior);
-        }
-
-        var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
-
         var dynamicLightsStart = Time.realtimeSinceStartupAsDouble;
         var dynamicLightsLineOfSightTime = 0d;
 
@@ -167,21 +120,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 for (var i = 0; i < lastIndex; i++)
                     visibility.tiles.Add(tiles[i]);
 
-                tiles[lastIndex].bounds.GetFarthestPlanesNonAlloc(dynamicLightPosition, _withinTileTestingPlanes);
-
-                if (itemVisibilityCulling)
-                {
-                    foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
-                    {
-                        if (!itemContents.IsVisible(frustums, lastIndex))
-                            continue;
-                        if (!itemContents.IsVisible(_withinTileTestingPlanes))
-                            continue;
-
-                        visibility.items.Add(itemContents);
-                    }
-                }
-
                 if (!lightPassesThroughOccluders)
                     visibility.dynamicLights.Add(dynamicLight);
             });
@@ -190,14 +128,50 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         var dynamicLightsTime = Time.realtimeSinceStartupAsDouble - dynamicLightsStart;
 
+        var itemBoundsTime = 0d;
+        var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
+
+        // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
+        foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
+        {
+            var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
+            itemContents.CalculateBounds();
+            itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
+
+            foreach (var visibleTile in visibility.tiles)
+            {
+                if (itemContents.IsWithin(visibleTile.bounds))
+                {
+                    visibility.items.Add(itemContents);
+                    continue;
+                }
+
+                bool addedItem = false;
+                foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
+                {
+                    if (itemContents.IsVisible(externalLightLineOfSight))
+                    {
+                        visibility.items.Add(itemContents);
+                        addedItem = true;
+                        break;
+                    }
+                }
+
+                if (addedItem)
+                    break;
+            }
+        }
+
+        var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
+
         if (_benchmarking)
         {
             _camerasTime += camerasTime - getCameraPositionTime;
             _visibilityTime += visibilityTime;
             _itemBoundsTime += itemBoundsTime;
-            _itemShadowsTime += itemShadowsTime;
             _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
             _dynamicLightsTime += dynamicLightsTime;
+            _itemShadowsTime += itemShadowsTime;
         }
     }
 }
