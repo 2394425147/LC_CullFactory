@@ -114,6 +114,12 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (lightTileContents == null)
                 continue;
 
+            if (visibility.tiles.Contains(lightTileContents))
+            {
+                visibility.dynamicLights.Add(dynamicLight);
+                continue;
+            }
+
             var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
             VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibility.tiles, (tiles, frustums, lastIndex) =>
             {
