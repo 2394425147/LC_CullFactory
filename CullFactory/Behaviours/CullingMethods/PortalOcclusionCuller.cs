@@ -14,6 +14,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
     private double _dynamicLightsLineOfSightTime = 0;
     private double _dynamicLightsTime = 0;
 
+    private HashSet<TileContents> _directlyVisibleTiles = [];
+
     protected override void BenchmarkEnded()
     {
         base.BenchmarkEnded();
@@ -46,6 +48,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
     {
         var camerasStart = Time.realtimeSinceStartupAsDouble;
 
+        _directlyVisibleTiles.Clear();
+
         var interiorIsVisible = false;
         var exteriorIsVisible = false;
 
@@ -73,7 +77,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 var visibilityStart = Time.realtimeSinceStartupAsDouble;
                 VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
                 {
-                    visibility.tiles.Add(tiles[index]);
+                    _directlyVisibleTiles.Add(tiles[index]);
                 });
                 visibilityTime += Time.realtimeSinceStartupAsDouble - visibilityStart;
             }
@@ -85,6 +89,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
+        visibility.tiles.UnionWith(_directlyVisibleTiles);
         var camerasTime = Time.realtimeSinceStartupAsDouble - camerasStart;
 
         if (!interiorIsVisible)
@@ -100,7 +105,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
             if (!dynamicLight.isActiveAndEnabled)
                 continue;
-            if (!dynamicLight.Affects(visibility.tiles))
+            if (!dynamicLight.Affects(_directlyVisibleTiles))
                 continue;
 
             bool lightPassesThroughOccluders = dynamicLight.PassesThroughOccluders();
@@ -114,14 +119,14 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (lightTileContents == null)
                 continue;
 
-            if (visibility.tiles.Contains(lightTileContents))
+            if (_directlyVisibleTiles.Contains(lightTileContents))
             {
                 visibility.dynamicLights.Add(dynamicLight);
                 continue;
             }
 
             var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
-            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, visibility.tiles, (tiles, frustums, lastIndex) =>
+            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, _directlyVisibleTiles, (tiles, frustums, lastIndex) =>
             {
                 for (var i = 0; i < lastIndex; i++)
                     visibility.tiles.Add(tiles[i]);
