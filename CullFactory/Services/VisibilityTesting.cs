@@ -102,32 +102,50 @@ public static class VisibilityTesting
         CallForEachLineOfSight(origin, originTile, [], callback);
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, Plane[] frustum, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
+    private static bool FrustumIntersectsAnyTile(Plane[] frustum, HashSet<TileContents> tiles)
+    {
+        foreach (var tile in tiles)
+        {
+            if (GeometryUtility.TestPlanesAABB(frustum, tile.bounds))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static bool CallForEachLineOfSightTowardTiles(Vector3 origin, TileContents originTile, Plane[] frustum, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
     {
         TileStack[0] = originTile;
         IndexStack[0] = 0;
         FrustumStack[0] = frustum;
         var stackIndex = 0;
 
-        if (goalTiles.Contains(originTile))
-            callback(TileStack, FrustumStack, stackIndex);
+        callback(TileStack, FrustumStack, stackIndex);
+
+        var reachedGoal = goalTiles.Contains(originTile);
 
         while (stackIndex >= 0)
         {
             if (!AdvanceToNextTile(origin, ref stackIndex))
                 continue;
 
-            // TODO: Create a plane for portals and use that to determine whether we're
-            //       moving in the right direction.
+            if (!FrustumIntersectsAnyTile(FrustumStack[stackIndex], goalTiles))
+            {
+                stackIndex--;
+                continue;
+            }
 
-            var currentTile = TileStack[stackIndex];
-            if (goalTiles.Contains(currentTile))
-                callback(TileStack, FrustumStack, stackIndex);
+            if (goalTiles.Contains(TileStack[stackIndex]))
+                reachedGoal = true;
+            
+            callback(TileStack, FrustumStack, stackIndex);
         }
+
+        return reachedGoal;
     }
 
-    public static void CallForEachLineOfSightToTiles(Vector3 origin, TileContents originTile, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
+    public static bool CallForEachLineOfSightTowardTiles(Vector3 origin, TileContents originTile, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
     {
-        CallForEachLineOfSightToTiles(origin, originTile, [], goalTiles, callback);
+        return CallForEachLineOfSightTowardTiles(origin, originTile, [], goalTiles, callback);
     }
 }

@@ -15,6 +15,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
     private double _dynamicLightsTime = 0;
 
     private HashSet<TileContents> _directlyVisibleTiles = [];
+    private List<TileContents> _dynamicLightOccludingTiles = [];
 
     protected override void BenchmarkEnded()
     {
@@ -119,21 +120,20 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (lightTileContents == null)
                 continue;
 
-            if (_directlyVisibleTiles.Contains(lightTileContents))
+            var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
+            _dynamicLightOccludingTiles.Clear();
+            var reachesAVisibleTile =
+                VisibilityTesting.CallForEachLineOfSightTowardTiles(dynamicLightPosition, lightTileContents, _directlyVisibleTiles, (tiles, frustums, lastIndex) =>
+                {
+                    _dynamicLightOccludingTiles.Add(tiles[lastIndex]);
+                });
+
+            if (!lightPassesThroughOccluders && reachesAVisibleTile)
             {
+                visibility.tiles.UnionWith(_dynamicLightOccludingTiles);
                 visibility.dynamicLights.Add(dynamicLight);
-                continue;
             }
 
-            var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
-            VisibilityTesting.CallForEachLineOfSightToTiles(dynamicLightPosition, lightTileContents, _directlyVisibleTiles, (tiles, frustums, lastIndex) =>
-            {
-                for (var i = 0; i < lastIndex; i++)
-                    visibility.tiles.Add(tiles[i]);
-
-                if (!lightPassesThroughOccluders)
-                    visibility.dynamicLights.Add(dynamicLight);
-            });
             dynamicLightsLineOfSightTime += Time.realtimeSinceStartupAsDouble - dynamicLightsLineOfSightStart;
         }
 
