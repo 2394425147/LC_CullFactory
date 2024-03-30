@@ -240,7 +240,7 @@ public abstract class CullingMethod : MonoBehaviour
         }
         foreach (var light in _visibility.dynamicLights)
         {
-            if (!_visibilityLastCall.dynamicLights.Contains(light))
+            if (light != null && !_visibilityLastCall.dynamicLights.Contains(light))
                 light.SetVisible(true);
         }
 
