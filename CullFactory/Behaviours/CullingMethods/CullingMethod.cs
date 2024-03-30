@@ -167,6 +167,8 @@ public abstract class CullingMethod : MonoBehaviour
         visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
         foreach (var interiorDynamicLight in DynamicObjects.AllLightsInInterior)
         {
+            if (interiorDynamicLight == null)
+                continue;
             if (interiorDynamicLight.Affects(_visibility.directTiles))
                 visibility.dynamicLights.Add(interiorDynamicLight);
         }

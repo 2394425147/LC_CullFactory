@@ -38,6 +38,8 @@ public sealed class DepthCuller : CullingMethod
             }
             foreach (var light in DynamicObjects.AllLightsInInterior)
             {
+                if (light == null)
+                    continue;
                 if (light.Affects(visibility.directTiles))
                     visibility.dynamicLights.Add(light);
             }
