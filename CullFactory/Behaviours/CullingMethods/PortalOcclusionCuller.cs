@@ -14,8 +14,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
     private double _dynamicLightsLineOfSightTime = 0;
     private double _dynamicLightsTime = 0;
 
-    private HashSet<TileContents> _directlyVisibleTiles = [];
-    private List<TileContents> _dynamicLightOccludingTiles = [];
+    private readonly HashSet<TileContents> _dynamicLightOccludingTiles = [];
 
     protected override void BenchmarkEnded()
     {
@@ -45,11 +44,32 @@ public sealed class PortalOcclusionCuller : CullingMethod
         _totalCalls = 0;
     }
 
+    private static bool ItemIsVisible(GrabbableObjectContents item, VisibilitySets visibility)
+    {
+        foreach (var tile in visibility.directTiles)
+        {
+            if (item.IsWithin(tile.bounds))
+                return true;
+
+            foreach (var externalLightLineOfSight in tile.externalLightLinesOfSight)
+            {
+                if (item.IsVisible(externalLightLineOfSight))
+                    return true;
+            }
+        }
+
+        foreach (var tile in visibility.indirectTiles)
+        {
+            if (item.IsWithin(tile.bounds))
+                return true;
+        }
+
+        return false;
+    }
+
     protected override void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility)
     {
         var camerasStart = Time.realtimeSinceStartupAsDouble;
-
-        _directlyVisibleTiles.Clear();
 
         var interiorIsVisible = false;
         var exteriorIsVisible = false;
@@ -78,7 +98,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 var visibilityStart = Time.realtimeSinceStartupAsDouble;
                 VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
                 {
-                    _directlyVisibleTiles.Add(tiles[index]);
+                    visibility.directTiles.Add(tiles[index]);
                 });
                 visibilityTime += Time.realtimeSinceStartupAsDouble - visibilityStart;
             }
@@ -90,7 +110,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
-        visibility.tiles.UnionWith(_directlyVisibleTiles);
         var camerasTime = Time.realtimeSinceStartupAsDouble - camerasStart;
 
         if (!interiorIsVisible)
@@ -106,7 +125,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
             if (!dynamicLight.isActiveAndEnabled)
                 continue;
-            if (!dynamicLight.Affects(_directlyVisibleTiles))
+            if (!dynamicLight.Affects(visibility.directTiles))
                 continue;
 
             bool lightPassesThroughOccluders = dynamicLight.PassesThroughOccluders();
@@ -123,14 +142,16 @@ public sealed class PortalOcclusionCuller : CullingMethod
             var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
             _dynamicLightOccludingTiles.Clear();
             var reachesAVisibleTile =
-                VisibilityTesting.CallForEachLineOfSightTowardTiles(dynamicLightPosition, lightTileContents, _directlyVisibleTiles, (tiles, frustums, lastIndex) =>
+                VisibilityTesting.CallForEachLineOfSightTowardTiles(dynamicLightPosition, lightTileContents, visibility.directTiles, (tiles, frustums, lastIndex) =>
                 {
-                    _dynamicLightOccludingTiles.Add(tiles[lastIndex]);
+                    var tile = tiles[lastIndex];
+                    if (!visibility.directTiles.Contains(tile))
+                        _dynamicLightOccludingTiles.Add(tile);
                 });
 
             if (!lightPassesThroughOccluders && reachesAVisibleTile)
             {
-                visibility.tiles.UnionWith(_dynamicLightOccludingTiles);
+                visibility.indirectTiles.UnionWith(_dynamicLightOccludingTiles);
                 visibility.dynamicLights.Add(dynamicLight);
             }
 
@@ -149,28 +170,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
             itemContents.CalculateBounds();
             itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
 
-            foreach (var visibleTile in visibility.tiles)
-            {
-                if (itemContents.IsWithin(visibleTile.bounds))
-                {
-                    visibility.items.Add(itemContents);
-                    continue;
-                }
-
-                bool addedItem = false;
-                foreach (var externalLightLineOfSight in visibleTile.externalLightLinesOfSight)
-                {
-                    if (itemContents.IsVisible(externalLightLineOfSight))
-                    {
-                        visibility.items.Add(itemContents);
-                        addedItem = true;
-                        break;
-                    }
-                }
-
-                if (addedItem)
-                    break;
-            }
+            if (ItemIsVisible(itemContents, visibility))
+                visibility.items.Add(itemContents);
         }
 
         var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;

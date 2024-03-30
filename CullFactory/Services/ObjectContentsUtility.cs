@@ -6,10 +6,10 @@ namespace CullFactory.Services;
 
 public static class ObjectContentsUtility
 {
-    public static void SetVisible(this IEnumerable<TileContents> tiles, bool visible)
+    public static void SetSelfVisible(this IEnumerable<TileContents> tiles, bool visible)
     {
         foreach (var tile in tiles)
-            tile.SetVisible(visible);
+            tile.SetSelfVisible(visible);
     }
 
     public static void SetVisible(this IEnumerable<GrabbableObjectContents> items, bool visible)

@@ -13,7 +13,8 @@ public abstract class CullingMethod : MonoBehaviour
     public struct VisibilitySets
     {
         public TileContents debugTile = null;
-        public readonly HashSet<TileContents> tiles = [];
+        public readonly HashSet<TileContents> directTiles = [];
+        public readonly HashSet<TileContents> indirectTiles = [];
         public readonly HashSet<GrabbableObjectContents> items = [];
         public readonly HashSet<Light> dynamicLights = [];
 
@@ -24,7 +25,8 @@ public abstract class CullingMethod : MonoBehaviour
         public void ClearAll()
         {
             debugTile = null;
-            tiles.Clear();
+            directTiles.Clear();
+            indirectTiles.Clear();
             items.Clear();
             dynamicLights.Clear();
         }
@@ -92,7 +94,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnEnable()
     {
-        DungeonCullingInfo.AllTileContents.SetVisible(false);
+        DungeonCullingInfo.AllTileContents.SetSelfVisible(false);
         DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(false);
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(false);
         DynamicObjects.AllLightsOutside.SetVisible(false);
@@ -144,7 +146,7 @@ public abstract class CullingMethod : MonoBehaviour
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
             if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
-                visibility.tiles.Add(tileContents);
+                visibility.directTiles.Add(tileContents);
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
@@ -162,7 +164,7 @@ public abstract class CullingMethod : MonoBehaviour
         visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
         foreach (var interiorDynamicLight in DynamicObjects.AllLightsInInterior)
         {
-            if (interiorDynamicLight.Affects(_visibility.tiles))
+            if (interiorDynamicLight.Affects(_visibility.directTiles))
                 visibility.dynamicLights.Add(interiorDynamicLight);
         }
     }
@@ -196,12 +198,27 @@ public abstract class CullingMethod : MonoBehaviour
         AddVisibleObjects(cameras, _visibility);
 
         // Update culling for tiles.
-        foreach (var tileContent in _visibilityLastCall.tiles)
+        foreach (var tileContent in _visibilityLastCall.directTiles)
         {
-            if (!_visibility.tiles.Contains(tileContent))
-                tileContent.SetVisible(false);
+            if (!_visibility.directTiles.Contains(tileContent))
+            {
+                tileContent.SetSelfVisible(false);
+                tileContent.SetExternalInfluencesVisible(false);
+            }
         }
-        _visibility.tiles.SetVisible(true);
+        foreach (var tileContent in _visibilityLastCall.indirectTiles)
+        {
+            if (!_visibility.indirectTiles.Contains(tileContent))
+                tileContent.SetRenderersVisible(false);
+        }
+
+        foreach (var tileContent in _visibility.directTiles)
+        {
+            tileContent.SetSelfVisible(true);
+            tileContent.SetExternalInfluencesVisible(true);
+        }
+        foreach (var tileContent in _visibility.indirectTiles)
+            tileContent.SetRenderersVisible(true);
 
         // Update culling for items.
         foreach (var item in _visibilityLastCall.items)
@@ -238,7 +255,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnDisable()
     {
-        DungeonCullingInfo.AllTileContents.SetVisible(true);
+        DungeonCullingInfo.AllTileContents.SetSelfVisible(true);
         DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(true);
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(true);
         DynamicObjects.AllLightsOutside.SetVisible(true);

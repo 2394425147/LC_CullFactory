@@ -29,16 +29,16 @@ public sealed class DepthCuller : CullingMethod
                 continue;
             }
             visibility.debugTile ??= cameraTile;
-            IncludeNearbyTiles(cameraTile.tile, visibility.tiles);
+            IncludeNearbyTiles(cameraTile.tile, visibility.directTiles);
 
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
             {
-                if (item.IsWithin(visibility.tiles))
+                if (item.IsWithin(visibility.directTiles))
                     visibility.items.Add(item);
             }
             foreach (var light in DynamicObjects.AllLightsInInterior)
             {
-                if (light.Affects(visibility.tiles))
+                if (light.Affects(visibility.directTiles))
                     visibility.dynamicLights.Add(light);
             }
         }

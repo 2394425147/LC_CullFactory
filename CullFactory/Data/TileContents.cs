@@ -105,10 +105,24 @@ public sealed class TileContents
         }
     }
 
-    public void SetVisible(bool visible)
+    public void SetRenderersVisible(bool visible)
     {
         SetVisible(renderers, visible);
+    }
+
+    public void SetLightsVisible(bool visible)
+    {
         SetVisible(lights, visible);
+    }
+
+    public void SetSelfVisible(bool visible)
+    {
+        SetRenderersVisible(visible);
+        SetLightsVisible(visible);
+    }
+
+    public void SetExternalInfluencesVisible(bool visible)
+    {
         SetVisible(externalRenderers, visible);
         SetVisible(externalLights, visible);
     }
