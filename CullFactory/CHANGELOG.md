@@ -1,3 +1,9 @@
+# 1.0.0 beta 1
+
+## Fixed
+
+- NullReferenceExceptions that could occur when lights inside the dungeon are destroyed
+
 # 1.0.0 beta 0
 
 ## Added
