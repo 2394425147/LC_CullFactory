@@ -125,6 +125,9 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void Update()
     {
+        if (!Config.Logging.Value)
+            return;
+
         if (UnityInput.Current.GetKey("LeftAlt") && UnityInput.Current.GetKeyUp("B"))
         {
             _benchmarking = !_benchmarking;
