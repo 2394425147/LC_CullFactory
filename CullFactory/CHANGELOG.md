@@ -1,3 +1,13 @@
+# 1.0.0 beta 0
+
+## Added
+
+- Items will be culled inside and outside the dungeon
+
+## Fixed
+
+- Dynamic lights shining through walls
+
 # 0.9.2
 
 ## Fixed
