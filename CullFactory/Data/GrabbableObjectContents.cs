@@ -6,6 +6,8 @@ namespace CullFactory.Data;
 
 public sealed class GrabbableObjectContents
 {
+    public static readonly Vector3 Vector3NaN = new Vector3(float.NaN, float.NaN, float.NaN);
+
     public readonly GrabbableObject item;
     public Renderer[] renderers;
     public Light[] lights;
@@ -27,12 +29,6 @@ public sealed class GrabbableObjectContents
 
     private void CalculateLocalBounds()
     {
-        if (item == null)
-        {
-            boundingVertices = [Vector3.zero];
-            return;
-        }
-
         var min = Vector3.positiveInfinity;
         var max = Vector3.negativeInfinity;
 
@@ -49,6 +45,12 @@ public sealed class GrabbableObjectContents
             max = Vector3.Max(max, rendererBounds.max);
         }
 
+        if (min.Equals(Vector3.positiveInfinity) || max.Equals(Vector3.negativeInfinity))
+        {
+            boundingVertices = [];
+            return;
+        }
+
         boundingVertices = BoundsUtility.GetVertices(min, max);
         item.transform.InverseTransformPoints(boundingVertices);
         CalculateBounds();
@@ -56,17 +58,39 @@ public sealed class GrabbableObjectContents
 
     public void CalculateBounds()
     {
-        if (item == null)
+        if (boundingVertices.Length == 0 || item == null)
         {
-            bounds = default;
+            bounds = new Bounds(Vector3NaN, Vector3NaN);
             return;
         }
 
         bounds = GeometryUtility.CalculateBounds(boundingVertices, item.transform.localToWorldMatrix);
     }
 
+    public bool HasBounds
+    {
+        get
+        {
+            if (float.IsNaN(bounds.center.x))
+                return false;
+            if (float.IsNaN(bounds.center.y))
+                return false;
+            if (float.IsNaN(bounds.center.z))
+                return false;
+            if (float.IsNaN(bounds.extents.x))
+                return false;
+            if (float.IsNaN(bounds.extents.y))
+                return false;
+            if (float.IsNaN(bounds.extents.z))
+                return false;
+            return true;
+        }
+    }
+
     public bool IsVisible(Plane[] planes)
     {
+        if (!HasBounds)
+            return false;
         return GeometryUtility.TestPlanesAABB(planes, bounds);
     }
 
@@ -82,6 +106,8 @@ public sealed class GrabbableObjectContents
 
     public bool IsWithin(Bounds bounds)
     {
+        if (!HasBounds)
+            return false;
         return this.bounds.Intersects(bounds);
     }
 
