@@ -5,9 +5,13 @@ namespace CullFactory.Data;
 
 public class Portal
 {
+    private const float PlaneOffset = 0.001f;
+
     public readonly Vector3[] Corners;
     public readonly Bounds Bounds;
     public readonly TileContents NextTile;
+
+    private readonly Plane _plane;
 
     public Portal(Doorway doorway, bool useTileBounds, TileContents nextTile)
     {
@@ -51,6 +55,9 @@ public class Portal
         };
 
         NextTile = nextTile;
+
+        _plane = new Plane(Corners[0], Corners[1], Corners[2]);
+        _plane.distance -= PlaneOffset;
     }
 
     internal void GetFrustumPlanesNonAlloc(Vector3 origin, Plane[] planes)
@@ -59,11 +66,12 @@ public class Portal
         planes[1] = new Plane(Corners[1], Corners[2], origin);
         planes[2] = new Plane(Corners[2], Corners[3], origin);
         planes[3] = new Plane(Corners[3], Corners[0], origin);
+        planes[4] = _plane;
     }
 
     internal Plane[] GetFrustumPlanes(Vector3 origin)
     {
-        var planes = new Plane[4];
+        var planes = new Plane[5];
         GetFrustumPlanesNonAlloc(origin, planes);
         return planes;
     }
