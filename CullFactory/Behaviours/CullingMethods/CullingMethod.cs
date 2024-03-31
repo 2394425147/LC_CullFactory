@@ -12,7 +12,6 @@ public abstract class CullingMethod : MonoBehaviour
 {
     public struct VisibilitySets
     {
-        public TileContents debugTile = null;
         public readonly HashSet<TileContents> directTiles = [];
         public readonly HashSet<TileContents> indirectTiles = [];
         public readonly HashSet<GrabbableObjectContents> items = [];
@@ -24,7 +23,6 @@ public abstract class CullingMethod : MonoBehaviour
 
         public void ClearAll()
         {
-            debugTile = null;
             directTiles.Clear();
             indirectTiles.Clear();
             items.Clear();
@@ -44,6 +42,8 @@ public abstract class CullingMethod : MonoBehaviour
 
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
+
+    protected TileContents _debugTile = null;
 
     private double _cullingTime = 0;
 
@@ -199,6 +199,7 @@ public abstract class CullingMethod : MonoBehaviour
         _lastUpdateTime = Time.time;
 
         _visibility.ClearAll();
+        _debugTile = null;
 
         AddVisibleObjects(cameras, _visibility);
 
@@ -278,10 +279,10 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (_visibilityLastCall.debugTile is not null)
+        if (_debugTile is not null)
         {
             Gizmos.color = Color.green;
-            var contents = _visibilityLastCall.debugTile;
+            var contents = _debugTile;
             Gizmos.DrawWireCube(contents.bounds.center, contents.bounds.size);
 
             Gizmos.color = Color.green;

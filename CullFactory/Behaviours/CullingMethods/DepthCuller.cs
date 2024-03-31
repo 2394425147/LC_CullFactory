@@ -28,7 +28,7 @@ public sealed class DepthCuller : CullingMethod
                 visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
                 continue;
             }
-            visibility.debugTile ??= cameraTile;
+            _debugTile ??= cameraTile;
             IncludeNearbyTiles(cameraTile.tile, visibility.directTiles);
 
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)

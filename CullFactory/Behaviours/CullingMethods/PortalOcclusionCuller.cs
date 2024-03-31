@@ -93,7 +93,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (cameraTile != null)
             {
                 interiorIsVisible = true;
-                visibility.debugTile ??= cameraTile;
+                _debugTile ??= cameraTile;
 
                 var visibilityStart = Time.realtimeSinceStartupAsDouble;
                 VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
