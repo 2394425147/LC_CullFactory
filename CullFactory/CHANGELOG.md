@@ -1,3 +1,9 @@
+# 1.0.0 beta 2
+
+## Fixed
+
+- Dynamic lights would cause some tiles to be kept visible unnecessarily
+
 # 1.0.0 beta 1
 
 ## Fixed
