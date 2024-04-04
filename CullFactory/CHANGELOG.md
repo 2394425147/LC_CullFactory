@@ -1,3 +1,14 @@
+# 1.0.0 beta 3
+
+## Added
+
+- An option to prevent shadowed lights shining through walls when viewing them from afar
+
+## Fixed
+
+- Lights on the opposite sides of a walls disappearing and reappearing when moving between tiles
+- Items being invisible after moving between tiles with depth culling enabled
+
 # 1.0.0 beta 2
 
 ## Fixed
