@@ -46,7 +46,7 @@ public static class DungeonCullingInfo
         DungeonBounds = default;
     }
 
-    public static void UpdateInteriorsWithFallbackPortals()
+    public static void RefreshCullingInfo()
     {
         if (AllTileContents != null)
             OnLevelGenerated();
@@ -133,7 +133,11 @@ public static class DungeonCullingInfo
                 continue;
 
             var hasShadows = light.HasShadows();
-            var lightPassesThroughWalls = light.PassesThroughOccluders();
+
+            // If we don't force the shadow fade distance to match the light fade distance, lights will
+            // always be able to shine through walls if there is a long enough line of sight to a place
+            // the light shines onto.
+            var lightPassesThroughWalls = !Config.DisableShadowDistanceFading.Value || light.PassesThroughOccluders();
 
             if (lightPassesThroughWalls)
             {

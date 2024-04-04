@@ -58,6 +58,14 @@ public static class Config
                                           "Currently this has no effect when portal occlusion culling is used.\n" +
                                           "Update interval: 1 / value (seconds)");
 
+        DisableShadowDistanceFading = configFile.Bind("General",
+                                          "Disable shadow distance fading",
+                                          true,
+                                          "Prevents lights' shadows from being hidden before the light itself becomes invisible.\n" +
+                                          "Fixes issues that are common in Mansion where some lights will be visible through walls, " +
+                                          "and allows more lights/tiles to be culled within the interior.\n" +
+                                          "Disabling may have a negative impact on performance.");
+
         #endregion
 
         #region Portal Occlusion Culling
@@ -159,6 +167,7 @@ public static class Config
         InteriorsToBlockCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
         InteriorsToForceCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
         UpdateFrequency.SettingChanged += (_, _) => CullingMethod.Initialize();
+        DisableShadowDistanceFading.SettingChanged += (_, _) => RefreshCullingInfoAndMethod();
 
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
@@ -215,7 +224,13 @@ public static class Config
                                        .Union(InteriorsToUseFallbackPortals.Value.SplitByComma())
                                        .Except(InteriorsToSkipFallbackPortals.Value.SplitByComma())
                                        .ToArray();
-        DungeonCullingInfo.UpdateInteriorsWithFallbackPortals();
+        RefreshCullingInfoAndMethod();
+    }
+
+    private static void RefreshCullingInfoAndMethod()
+    {
+        DungeonCullingInfo.RefreshCullingInfo();
+        CullingMethod.Initialize();
     }
 
     public static ConfigEntry<bool> Logging { get; private set; }
@@ -227,6 +242,8 @@ public static class Config
     private static ConfigEntry<string> InteriorsToForceCulling;
 
     public static ConfigEntry<float> UpdateFrequency { get; private set; }
+
+    public static ConfigEntry<bool> DisableShadowDistanceFading { get; private set; }
 
     /// <summary>
     /// <para>

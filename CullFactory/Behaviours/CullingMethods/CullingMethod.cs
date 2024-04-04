@@ -5,6 +5,7 @@ using CullFactory.Data;
 using CullFactory.Services;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Behaviours.CullingMethods;
 
@@ -42,6 +43,8 @@ public abstract class CullingMethod : MonoBehaviour
 
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
+
+    private float[] _lightShadowFadeDistances;
 
     protected TileContents _debugTile = null;
 
@@ -97,7 +100,29 @@ public abstract class CullingMethod : MonoBehaviour
         DynamicObjects.AllLightsOutside.SetVisible(false);
         DynamicObjects.AllLightsInInterior.SetVisible(false);
 
+        DisableShadowDistanceFading();
+
         RenderPipelineManager.beginContextRendering += DoCulling;
+    }
+
+    private void DisableShadowDistanceFading()
+    {
+        if (!Config.DisableShadowDistanceFading.Value)
+            return;
+
+        _lightShadowFadeDistances = new float[DungeonCullingInfo.AllLightsInDungeon.Length];
+        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
+        {
+            var light = DungeonCullingInfo.AllLightsInDungeon[i];
+            if (light == null)
+                continue;
+            var hdLight = light.GetComponent<HDAdditionalLightData>();
+            if (hdLight == null)
+                continue;
+
+            _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
+            hdLight.shadowFadeDistance = hdLight.fadeDistance;
+        }
     }
 
     internal void OnDynamicLightsCollected()
@@ -266,7 +291,29 @@ public abstract class CullingMethod : MonoBehaviour
 
         _visibilityLastCall.ClearAll();
 
+        RestoreShadowDistanceFading();
+
         RenderPipelineManager.beginContextRendering -= DoCulling;
+    }
+
+    private void RestoreShadowDistanceFading()
+    {
+        if (_lightShadowFadeDistances == null)
+            return;
+
+        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
+        {
+            var light = DungeonCullingInfo.AllLightsInDungeon[i];
+            if (light == null)
+                continue;
+            var hdLight = light.GetComponent<HDAdditionalLightData>();
+            if (hdLight == null)
+                continue;
+
+            hdLight.shadowFadeDistance = _lightShadowFadeDistances[i];
+        }
+
+        _lightShadowFadeDistances = null;
     }
 
     private void OnDrawGizmos()
