@@ -60,15 +60,14 @@ public abstract class CullingMethod : MonoBehaviour
 
         var generator = RoundManager.Instance.dungeonGenerator.Generator;
         var dungeon = generator.CurrentDungeon.gameObject;
-        CullingMethod instance = null;
 
         switch (Config.GetCullingType(generator.DungeonFlow))
         {
             case CullingType.PortalOcclusionCulling:
-                instance = dungeon.AddComponent<PortalOcclusionCuller>();
+                Instance = dungeon.AddComponent<PortalOcclusionCuller>();
                 break;
             case CullingType.DepthCulling:
-                instance = dungeon.AddComponent<DepthCuller>();
+                Instance = dungeon.AddComponent<DepthCuller>();
                 break;
             case CullingType.None:
                 break;
@@ -76,19 +75,17 @@ public abstract class CullingMethod : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (instance == null)
+        if (Instance == null)
             return;
 
         if (Config.UpdateFrequency.Value > 0)
-            instance._updateInterval = 1 / Config.UpdateFrequency.Value;
+            Instance._updateInterval = 1 / Config.UpdateFrequency.Value;
         else
-            instance._updateInterval = 0;
+            Instance._updateInterval = 0;
     }
 
     private void Awake()
     {
-        Instance = this;
-
         _hudCamera = GameObject.Find("Systems/UI/UICamera").GetComponent<Camera>();
     }
 
@@ -270,11 +267,6 @@ public abstract class CullingMethod : MonoBehaviour
         _visibilityLastCall.ClearAll();
 
         RenderPipelineManager.beginContextRendering -= DoCulling;
-    }
-
-    private void OnDestroy()
-    {
-        Instance = null;
     }
 
     private void OnDrawGizmos()
