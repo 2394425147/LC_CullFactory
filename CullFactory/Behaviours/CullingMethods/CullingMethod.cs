@@ -54,7 +54,7 @@ public abstract class CullingMethod : MonoBehaviour
     {
         if (Instance != null)
         {
-            Destroy(Instance);
+            DestroyImmediate(Instance);
             Instance = null;
         }
 
@@ -63,14 +63,15 @@ public abstract class CullingMethod : MonoBehaviour
 
         var generator = RoundManager.Instance.dungeonGenerator.Generator;
         var dungeon = generator.CurrentDungeon.gameObject;
+        CullingMethod instance = null;
 
         switch (Config.GetCullingType(generator.DungeonFlow))
         {
             case CullingType.PortalOcclusionCulling:
-                Instance = dungeon.AddComponent<PortalOcclusionCuller>();
+                instance = dungeon.AddComponent<PortalOcclusionCuller>();
                 break;
             case CullingType.DepthCulling:
-                Instance = dungeon.AddComponent<DepthCuller>();
+                instance = dungeon.AddComponent<DepthCuller>();
                 break;
             case CullingType.None:
                 break;
@@ -78,17 +79,19 @@ public abstract class CullingMethod : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (Instance == null)
+        if (instance == null)
             return;
 
         if (Config.UpdateFrequency.Value > 0)
-            Instance._updateInterval = 1 / Config.UpdateFrequency.Value;
+            instance._updateInterval = 1 / Config.UpdateFrequency.Value;
         else
-            Instance._updateInterval = 0;
+            instance._updateInterval = 0;
     }
 
     private void Awake()
     {
+        Instance = this;
+
         _hudCamera = GameObject.Find("Systems/UI/UICamera").GetComponent<Camera>();
     }
 
@@ -294,6 +297,11 @@ public abstract class CullingMethod : MonoBehaviour
         RestoreShadowDistanceFading();
 
         RenderPipelineManager.beginContextRendering -= DoCulling;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     private void RestoreShadowDistanceFading()
