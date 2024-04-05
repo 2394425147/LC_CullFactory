@@ -1,3 +1,9 @@
+# 1.0.0 beta 4
+
+## Fixed
+
+- Lights on the ship being disabled after the performance report finishes
+
 # 1.0.0 beta 3
 
 ## Added
