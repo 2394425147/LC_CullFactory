@@ -13,21 +13,23 @@ public static class TeleportExtender
     {
         var allPlayers = StartOfRound.Instance.allPlayerScripts;
 
+        if (_initialPlayerCameraFarPlanes == null)
+        {
+            _initialPlayerCameraFarPlanes = new float[allPlayers.Length];
+            for (var i = 0; i < allPlayers.Length; i++)
+                _initialPlayerCameraFarPlanes[i] = allPlayers[i].gameplayCamera.farClipPlane;
+        }
+
         if (!Config.CullDistanceEnabled.Value)
         {
-            if (_initialPlayerCameraFarPlanes == null)
-                return;
             for (var i = 0; i < allPlayers.Length; i++)
                 allPlayers[i].gameplayCamera.farClipPlane = _initialPlayerCameraFarPlanes[i];
             return;
         }
 
-        _initialPlayerCameraFarPlanes ??= new float[allPlayers.Length];
-
         for (var i = 0; i < allPlayers.Length; i++)
         {
             var player = allPlayers[i];
-            _initialPlayerCameraFarPlanes[i] = player.gameplayCamera.farClipPlane;
             player.gameplayCamera.farClipPlane = player.isInsideFactory
                                                      ? Config.CullDistance.Value
                                                      : Config.SurfaceCullDistance.Value;
