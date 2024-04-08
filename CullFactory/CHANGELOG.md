@@ -1,3 +1,10 @@
+# 1.0.0 beta 5
+
+## Fixed
+
+- Puddles in the vanilla Factory interior disappearing visibly with certain seeds and camera angles
+- Setting the `[Distance culling] Enabled` option to `false` in-game would set the far planes incorrectly
+
 # 1.0.0 beta 4
 
 ## Fixed
