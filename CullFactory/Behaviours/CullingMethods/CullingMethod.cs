@@ -31,6 +31,8 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
+    public const float ExtraShadowFadeDistance = 1 / 0.9f;
+
     public static CullingMethod Instance { get; private set; }
 
     protected Camera _hudCamera;
@@ -124,7 +126,7 @@ public abstract class CullingMethod : MonoBehaviour
                 continue;
 
             _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
-            hdLight.shadowFadeDistance = hdLight.fadeDistance;
+            hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
         }
     }
 
