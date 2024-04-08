@@ -16,10 +16,10 @@ public sealed class TileContents
 {
     public readonly Tile tile;
     public readonly Bounds bounds;
-    public readonly Renderer[] renderers;
-    public readonly Light[] lights;
-
     public Portal[] portals;
+
+    public Renderer[] renderers;
+    public readonly Light[] lights;
 
     public Renderer[] externalRenderers = [];
     public Light[] externalLights = [];

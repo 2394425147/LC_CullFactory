@@ -12,7 +12,8 @@ public static class DungeonCullingInfo
     private const float OutsideTileRadius = 10f;
     private const float SqrOutsideTileRadius = OutsideTileRadius * OutsideTileRadius;
 
-    private const float AdjacentTileIntrusionDistance = 0.2f;
+    private const int RendererIntrusionTileDepth = 2;
+    private const float RendererIntrusionDistance = 0.01f;
 
     public static TileContents[] AllTileContents { get; private set; }
     public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
@@ -50,6 +51,41 @@ public static class DungeonCullingInfo
     {
         if (AllTileContents != null)
             OnLevelGenerated();
+    }
+
+    private static void AddIntersectingRenderers(Bounds bounds, HashSet<Renderer> toCollection, HashSet<TileContents> visitedTiles, TileContents currentTile, int tilesLeft)
+    {
+        if (!visitedTiles.Add(currentTile))
+            return;
+
+        foreach (var renderer in currentTile.renderers)
+        {
+            if (renderer.bounds.Intersects(bounds))
+                toCollection.Add(renderer);
+        }
+
+        if (--tilesLeft > 0)
+        {
+            foreach (var portal in currentTile.portals)
+                AddIntersectingRenderers(bounds, toCollection, visitedTiles, portal.NextTile, tilesLeft - 1);
+        }
+
+        visitedTiles.Remove(currentTile);
+    }
+
+    private static HashSet<Renderer> GetIntrudingRenderers(TileContents originTile)
+    {
+        HashSet<Renderer> result = [];
+
+        var bounds = originTile.bounds;
+        bounds.Expand(-RendererIntrusionDistance);
+
+        HashSet<TileContents> visitedTiles = [originTile];
+
+        foreach (var portal in originTile.portals)
+            AddIntersectingRenderers(bounds, result, visitedTiles, portal.NextTile, RendererIntrusionTileDepth);
+
+        return result;
     }
 
     private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
@@ -101,27 +137,14 @@ public static class DungeonCullingInfo
 
         // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
         // but floor decals in the factory interior can as well.
-        foreach (var tile in AllTileContents)
+        var tileExternalRenderers = new HashSet<Renderer>[AllTileContents.Length];
+        for (i = 0; i < AllTileContents.Length; i++)
+            tileExternalRenderers[i] = GetIntrudingRenderers(AllTileContents[i]);
+
+        for (i = 0; i < AllTileContents.Length; i++)
         {
-            var overlappingTileBounds = tile.bounds;
-            overlappingTileBounds.extents -= new Vector3(AdjacentTileIntrusionDistance, AdjacentTileIntrusionDistance,
-                                                         AdjacentTileIntrusionDistance);
-            var externalRenderers = new List<Renderer>();
-
-            foreach (var portal in tile.portals)
-            {
-                var adjacentTile = portal.NextTile;
-                if (adjacentTile == null)
-                    continue;
-                foreach (var externalRenderer in adjacentTile.renderers)
-                {
-                    if (!externalRenderer.bounds.Intersects(overlappingTileBounds))
-                        continue;
-                    externalRenderers.Add(externalRenderer);
-                }
-            }
-
-            tile.externalRenderers = [.. externalRenderers];
+            var tile = AllTileContents[i];
+            tile.renderers = [.. tile.renderers, .. tileExternalRenderers[i]];
         }
 
         // Collect all external lights that may influence the tiles that we know of:
