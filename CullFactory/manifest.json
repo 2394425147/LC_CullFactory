@@ -3,7 +3,7 @@
   "author": "fumiko",
   "version_number": "1.0.0",
   "website_url": "https://github.com/2394425147/LC_CullFactory",
-  "description": "Stops rendering faraway factory rooms - Helps with performance.",
+  "description": "Stops rendering interior rooms that aren't visible - Helps with performance without affecting visuals.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]
