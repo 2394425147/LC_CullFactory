@@ -1,50 +1,19 @@
-# 1.0.0 beta 5
+# 1.0.0
+
+## Added
+
+- Visibility culling of items inside the dungeon
+- Culling of all items outside the dungeon when inside the dungeon and vice versa
+- An option that is enabled by default preventing shadowed lights shining through walls when viewing them from afar (i.e. the Mansion's chandeliers in the entry tile)
 
 ## Fixed
 
-- Puddles in the vanilla Factory interior disappearing visibly with certain seeds and camera angles
+- Dynamic lights such as flashlights shining through walls
+- Faraway shadowed lights on the opposite sides of a walls disappearing and reappearing when moving between tiles
+- Puddles in the vanilla Factory interior sometimes disappearing visibly at certain camera angles
 - Setting the `[Distance culling] Enabled` option to `false` in-game would set the far planes incorrectly
 
-# 1.0.0 beta 4
-
-## Fixed
-
-- Lights on the ship being disabled after the performance report finishes
-
-# 1.0.0 beta 3
-
-## Added
-
-- An option to prevent shadowed lights shining through walls when viewing them from afar
-
-## Fixed
-
-- Lights on the opposite sides of a walls disappearing and reappearing when moving between tiles
-- Items being invisible after moving between tiles with depth culling enabled
-
-# 1.0.0 beta 2
-
-## Fixed
-
-- Dynamic lights would cause some tiles to be kept visible unnecessarily
-
-# 1.0.0 beta 1
-
-## Fixed
-
-- NullReferenceExceptions that could occur when lights inside the dungeon are destroyed
-
-# 1.0.0 beta 0
-
-## Added
-
-- Items will be culled inside and outside the dungeon
-
-## Fixed
-
-- Dynamic lights shining through walls
-
-# 0.9.2
+# 0.9.3
 
 ## Fixed
 

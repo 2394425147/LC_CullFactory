@@ -1,7 +1,7 @@
 {
-  "name": "CullFactory_Beta",
+  "name": "CullFactory",
   "author": "fumiko",
-  "version_number": "1.0.5",
+  "version_number": "1.0.0",
   "website_url": "https://github.com/2394425147/LC_CullFactory",
   "description": "Stops rendering faraway factory rooms - Helps with performance.",
   "dependencies": [
