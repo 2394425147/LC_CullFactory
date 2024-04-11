@@ -123,6 +123,15 @@ public static class DynamicObjects
         }
     }
 
+    internal static void CollectAllLightsInWorld()
+    {
+        var allLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).AsEnumerable();
+        if (DungeonCullingInfo.AllLightsInDungeon != null)
+            allLights = allLights.Except(DungeonCullingInfo.AllLightsInDungeon);
+        AllLightsOutside.UnionWith(allLights.Where(light => !DungeonCullingInfo.DungeonBounds.Contains(light.transform.position)));
+        AllLightsInInterior.UnionWith(allLights.Except(AllLightsOutside));
+    }
+
     internal static void CollectAllTrackedObjects()
     {
         AllLightsOutside.Clear();
@@ -132,11 +141,7 @@ public static class DynamicObjects
         AllGrabbableObjectContentsInInterior.Clear();
         GrabbableObjectToContents.Clear();
 
-        var allLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).AsEnumerable();
-        if (DungeonCullingInfo.AllLightsInDungeon != null)
-            allLights = allLights.Except(DungeonCullingInfo.AllLightsInDungeon);
-        AllLightsOutside.UnionWith(allLights.Where(light => !DungeonCullingInfo.DungeonBounds.Contains(light.transform.position)));
-        AllLightsInInterior.UnionWith(allLights.Except(AllLightsOutside));
+        CollectAllLightsInWorld();
 
         foreach (var player in StartOfRound.Instance.allPlayerScripts)
             OnPlayerTeleported(player);
