@@ -34,6 +34,13 @@ public static class DynamicObjects
         }
     }
 
+    internal static bool IsInInterior(Vector3 position)
+    {
+        if (DungeonCullingInfo.DungeonBounds.SqrDistance(position) <= DungeonCullingInfo.SqrOutsideTileRadius)
+            return true;
+        return false;
+    }
+
     internal static void RefreshGrabbableObject(GrabbableObject item)
     {
         if (GrabbableObjectToContents.TryGetValue(item, out var contents))
@@ -51,23 +58,23 @@ public static class DynamicObjects
             GrabbableObjectToContents[item] = contents;
         }
 
-        bool isInFactory;
+        bool isInInterior;
         if (item.playerHeldBy is null)
         {
             // GrabbableObject.isInFactory is not reliable for items that are in the ship
             // at the start of the game.
             if (item.GetComponentInChildren<ScanNodeProperties>() is ScanNodeProperties scanNode)
-                isInFactory = DungeonCullingInfo.DungeonBounds.Contains(scanNode.transform.position);
+                isInInterior = IsInInterior(scanNode.transform.position);
             else
-                isInFactory = DungeonCullingInfo.DungeonBounds.Contains(item.transform.position);
+                isInInterior = IsInInterior(item.transform.position);
         }
         else
         {
             // Items may be within the bounds of the dungeon when held by a player.
-            isInFactory = item.playerHeldBy.isInsideFactory;
+            isInInterior = item.playerHeldBy.isInsideFactory;
         }
 
-        if (isInFactory)
+        if (isInInterior)
         {
             AllLightsOutside.ExceptWith(contents.lights);
             AllLightsInInterior.UnionWith(contents.lights);
