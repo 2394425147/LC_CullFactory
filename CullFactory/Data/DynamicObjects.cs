@@ -11,6 +11,7 @@ public static class DynamicObjects
 {
     public static readonly HashSet<Light> AllLightsOutside = [];
     public static readonly HashSet<Light> AllLightsInInterior = [];
+    public static readonly HashSet<Light> AllUnpredictableLights = [];
 
     public static HashSet<GrabbableObjectContents> AllGrabbableObjectContentsOutside = [];
     public static HashSet<GrabbableObjectContents> AllGrabbableObjectContentsInInterior = [];
@@ -132,6 +133,33 @@ public static class DynamicObjects
         AllLightsInInterior.UnionWith(allLights.Except(AllLightsOutside));
     }
 
+    internal static void CollectAllUnpredictableLights()
+    {
+        if (StartOfRound.Instance.spectateCamera.TryGetComponent<Light>(out var light))
+            AllUnpredictableLights.Add(light);
+
+        UpdateAllUnpredictableLights();
+    }
+
+    internal static void UpdateAllUnpredictableLights()
+    {
+        foreach (var light in AllUnpredictableLights)
+        {
+            if (!light.isActiveAndEnabled)
+                continue;
+            if (IsInInterior(light.transform.position))
+            {
+                AllLightsOutside.Remove(light);
+                AllLightsInInterior.Add(light);
+            }
+            else
+            {
+                AllLightsInInterior.Remove(light);
+                AllLightsOutside.Add(light);
+            }
+        }
+    }
+
     internal static void CollectAllTrackedObjects()
     {
         AllLightsOutside.Clear();
@@ -142,6 +170,8 @@ public static class DynamicObjects
         GrabbableObjectToContents.Clear();
 
         CollectAllLightsInWorld();
+
+        CollectAllUnpredictableLights();
 
         foreach (var player in StartOfRound.Instance.allPlayerScripts)
             OnPlayerTeleported(player);

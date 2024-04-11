@@ -167,6 +167,11 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        DynamicObjects.UpdateAllUnpredictableLights();
+    }
+
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
