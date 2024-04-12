@@ -44,6 +44,10 @@ public static class DynamicObjects
 
     internal static void RefreshGrabbableObject(GrabbableObject item)
     {
+        // If mods flag an item with DontSave, we won't find it in FindObjectsByType(),
+        // so don't include it here to avoid ever culling it.
+        if (item.hideFlags.HasFlag(HideFlags.DontSave))
+            return;
         if (GrabbableObjectToContents.TryGetValue(item, out var contents))
         {
             Plugin.Log($"Refreshing contents of {item.name}");
