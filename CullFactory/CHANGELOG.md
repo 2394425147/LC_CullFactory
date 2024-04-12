@@ -1,3 +1,9 @@
+# 1.0.1
+
+## Fixed
+
+- The flashlight from [Spectate Enemies](https://thunderstore.io/c/lethal-company/p/AllToasters/SpectateEnemies/) being invisible when viewing an enemy in the interior
+
 # 1.0.0
 
 ## Added
