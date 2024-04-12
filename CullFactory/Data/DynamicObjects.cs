@@ -48,6 +48,12 @@ public static class DynamicObjects
         // so don't include it here to avoid ever culling it.
         if (item.hideFlags.HasFlag(HideFlags.DontSave))
             return;
+        // Apparently Unity lets us find some objects that aren't in one of the visible
+        // scenes, so prefabs that some mods create will end up here, let's filter those
+        // out so that we don't have to do any processing on them.
+        if (!item.gameObject.scene.isLoaded)
+            return;
+
         if (GrabbableObjectToContents.TryGetValue(item, out var contents))
         {
             Plugin.Log($"Refreshing contents of {item.name}");
