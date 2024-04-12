@@ -135,6 +135,8 @@ public static class DynamicObjects
 
     internal static void CollectAllUnpredictableLights()
     {
+        AllUnpredictableLights.Clear();
+
         if (StartOfRound.Instance.spectateCamera.TryGetComponent<Light>(out var light))
             AllUnpredictableLights.Add(light);
 
@@ -145,6 +147,8 @@ public static class DynamicObjects
     {
         foreach (var light in AllUnpredictableLights)
         {
+            if (light == null)
+                continue;
             if (!light.isActiveAndEnabled)
                 continue;
             if (IsInInterior(light.transform.position))
