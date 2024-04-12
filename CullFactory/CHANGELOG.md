@@ -1,3 +1,9 @@
+# 1.0.2
+
+## Fixed
+
+- Error spam that could occur after exiting to menu, loading into a save again and landing on a moon
+
 # 1.0.1
 
 ## Fixed
