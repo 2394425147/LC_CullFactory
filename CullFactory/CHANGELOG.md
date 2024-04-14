@@ -1,3 +1,9 @@
+# 1.0.3
+
+## Fixed
+
+- Items spawned in the interior through LethalLib remaining invisible permanently, they will now never be culled
+
 # 1.0.2
 
 ## Fixed
