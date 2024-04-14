@@ -94,7 +94,15 @@ public abstract class CullingMethod : MonoBehaviour
     {
         Instance = this;
 
-        _hudCamera = GameObject.Find("Systems/UI/UICamera").GetComponent<Camera>();
+        // Get the camera for the HUD/UI via an object referenced by HUDManager so that
+        // if the UICamera's hierarchy is modified (i.e. by LethalCompanyVR), we can still
+        // find the camera.
+        var hudContainerTransform = HUDManager.Instance.HUDContainer.transform;
+        var hudCanvas = hudContainerTransform.GetComponentInParent<Canvas>();
+        if (hudCanvas != null)
+            _hudCamera = hudCanvas.worldCamera;
+        else
+            Plugin.LogWarning("Failed to find the HUD canvas, culling will be calculated unnecessarily for the HUD camera.");
     }
 
     private void OnEnable()

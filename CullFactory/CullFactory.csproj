@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
@@ -32,6 +32,9 @@
         </Reference>
         <Reference Include="UnityEngine.PhysicsModule">
             <HintPath>..\..\Libraries\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>..\..\Libraries\UnityEngine.UIModule.dll</HintPath>
         </Reference>
         <Reference Include="Unity.Netcode.Runtime">
             <HintPath>..\..\Libraries\Unity.Netcode.Runtime.dll</HintPath>
