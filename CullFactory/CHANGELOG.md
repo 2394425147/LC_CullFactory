@@ -1,3 +1,9 @@
+# 1.0.4
+
+## Fixed
+
+- All lights being culled when LethalCompanyVR is active (tentative fix)
+
 # 1.0.3
 
 ## Fixed
