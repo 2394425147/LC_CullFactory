@@ -182,25 +182,27 @@ public abstract class CullingMethod : MonoBehaviour
 
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
+    private readonly Plane[] _frustumPlanes = new Plane[6];
+
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
     {
-        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+        GeometryUtility.CalculateFrustumPlanes(camera, _frustumPlanes);
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
-            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+            if (GeometryUtility.TestPlanesAABB(_frustumPlanes, tileContents.bounds))
                 visibility.directTiles.Add(tileContents);
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
-            if (itemContents.IsVisible(frustum))
+            if (itemContents.IsVisible(_frustumPlanes))
                 visibility.items.Add(itemContents);
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsOutside)
         {
-            if (itemContents.IsVisible(frustum))
+            if (itemContents.IsVisible(_frustumPlanes))
                 visibility.items.Add(itemContents);
         }
 
@@ -228,6 +230,7 @@ public abstract class CullingMethod : MonoBehaviour
                 continue;
             needsCulling = true;
         }
+
         if (!needsCulling)
             return;
 
@@ -252,6 +255,7 @@ public abstract class CullingMethod : MonoBehaviour
                 tileContent.SetExternalInfluencesVisible(false);
             }
         }
+
         foreach (var tileContent in _visibilityLastCall.indirectTiles)
         {
             if (!_visibility.indirectTiles.Contains(tileContent))
@@ -263,6 +267,7 @@ public abstract class CullingMethod : MonoBehaviour
             tileContent.SetSelfVisible(true);
             tileContent.SetExternalInfluencesVisible(true);
         }
+
         foreach (var tileContent in _visibility.indirectTiles)
             tileContent.SetRenderersVisible(true);
 
@@ -272,6 +277,7 @@ public abstract class CullingMethod : MonoBehaviour
             if (!_visibility.items.Contains(item))
                 item.SetVisible(false);
         }
+
         foreach (var item in _visibility.items)
         {
             if (!_visibilityLastCall.items.Contains(item))
@@ -284,6 +290,7 @@ public abstract class CullingMethod : MonoBehaviour
             if (light != null && !_visibility.dynamicLights.Contains(light))
                 light.SetVisible(false);
         }
+
         foreach (var light in _visibility.dynamicLights)
         {
             if (light != null && !_visibilityLastCall.dynamicLights.Contains(light))
@@ -353,6 +360,7 @@ public abstract class CullingMethod : MonoBehaviour
                 var bounds = renderer.bounds;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
             }
+
             foreach (var light in contents.lights)
                 Gizmos.DrawWireSphere(light.transform.position, light.range);
 
