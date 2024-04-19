@@ -13,10 +13,10 @@ public abstract class CullingMethod : MonoBehaviour
 {
     public struct VisibilitySets
     {
-        public readonly HashSet<TileContents> directTiles = [];
-        public readonly HashSet<TileContents> indirectTiles = [];
-        public readonly HashSet<GrabbableObjectContents> items = [];
-        public readonly HashSet<Light> dynamicLights = [];
+        public readonly HashSet<TileContents> directTiles = new(IdentityEqualityComparer<TileContents>.Instance);
+        public readonly HashSet<TileContents> indirectTiles = new(IdentityEqualityComparer<TileContents>.Instance);
+        public readonly HashSet<GrabbableObjectContents> items = new(IdentityEqualityComparer<GrabbableObjectContents>.Instance);
+        public readonly HashSet<Light> dynamicLights = new(IdentityEqualityComparer<Light>.Instance);
 
         public VisibilitySets()
         {
