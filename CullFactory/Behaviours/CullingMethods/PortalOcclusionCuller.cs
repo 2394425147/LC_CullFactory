@@ -110,7 +110,8 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
-        var camerasTime = Time.realtimeSinceStartupAsDouble - camerasStart;
+        if (_benchmarking)
+            _camerasTime += (Time.realtimeSinceStartupAsDouble - camerasStart) - getCameraPositionTime;
 
         if (!interiorIsVisible)
             return;
@@ -178,7 +179,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         if (_benchmarking)
         {
-            _camerasTime += camerasTime - getCameraPositionTime;
             _visibilityTime += visibilityTime;
             _itemBoundsTime += itemBoundsTime;
             _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
