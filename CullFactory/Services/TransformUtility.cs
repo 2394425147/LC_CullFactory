@@ -17,4 +17,10 @@ public static class TransformUtility
         }
         return builder.ToString();
     }
+
+    public static bool TryGetComponentInParent<T>(this Transform transform, out T component)
+    {
+        component = transform.GetComponentInParent<T>();
+        return component != null;
+    }
 }

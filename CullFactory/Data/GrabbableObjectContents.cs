@@ -14,6 +14,8 @@ public sealed class GrabbableObjectContents
     public Vector3[] boundingVertices;
     public Bounds bounds;
 
+    public EnemyAI heldByEnemy;
+
     public GrabbableObjectContents(GrabbableObject item)
     {
         this.item = item;

@@ -1,4 +1,5 @@
 using CullFactory.Behaviours.CullingMethods;
+using CullFactory.Services;
 using GameNetcodeStuff;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ public static class DynamicObjects
     public static HashSet<GrabbableObjectContents> AllGrabbableObjectContentsOutside = [];
     public static HashSet<GrabbableObjectContents> AllGrabbableObjectContentsInInterior = [];
     public static Dictionary<GrabbableObject, GrabbableObjectContents> GrabbableObjectToContents = [];
+
+    public static Dictionary<EnemyAI, HashSet<GrabbableObjectContents>> ItemsHeldByEnemies = [];
 
     private static Light[][] allPlayerLights;
 
@@ -70,19 +73,38 @@ public static class DynamicObjects
         }
 
         bool isInInterior;
-        if (item.playerHeldBy is null)
+        if (item.parentObject != null && item.parentObject.transform.TryGetComponentInParent(out EnemyAI enemy))
         {
-            // GrabbableObject.isInFactory is not reliable for items that are in the ship
-            // at the start of the game.
-            if (item.GetComponentInChildren<ScanNodeProperties>() is ScanNodeProperties scanNode)
-                isInInterior = IsInInterior(scanNode.transform.position);
-            else
-                isInInterior = IsInInterior(item.transform.position);
+            isInInterior = !enemy.isOutside;
+
+            contents.heldByEnemy = enemy;
+            if (!ItemsHeldByEnemies.TryGetValue(enemy, out var heldItems))
+                ItemsHeldByEnemies.Add(enemy, heldItems = []);
+            heldItems.Add(contents);
         }
         else
         {
-            // Items may be within the bounds of the dungeon when held by a player.
-            isInInterior = item.playerHeldBy.isInsideFactory;
+            if (item.playerHeldBy is null)
+            {
+                // GrabbableObject.isInFactory is not reliable for items that are in the ship
+                // at the start of the game.
+                if (item.GetComponentInChildren<ScanNodeProperties>() is ScanNodeProperties scanNode)
+                    isInInterior = IsInInterior(scanNode.transform.position);
+                else
+                    isInInterior = IsInInterior(item.transform.position);
+            }
+            else
+            {
+                // Items may be within the bounds of the dungeon when held by a player.
+                isInInterior = item.playerHeldBy.isInsideFactory;
+            }
+
+            if (contents.heldByEnemy is not null)
+            {
+                if (ItemsHeldByEnemies.TryGetValue(contents.heldByEnemy, out var heldItems))
+                    heldItems.Remove(contents);
+                contents.heldByEnemy = null;
+            }
         }
 
         if (isInInterior)
@@ -134,6 +156,18 @@ public static class DynamicObjects
         }
     }
 
+    internal static void OnEnemyTeleported(EnemyAI enemy)
+    {
+        if (!ItemsHeldByEnemies.TryGetValue(enemy, out var items))
+            return;
+        foreach (var item in items)
+        {
+            if (item.item == null)
+                continue;
+            RefreshGrabbableObject(item.item);
+        }
+    }
+
     internal static void CollectAllLightsInWorld()
     {
         var allLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).AsEnumerable();
@@ -182,6 +216,8 @@ public static class DynamicObjects
         AllGrabbableObjectContentsOutside.Clear();
         AllGrabbableObjectContentsInInterior.Clear();
         GrabbableObjectToContents.Clear();
+
+        ItemsHeldByEnemies.Clear();
 
         CollectAllLightsInWorld();
 

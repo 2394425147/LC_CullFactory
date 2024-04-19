@@ -78,6 +78,18 @@ public static class TeleportExtender
         DynamicObjects.OnPlayerTeleported(player);
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.SetEnemyOutside))]
+    private static void OnEnemySetOutsideOrInside(EnemyAI __instance, bool outside)
+    {
+        OnEnemyTeleported(__instance);
+    }
+
+    private static void OnEnemyTeleported(EnemyAI enemy)
+    {
+        DynamicObjects.OnEnemyTeleported(enemy);
+    }
+
     private static void UpdateFarPlane(PlayerControllerB player)
     {
         if (!Config.CullDistanceEnabled.Value)

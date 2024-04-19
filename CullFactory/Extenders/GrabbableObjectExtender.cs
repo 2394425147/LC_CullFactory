@@ -1,4 +1,4 @@
-using CullFactory.Data;
+﻿using CullFactory.Data;
 using HarmonyLib;
 
 namespace CullFactory.Extenders;
@@ -23,6 +23,20 @@ internal class GrabbableObjectExtender
     [HarmonyPostfix]
     [HarmonyPatch(nameof(GrabbableObject.EnableItemMeshes))]
     private static void GrabbableObjectShownOrHidden(GrabbableObject __instance)
+    {
+        DynamicObjects.RefreshGrabbableObject(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(GrabbableObject.GrabItemFromEnemy))]
+    private static void GrabbableObjectPickedUpByEnemy(GrabbableObject __instance)
+    {
+        DynamicObjects.RefreshGrabbableObject(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(GrabbableObject.DiscardItemFromEnemy))]
+    private static void GrabbableObjectDroppedByEnemy(GrabbableObject __instance)
     {
         DynamicObjects.RefreshGrabbableObject(__instance);
     }
