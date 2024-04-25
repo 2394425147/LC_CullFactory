@@ -1,3 +1,13 @@
+# 1.1.0
+
+## Added
+
+- Tracking of items held by enemies that can enter and leave the interior
+
+## Fixed
+
+- Items becoming invisible if custom moons cause errors while a player enters/leaves the interior
+
 # 1.0.4
 
 ## Fixed
