@@ -52,16 +52,6 @@ public static class TeleportExtender
         OnPlayerTeleported(__instance);
     }
 
-    // EntranceTeleport sets the `isInsideFactory` flag after calling `PlayerControllerB.TeleportPlayer()`,
-    // so we need to postfix these too.
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.TeleportPlayer))]
-    private static void OnTeleportLocalPlayerThroughEntrance()
-    {
-        OnPlayerTeleported(StartOfRound.Instance.localPlayerController);
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.TeleportPlayerClientRpc))]
     private static void OnTeleportOtherPlayerThroughEntrance(ref int playerObj)

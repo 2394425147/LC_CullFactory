@@ -45,6 +45,11 @@ public static class DynamicObjects
         return false;
     }
 
+    internal static bool PlayerIsInInterior(PlayerControllerB player)
+    {
+        return IsInInterior(player.transform.position);
+    }
+
     internal static void RefreshGrabbableObject(GrabbableObject item)
     {
         // If mods flag an item with DontSave, we won't find it in FindObjectsByType(),
@@ -96,7 +101,7 @@ public static class DynamicObjects
             else
             {
                 // Items may be within the bounds of the dungeon when held by a player.
-                isInInterior = item.playerHeldBy.isInsideFactory;
+                isInInterior = PlayerIsInInterior(item.playerHeldBy);
             }
 
             if (contents.heldByEnemy is not null)
@@ -136,7 +141,9 @@ public static class DynamicObjects
             return;
 
         var playerLights = allPlayerLights[playerIndex];
-        if (player.isInsideFactory)
+        // PlayerControllerB.isInsideFactory may not be accurate if an error occurs while
+        // teleporting, so let's just check their position instead.
+        if (PlayerIsInInterior(player))
         {
             AllLightsOutside.ExceptWith(playerLights);
             AllLightsInInterior.UnionWith(playerLights);
