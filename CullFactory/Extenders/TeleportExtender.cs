@@ -70,7 +70,7 @@ public static class TeleportExtender
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.SetEnemyOutside))]
-    private static void OnEnemySetOutsideOrInside(EnemyAI __instance, bool outside)
+    private static void OnEnemySetOutsideOrInside(EnemyAI __instance)
     {
         OnEnemyTeleported(__instance);
     }
