@@ -21,8 +21,7 @@ public static class Config
                                                       "Value:\n" +
                                                       "A list of dungeon generators, separated by commas \",\".";
 
-    private static readonly Version DefaultVersion = Version.Parse("0.0.0");
-    private static readonly Version FallbackVersion = Version.Parse("0.8.0");
+    private static readonly Version DefaultVersion = new Version(0, 0, 0);
 
     private static readonly string VersionFile =
         Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
@@ -30,7 +29,6 @@ public static class Config
     private static readonly string[] DefaultFlowsToBlockCulling = [];
 
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow", "School"];
-    private static readonly string[] BaseSetOfInteriorsToSkipFallbackPortals = ["CastleFlow", "SewerFlow"];
 
     public static void Initialize(ConfigFile configFile)
     {
@@ -195,9 +193,9 @@ public static class Config
                                       ? Version.Parse(Encoding.UTF8.GetString(File.ReadAllBytes(VersionFile)))
                                       : DefaultVersion;
 
-        if (versionBeforeLaunch <= FallbackVersion)
+        if (versionBeforeLaunch <= new Version(0, 8, 0))
             InteriorsToUseFallbackPortals.Value = InteriorsToUseFallbackPortals.Value.SplitByComma()
-                                                                               .Except(BaseSetOfInteriorsToSkipFallbackPortals)
+                                                                               .Except(["CastleFlow", "SewerFlow"])
                                                                                .JoinByComma();
 
         if (versionBeforeLaunch <= new Version(0, 8, 6))
