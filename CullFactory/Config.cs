@@ -17,6 +17,10 @@ namespace CullFactory;
 /// </summary>
 public static class Config
 {
+    private const string DungeonFlowListDescription = "\n\n" +
+                                                      "Value:\n" +
+                                                      "A list of dungeon generators, separated by commas \",\".";
+
     private static readonly Version DefaultVersion = Version.Parse("0.0.0");
     private static readonly Version FallbackVersion = Version.Parse("0.8.0");
 
@@ -44,12 +48,15 @@ public static class Config
                                                   "Disable culling for interiors",
                                                   "",
                                                   "A list of dungeon flows to disable culling on, separated by commas, i.e.\n" +
-                                                  "\"Level1Flow, Level2Flow\"");
+                                                  "\"Level1Flow, Level2Flow\"" +
+                                                  DungeonFlowListDescription);
 
         InteriorsToForceCulling = configFile.Bind("General",
                                                   "Force enable culling for interiors",
                                                   "",
-                                                  "A list of dungeon flows to ignore the blacklists and enable culling on, also separated by commas");
+                                                  "A list of dungeon flows to have culling force-enabled if they are blacklisted internally:\n" +
+                                                  DefaultFlowsToBlockCulling.JoinByComma() +
+                                                  DungeonFlowListDescription);
 
         UpdateFrequency = configFile.Bind("General",
                                           "Update frequency",
@@ -73,18 +80,16 @@ public static class Config
         InteriorsToUseFallbackPortals = configFile.Bind("Portal occlusion culling",
                                                         "Use fallback portals for interiors",
                                                         "",
-                                                        "Use a more forgiving testing method for the specified interiors.\n" +
-                                                        "This is recommended for interiors with incorrect portal sizes.\n\n" +
-                                                        "Value:\n" +
-                                                        "A list of dungeon generators, separated by commas \",\".");
+                                                        "Uses the maximum possible doorway sizes in each tile for visibility testing in the specified interiors.\n" +
+                                                        "This is recommended for interiors with incorrect doorway sizes." +
+                                                        DungeonFlowListDescription);
 
         InteriorsToSkipFallbackPortals = configFile.Bind("Portal occlusion culling",
                                                          "Skip fallback portals for interiors",
                                                          "",
                                                          "Skip using fallback portals on previously problematic interiors:\n" +
-                                                         $"{BaseSetOfInteriorsToSkipFallbackPortals.JoinByComma()}\n\n" +
-                                                         "Value:\n" +
-                                                         "A list of dungeon generators, separated by commas \",\".");
+                                                         BaseSetOfInteriorsToUseFallbackPortals.JoinByComma() +
+                                                         DungeonFlowListDescription);
 
         #endregion
 
