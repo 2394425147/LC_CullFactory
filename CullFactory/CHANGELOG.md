@@ -1,3 +1,9 @@
+# 1.1.2
+
+## Fixed
+
+- Added Wesley's upcoming interior to the blacklist, as issues are anticipated at release
+
 # 1.1.1
 
 ## Fixed
