@@ -26,7 +26,7 @@ public static class Config
     private static readonly string VersionFile =
         Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
 
-    private static readonly string[] DefaultFlowsToBlockCulling = [];
+    private static readonly string[] DefaultFlowsToBlockCulling = ["GrandArmoryFlow"];
 
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow", "School"];
 
