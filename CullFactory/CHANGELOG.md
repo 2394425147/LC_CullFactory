@@ -1,6 +1,6 @@
 # 1.1.1
 
-# Fixed
+## Fixed
 
 - The render distance (camera far plane) being set based on where the player previously was when teleporting
 
