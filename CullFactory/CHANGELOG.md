@@ -1,3 +1,9 @@
+# 1.1.3
+
+## Fixed
+
+- Imperium's night vision not being visible on the player camera
+
 # 1.1.2
 
 ## Fixed
