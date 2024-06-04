@@ -191,6 +191,12 @@ public static class DynamicObjects
         if (StartOfRound.Instance.spectateCamera.TryGetComponent<Light>(out var light))
             AllUnpredictableLights.Add(light);
 
+        AllUnpredictableLights.UnionWith(StartOfRound.Instance.mapScreen.mapCamera.GetComponentsInChildren<Light>());
+
+        var imperiumMap = GameObject.Find("ImpMap");
+        if (imperiumMap != null)
+            AllUnpredictableLights.UnionWith(imperiumMap.GetComponentsInChildren<Light>());
+
         UpdateAllUnpredictableLights();
     }
 
