@@ -1,3 +1,9 @@
+# 1.1.4
+
+## Changed
+
+- Removed the Grand Armory interior from the blacklist, culling issues have been fixed
+
 # 1.1.3
 
 ## Fixed
