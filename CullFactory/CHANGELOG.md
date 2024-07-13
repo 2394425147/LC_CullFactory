@@ -1,3 +1,9 @@
+# 1.1.5
+
+## Fixed
+
+- Freezes on the Grand Armory interior due to an issue in Unity, it will be blacklisted until further notice
+
 # 1.1.4
 
 ## Changed
