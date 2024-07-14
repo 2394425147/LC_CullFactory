@@ -244,27 +244,39 @@ public abstract class CullingMethod : MonoBehaviour
         AddVisibleObjects(cameras, _visibility);
 
         // Update culling for tiles.
+        bool removedAnyTile = false;
+
         foreach (var tileContent in _visibilityLastCall.directTiles)
         {
             if (!_visibility.directTiles.Contains(tileContent))
             {
                 tileContent.SetSelfVisible(false);
                 tileContent.SetExternalInfluencesVisible(false);
+                removedAnyTile = true;
             }
         }
         foreach (var tileContent in _visibilityLastCall.indirectTiles)
         {
             if (!_visibility.indirectTiles.Contains(tileContent))
+            {
                 tileContent.SetRenderersVisible(false);
+                removedAnyTile = true;
+            }
         }
 
         foreach (var tileContent in _visibility.directTiles)
         {
-            tileContent.SetSelfVisible(true);
-            tileContent.SetExternalInfluencesVisible(true);
+            if (removedAnyTile || !_visibilityLastCall.directTiles.Contains(tileContent))
+            {
+                tileContent.SetSelfVisible(true);
+                tileContent.SetExternalInfluencesVisible(true);
+            }
         }
         foreach (var tileContent in _visibility.indirectTiles)
-            tileContent.SetRenderersVisible(true);
+        {
+            if (removedAnyTile || !_visibilityLastCall.indirectTiles.Contains(tileContent))
+                tileContent.SetRenderersVisible(true);
+        }
 
         // Update culling for items.
         foreach (var item in _visibilityLastCall.items)
