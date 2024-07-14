@@ -61,15 +61,9 @@
         <None Update="README.md">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Documentation\banner.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Update="CHANGELOG.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Documentation\"/>
-    </ItemGroup>
 </Project>
