@@ -1,4 +1,5 @@
 using CullFactory.Services;
+using CullFactoryBurst;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -93,7 +94,7 @@ public sealed class GrabbableObjectContents
     {
         if (!HasBounds)
             return false;
-        return GeometryUtility.TestPlanesAABB(planes, bounds);
+        return Geometry.TestPlanesAABB(planes, bounds);
     }
 
     public bool IsVisible(Plane[][] planes, int lastIndex)

@@ -25,6 +25,9 @@
             <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
             <Private>false</Private>
         </Reference>
+        <Reference Include="CullFactoryBurst">
+            <HintPath>..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Managed\CullFactoryBurstPlugin.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine">
             <HintPath>..\..\Libraries\UnityEngine.dll</HintPath>
             <Private>false</Private>
@@ -39,6 +42,10 @@
         </Reference>
         <Reference Include="UnityEngine.UIModule">
             <HintPath>..\..\Libraries\UnityEngine.UIModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Unity.Burst">
+            <HintPath>..\..\Libraries\Unity.Burst.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="Unity.Netcode.Runtime">
@@ -65,5 +72,10 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+
+    <Target Name="CopyToPackage" AfterTargets="AfterBuild">
+        <Copy SourceFiles="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Managed\CullFactoryBurstPlugin.dll" DestinationFolder="$(OutDir)"/>
+        <Copy SourceFiles="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Plugins\x86_64\lib_burst_generated.dll" DestinationFiles="$(OutDir)\lib_burst_generated.data"/>
+    </Target>
 
 </Project>

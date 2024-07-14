@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CullFactory.Services;
+using CullFactoryBurst;
 using DunGen;
 using UnityEngine;
 
@@ -266,7 +267,7 @@ public static class DungeonCullingInfo
 
         foreach (var tileContents in AllTileContents)
         {
-            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
                 intoList.Add(tileContents);
         }
     }

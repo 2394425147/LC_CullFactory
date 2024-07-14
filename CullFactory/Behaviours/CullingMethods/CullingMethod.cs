@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx;
 using CullFactory.Data;
 using CullFactory.Services;
+using CullFactoryBurst;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -188,7 +189,7 @@ public abstract class CullingMethod : MonoBehaviour
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
-            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
                 visibility.directTiles.Add(tileContents);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CullFactory.Data;
+using CullFactoryBurst;
 using UnityEngine;
 
 namespace CullFactory.Services;
@@ -39,7 +40,7 @@ public static class ObjectContentsUtility
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
-            if (GeometryUtility.TestPlanesAABB(frustum, tileContents.bounds))
+            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
                 result.Add(tileContents);
         }
     }

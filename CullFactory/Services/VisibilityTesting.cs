@@ -1,4 +1,5 @@
 ﻿using CullFactory.Data;
+using CullFactoryBurst;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -11,7 +12,7 @@ public static class VisibilityTesting
     {
         for (var i = 0; i <= lastFrustum; i++)
         {
-            if (!GeometryUtility.TestPlanesAABB(frustums[i], bounds))
+            if (!Geometry.TestPlanesAABB(frustums[i], bounds))
                 return false;
         }
         return true;
@@ -104,7 +105,7 @@ public static class VisibilityTesting
     {
         foreach (var tile in tiles)
         {
-            if (GeometryUtility.TestPlanesAABB(frustum, tile.bounds))
+            if (Geometry.TestPlanesAABB(frustum, tile.bounds))
                 return true;
         }
 

@@ -2,7 +2,9 @@ using BepInEx;
 using CullFactory.Behaviours.Visualization;
 using CullFactory.Extenders;
 using HarmonyLib;
+using System.IO;
 using UnityEngine;
+using Unity.Burst;
 
 namespace CullFactory;
 
@@ -26,6 +28,11 @@ public class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(GrabbableObjectExtender));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
+
+        var workingDirectory = new FileInfo(Info.Location).DirectoryName;
+        var burstLibrary = Path.Combine(workingDirectory, "lib_burst_generated.data");
+        if (File.Exists(burstLibrary) && BurstRuntime.LoadAdditionalLibrary(burstLibrary))
+            LogAlways("Loaded CullFactory's Burst assembly.");
 
         Log($"Plugin {Name} is loaded!");
     }
