@@ -59,23 +59,24 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="icon.png">
+        <Content Include="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Plugins\x86_64\lib_burst_generated.dll" Link="lib_burst_generated.data">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="manifest.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="README.md">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="CHANGELOG.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
+        </Content>
     </ItemGroup>
 
-    <Target Name="CopyToPackage" AfterTargets="AfterBuild">
-        <Copy SourceFiles="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Managed\CullFactoryBurstPlugin.dll" DestinationFolder="$(OutDir)"/>
-        <Copy SourceFiles="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Plugins\x86_64\lib_burst_generated.dll" DestinationFiles="$(OutDir)\lib_burst_generated.data"/>
-    </Target>
+    <ItemGroup>
+        <None Include="icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="manifest.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="README.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="CHANGELOG.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
 </Project>
