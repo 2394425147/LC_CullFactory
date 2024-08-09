@@ -16,7 +16,7 @@ namespace CullFactoryBurst
         }
 
         [BurstCompile(FloatMode = FloatMode.Fast)]
-        public static unsafe bool TestPlanesAABB(Plane* planes, long planeCount, in Bounds bounds)
+        public static unsafe bool TestPlanesAABB(Plane* planes, int planeCount, in Bounds bounds)
         {
             WarnNotBursted();
 
@@ -41,7 +41,7 @@ namespace CullFactoryBurst
             {
                 fixed (Plane* planePtr = planes)
                 {
-                    return TestPlanesAABB(planePtr, planes.LongLength, bounds);
+                    return TestPlanesAABB(planePtr, planes.Length, bounds);
                 }
             }
         }
