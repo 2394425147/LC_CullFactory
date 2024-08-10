@@ -3,6 +3,7 @@
 ## Added
 
 - A Burst-compiled assembly which will contain optimized algorithms to be used for culling
+- An optimization to prevent some work from being done when culled tiles don't change
 
 ## Fixed
 
