@@ -1,3 +1,13 @@
+# 1.2.0
+
+## Added
+
+- A Burst-compiled assembly which will contain optimized algorithms to be used for culling
+
+## Fixed
+
+- A freeze that could occur on any interior, but most commonly the Grand Armory interior
+
 # 1.1.5
 
 ## Fixed
