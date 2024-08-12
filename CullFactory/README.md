@@ -1,4 +1,4 @@
-![Banner](https://github.com/2394425147/LC_CullFactory/blob/master/CullFactory/Documentation/banner.png)
+![Banner](https://raw.githubusercontent.com/2394425147/LC_CullFactory/master/CullFactory/Documentation/banner.png)
 
 **Note:** Performance gains may vary between devices. Feel free to give it a try and experiment with different options!
 
