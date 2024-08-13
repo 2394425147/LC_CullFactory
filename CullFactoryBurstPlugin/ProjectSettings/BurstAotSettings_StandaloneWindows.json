@@ -4,7 +4,7 @@
     "EnableBurstCompilation": true,
     "EnableOptimisations": true,
     "EnableSafetyChecks": false,
-    "EnableDebugInAllBuilds": false,
+    "EnableDebugInAllBuilds": true,
     "DebugDataKind": 1,
     "EnableArmv9SecurityFeatures": false,
     "CpuMinTargetX32": 0,
