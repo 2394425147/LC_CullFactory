@@ -9,16 +9,22 @@ namespace CullFactoryBurst
     [BurstCompile]
     public static class Geometry
     {
+        private static bool WarnedCallWasNotBurstCompiled = false;
+
         [BurstDiscard]
-        public static void WarnNotBursted()
+        public static void WarnIfNotBurstCompiled()
         {
-            Debug.LogWarning("Call to TestPlanesAABB is not using Burst.");
+            if (!WarnedCallWasNotBurstCompiled)
+            {
+                Debug.LogWarning("Call to TestPlanesAABB is not using Burst.");
+                WarnedCallWasNotBurstCompiled = true;
+            }
         }
 
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static unsafe bool TestPlanesAABB(Plane* planes, int planeCount, in Bounds bounds)
         {
-            WarnNotBursted();
+            WarnIfNotBurstCompiled();
 
             for (int i = 0; i < planeCount; i++)
             {
