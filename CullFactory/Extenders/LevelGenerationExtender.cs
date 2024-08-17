@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace CullFactory.Extenders;
 
-public sealed class LevelGenerationExtender
+public static class LevelGenerationExtender
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.waitForMainEntranceTeleportToSpawn))]

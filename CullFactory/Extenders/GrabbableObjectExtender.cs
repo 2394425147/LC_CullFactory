@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace CullFactory.Extenders;
 
 [HarmonyPatch(typeof(GrabbableObject))]
-internal class GrabbableObjectExtender
+internal static class GrabbableObjectExtender
 {
     [HarmonyPostfix]
     [HarmonyPatch(nameof(GrabbableObject.Start))]

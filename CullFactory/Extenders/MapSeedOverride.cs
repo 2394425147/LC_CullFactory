@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace CullFactory.Extenders;
 
-internal class MapSeedOverride
+internal static class MapSeedOverride
 {
     [HarmonyPatch(typeof(StartOfRound), "Start")]
     [HarmonyPostfix]
