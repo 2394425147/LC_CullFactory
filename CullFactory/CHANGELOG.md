@@ -1,3 +1,10 @@
+# 1.2.1
+
+## Fixed
+
+- Culling issue in the entry tile of the new interior in v60
+- Crash when joining a LAN host
+
 # 1.2.0
 
 ## Added
