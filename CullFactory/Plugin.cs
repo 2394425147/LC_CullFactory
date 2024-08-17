@@ -26,7 +26,6 @@ public class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(TeleportExtender));
         harmony.PatchAll(typeof(MapSeedOverride));
         harmony.PatchAll(typeof(GrabbableObjectExtender));
-        harmony.PatchAll(typeof(BurstHacks));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
 
