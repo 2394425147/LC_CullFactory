@@ -1,3 +1,9 @@
+# 1.2.2
+
+## Fixed
+
+- Packages built into the Burst assembly will now use the versions packaged with Lethal Company to avoid tricky bugs
+
 # 1.2.1
 
 ## Fixed
