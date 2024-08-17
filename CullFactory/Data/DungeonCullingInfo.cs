@@ -10,7 +10,7 @@ namespace CullFactory.Data;
 
 public static class DungeonCullingInfo
 {
-    internal const float OutsideTileRadius = 10f;
+    internal const float OutsideTileRadius = 20f;
     internal const float SqrOutsideTileRadius = OutsideTileRadius * OutsideTileRadius;
 
     private const int RendererIntrusionTileDepth = 2;
