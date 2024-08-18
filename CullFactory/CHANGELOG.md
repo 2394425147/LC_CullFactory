@@ -1,3 +1,9 @@
+# 1.2.3
+
+## Fixed
+
+- Items being invisible in the entry tile of the new interior
+
 # 1.2.2
 
 ## Fixed
