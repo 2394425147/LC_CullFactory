@@ -48,7 +48,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
     {
         foreach (var tile in visibility.directTiles)
         {
-            if (item.IsWithin(tile.bounds))
+            if (item.IsWithin(tile))
                 return true;
 
             foreach (var externalLightLineOfSight in tile.externalLightLinesOfSight)
@@ -60,7 +60,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         foreach (var tile in visibility.indirectTiles)
         {
-            if (item.IsWithin(tile.bounds))
+            if (item.IsWithin(tile))
                 return true;
         }
 
