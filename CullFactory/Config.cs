@@ -71,6 +71,15 @@ public static class Config
                                           "and allows more lights/tiles to be culled within the interior.\n" +
                                           "Disabling may have a negative impact on performance.");
 
+        DisableLODCulling = configFile.Bind("General",
+                                             "Disable LOD culling",
+                                             true,
+                                             "Forces the last LOD to stay visible for all static objects in the interior. This will " +
+                                             "prevent the stairs on the factory interior from disappearing at a distance, and should " +
+                                             "also prevent any other similar disappearing objects.\n" +
+                                             "Objects that have LOD groups will instead be culled based on visibility, so this has a " +
+                                             "minimal effect on performance.");
+
         #endregion
 
         #region Portal Occlusion Culling
@@ -171,6 +180,7 @@ public static class Config
         InteriorsToForceCulling.SettingChanged += (_, _) => UpdateInteriorsWithDisabledCulling();
         UpdateFrequency.SettingChanged += (_, _) => CullingMethod.Initialize();
         DisableShadowDistanceFading.SettingChanged += (_, _) => RefreshCullingInfoAndMethod();
+        DisableLODCulling.SettingChanged += (_, _) => RefreshCullingInfoAndMethod();
 
         InteriorsToUseFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
         InteriorsToSkipFallbackPortals.SettingChanged += (_, _) => UpdateInteriorsWithFallbackPortals();
@@ -247,6 +257,8 @@ public static class Config
     public static ConfigEntry<float> UpdateFrequency { get; private set; }
 
     public static ConfigEntry<bool> DisableShadowDistanceFading { get; private set; }
+
+    public static ConfigEntry<bool> DisableLODCulling { get; private set; }
 
     /// <summary>
     /// <para>

@@ -48,6 +48,7 @@ public abstract class CullingMethod : MonoBehaviour
     private VisibilitySets _visibilityLastCall = new();
 
     private float[] _lightShadowFadeDistances;
+    private Dictionary<LODGroup, float> _lastLODScreenHeights;
 
     protected TileContents _debugTile = null;
 
@@ -115,6 +116,7 @@ public abstract class CullingMethod : MonoBehaviour
         DynamicObjects.AllLightsInInterior.SetVisible(false);
 
         DisableShadowDistanceFading();
+        DisableInteriorLODCulling();
 
         RenderPipelineManager.beginContextRendering += DoCulling;
     }
@@ -303,6 +305,7 @@ public abstract class CullingMethod : MonoBehaviour
         _visibilityLastCall.ClearAll();
 
         RestoreShadowDistanceFading();
+        RestoreInteriorLODCulling();
 
         RenderPipelineManager.beginContextRendering -= DoCulling;
     }
@@ -350,6 +353,47 @@ public abstract class CullingMethod : MonoBehaviour
         }
 
         _lightShadowFadeDistances = null;
+    }
+
+    private void DisableInteriorLODCulling()
+    {
+        if (!Config.DisableLODCulling.Value)
+            return;
+
+        _lastLODScreenHeights = [];
+
+        foreach (var tile in DungeonCullingInfo.AllTileContents)
+        {
+            foreach (var lodGroup in tile.tile.GetComponentsInChildren<LODGroup>())
+            {
+                var lods = lodGroup.GetLODs();
+                _lastLODScreenHeights[lodGroup] = lods[^1].screenRelativeTransitionHeight;
+                Plugin.LogAlways($"{lodGroup} originally set to {lods[^1].screenRelativeTransitionHeight}");
+                lods[^1].screenRelativeTransitionHeight = 0;
+                lodGroup.SetLODs(lods);
+            }
+        }
+    }
+
+    private void RestoreInteriorLODCulling()
+    {
+        if (_lastLODScreenHeights == null)
+            return;
+
+        foreach (var tile in DungeonCullingInfo.AllTileContents)
+        {
+            foreach (var lodGroup in tile.tile.GetComponentsInChildren<LODGroup>())
+            {
+                if (!_lastLODScreenHeights.TryGetValue(lodGroup, out var screenRelativeTransitionHeight))
+                    continue;
+                Plugin.LogAlways($"{lodGroup} resetting to {screenRelativeTransitionHeight}");
+                var lods = lodGroup.GetLODs();
+                lods[^1].screenRelativeTransitionHeight = screenRelativeTransitionHeight;
+                lodGroup.SetLODs(lods);
+            }
+        }
+
+        _lastLODScreenHeights = null;
     }
 
     private void OnDrawGizmos()
