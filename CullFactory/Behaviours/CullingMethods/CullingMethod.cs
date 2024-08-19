@@ -119,26 +119,6 @@ public abstract class CullingMethod : MonoBehaviour
         RenderPipelineManager.beginContextRendering += DoCulling;
     }
 
-    private void DisableShadowDistanceFading()
-    {
-        if (!Config.DisableShadowDistanceFading.Value)
-            return;
-
-        _lightShadowFadeDistances = new float[DungeonCullingInfo.AllLightsInDungeon.Length];
-        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
-        {
-            var light = DungeonCullingInfo.AllLightsInDungeon[i];
-            if (light == null)
-                continue;
-            var hdLight = light.GetComponent<HDAdditionalLightData>();
-            if (hdLight == null)
-                continue;
-
-            _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
-            hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
-        }
-    }
-
     internal void OnDynamicLightsCollected()
     {
         DynamicObjects.AllLightsOutside.SetVisible(false);
@@ -330,6 +310,26 @@ public abstract class CullingMethod : MonoBehaviour
     private void OnDestroy()
     {
         Instance = null;
+    }
+
+    private void DisableShadowDistanceFading()
+    {
+        if (!Config.DisableShadowDistanceFading.Value)
+            return;
+
+        _lightShadowFadeDistances = new float[DungeonCullingInfo.AllLightsInDungeon.Length];
+        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
+        {
+            var light = DungeonCullingInfo.AllLightsInDungeon[i];
+            if (light == null)
+                continue;
+            var hdLight = light.GetComponent<HDAdditionalLightData>();
+            if (hdLight == null)
+                continue;
+
+            _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
+            hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
+        }
     }
 
     private void RestoreShadowDistanceFading()
