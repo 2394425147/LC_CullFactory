@@ -11,6 +11,9 @@ public static class TeleportExtender
 
     public static void SetInitialFarClipPlane()
     {
+        if (StartOfRound.Instance == null)
+            return;
+
         var allPlayers = StartOfRound.Instance.allPlayerScripts;
 
         if (_initialPlayerCameraFarPlanes == null)
@@ -28,18 +31,12 @@ public static class TeleportExtender
         }
 
         for (var i = 0; i < allPlayers.Length; i++)
-        {
-            var player = allPlayers[i];
-            player.gameplayCamera.farClipPlane = player.isInsideFactory
-                                                     ? Config.CullDistance.Value
-                                                     : Config.SurfaceCullDistance.Value;
-            Plugin.Log($"Set culling distance of \"{player.gameplayCamera.name}\" to {player.gameplayCamera.farClipPlane}");
-        }
+            UpdateFarPlane(allPlayers[i]);
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-    private static void LocalPlayerTookControl()
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start))]
+    private static void GameStarted()
     {
         SetInitialFarClipPlane();
         DynamicObjects.CollectAllPlayerLights();
