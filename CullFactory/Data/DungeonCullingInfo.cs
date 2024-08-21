@@ -42,9 +42,9 @@ public static class DungeonCullingInfo
         if (AllTileContents == null)
             return;
 
-        AllTileContents = [];
+        AllTileContents = null;
         TileContentsForTile.Clear();
-        AllLightsInDungeon = [];
+        AllLightsInDungeon = null;
         DungeonBounds = default;
     }
 

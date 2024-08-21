@@ -40,6 +40,8 @@ public static class DynamicObjects
 
     internal static bool IsInInterior(Vector3 position)
     {
+        if (DungeonCullingInfo.AllTileContents == null)
+            return false;
         if (DungeonCullingInfo.DungeonBounds.SqrDistance(position) <= DungeonCullingInfo.SqrOutsideTileRadius)
             return true;
         return false;
