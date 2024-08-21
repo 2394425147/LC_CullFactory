@@ -1,4 +1,5 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
+using CullFactoryBurst;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -13,7 +14,8 @@ namespace CullFactory.Services
             var lightDistanceSquared = bounds.SqrDistance(light.transform.position);
             if (lightDistanceSquared > lightRange * lightRange)
                 return false;
-            // TODO: Take into account light shapes other than point.
+            if (light.type == LightType.Spot)
+                return Geometry.SpotLightInfluencesBounds(light, bounds);
             return true;
         }
 
