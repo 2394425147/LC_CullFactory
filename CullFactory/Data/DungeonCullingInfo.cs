@@ -167,7 +167,7 @@ public static class DungeonCullingInfo
             {
                 foreach (var otherTile in AllTileContents)
                 {
-                    if (!light.Affects(otherTile.bounds))
+                    if (!light.Affects(otherTile))
                         continue;
 
                     // If the light has no shadows or if the shadows don't fully occlude light,
@@ -195,7 +195,7 @@ public static class DungeonCullingInfo
 
                 var currentTile = tiles[index];
 
-                if (!light.Affects(currentTile.bounds))
+                if (!light.Affects(currentTile))
                     return;
 
                 bool influencesARenderer = false;
