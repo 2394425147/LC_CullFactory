@@ -368,7 +368,6 @@ public abstract class CullingMethod : MonoBehaviour
             {
                 var lods = lodGroup.GetLODs();
                 _lastLODScreenHeights[lodGroup] = lods[^1].screenRelativeTransitionHeight;
-                Plugin.LogAlways($"{lodGroup} originally set to {lods[^1].screenRelativeTransitionHeight}");
                 lods[^1].screenRelativeTransitionHeight = 0;
                 lodGroup.SetLODs(lods);
             }
@@ -386,7 +385,6 @@ public abstract class CullingMethod : MonoBehaviour
             {
                 if (!_lastLODScreenHeights.TryGetValue(lodGroup, out var screenRelativeTransitionHeight))
                     continue;
-                Plugin.LogAlways($"{lodGroup} resetting to {screenRelativeTransitionHeight}");
                 var lods = lodGroup.GetLODs();
                 lods[^1].screenRelativeTransitionHeight = screenRelativeTransitionHeight;
                 lodGroup.SetLODs(lods);
