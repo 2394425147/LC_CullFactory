@@ -5,6 +5,7 @@ using CullFactory.Services;
 using CullFactoryBurst;
 using DunGen;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Data;
 
@@ -89,6 +90,25 @@ public static class DungeonCullingInfo
         return result;
     }
 
+    internal static bool ShouldShadowFadingBeDisabledForLight(HDAdditionalLightData light)
+    {
+        // A heuristic to determine whether a light is "close enough" to fading the shadows
+        // at the same distance as the light itself. These values are arbitrarily chosen to
+        // return true for all lights in the mansion interior, where the performance impact
+        // is negligible.
+        // They may need adjustment if this results in a significant performance regression
+        // in any other interiors.
+        return light.shadowFadeDistance >= light.fadeDistance * 0.75 - 15;
+    }
+
+    internal static bool ShouldShadowFadingBeDisabledForLight(Light light)
+    {
+        if (!Config.DisableShadowDistanceFading.Value)
+            return false;
+
+        return ShouldShadowFadingBeDisabledForLight(light.GetComponent<HDAdditionalLightData>());
+    }
+
     private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
     {
         // Create TileContents instances for each tile, calculating the total dungeon
@@ -161,7 +181,7 @@ public static class DungeonCullingInfo
             // If we don't force the shadow fade distance to match the light fade distance, lights will
             // always be able to shine through walls if there is a long enough line of sight to a place
             // the light shines onto.
-            var lightPassesThroughWalls = !Config.DisableShadowDistanceFading.Value || light.PassesThroughOccluders();
+            var lightPassesThroughWalls = ShouldShadowFadingBeDisabledForLight(light) || light.PassesThroughOccluders();
 
             if (lightPassesThroughWalls)
             {

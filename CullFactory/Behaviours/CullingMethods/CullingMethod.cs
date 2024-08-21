@@ -331,6 +331,9 @@ public abstract class CullingMethod : MonoBehaviour
                 continue;
 
             _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
+
+            if (!DungeonCullingInfo.ShouldShadowFadingBeDisabledForLight(hdLight))
+                continue;
             hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
         }
     }
