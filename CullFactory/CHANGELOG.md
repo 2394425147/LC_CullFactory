@@ -1,3 +1,19 @@
+# 1.3.0
+
+## Added
+
+- An option (`Disable LOD culling`) to prevent LOD in interior objects from causing them to disappear visibly
+- Calculation of influence of spot lights to reduce the visible geometry further
+
+## Changed
+
+- `Disable shadow distance fading` will now only disable shadow fading for a light using a heuristic to avoid performance degradation
+- Culling is enabled by default on Grand Armory again, as performance is no longer regressed thanks to the above change
+
+## Fixed
+
+- Disabling distance culling after loading a level with it enabled would cause the far plane to reset to the configured interior far plane distance
+
 # 1.2.3
 
 ## Fixed
