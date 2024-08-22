@@ -16,7 +16,7 @@ namespace CullFactoryBurst
         {
             if (!WarnedCallWasNotBurstCompiled)
             {
-                Debug.LogWarning("Call to TestPlanesAABB is not using Burst.");
+                Debug.LogWarning("Methods intended to be Burst-compiled in CullFactoryBurstPlugin are not using Burst.");
                 WarnedCallWasNotBurstCompiled = true;
             }
         }
@@ -502,6 +502,8 @@ namespace CullFactoryBurst
         [BurstCompile(FloatMode = FloatMode.Fast)]
         private static bool ConeIntersectsBounds(in Cone cone, in Bounds bounds)
         {
+            WarnIfNotBurstCompiled();
+
             ComputeBoundsHeightInterval(bounds, cone, out var minHeight, out var maxHeight);
             if (maxHeight <= 0 || minHeight >= cone.length)
                 return false;
