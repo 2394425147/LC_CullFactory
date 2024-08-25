@@ -1,3 +1,10 @@
+# 1.3.1
+
+## Fixed
+
+- Light culling issues in the vanilla mineshaft's entry tile
+- The disappearing world in Scoopy's entry tile, theoretically this should be prevented in most cases where the generation is logical
+
 # 1.3.0
 
 ## Added
