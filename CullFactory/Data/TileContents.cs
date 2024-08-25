@@ -14,10 +14,13 @@ namespace CullFactory.Data;
 /// </summary>
 public sealed class TileContents
 {
+    private const float MaxRendererBoundsSize = 20f;
+
     public readonly Tile tile;
     public readonly Bounds bounds;
     public Portal[] portals;
 
+    public readonly Bounds rendererBounds;
     public Renderer[] renderers;
     public readonly Light[] lights;
 
@@ -60,6 +63,19 @@ public sealed class TileContents
             renderersList.AddRange(doorway.GetComponentsInChildren<Renderer>(includeInactive: true));
             lightsList.AddRange(doorway.GetComponentsInChildren<Light>(includeInactive: true));
         }
+
+        // Create a bounding box that encompasses everything that may be accessible around the tile.
+        // Some interiors like to make entry tiles that have bounds that have upper areas that have a
+        // wider accessible area than the tile bounds indicate, including the vanilla mineshaft.
+        // We have an upper limit on the size of these to prevent stray renderers from causing the
+        // any part of the exterior from being considered part of the interior.
+        rendererBounds = bounds;
+        foreach (var renderer in renderersList)
+            rendererBounds.Encapsulate(renderer.bounds);
+        var maximumBounds = bounds;
+        maximumBounds.Expand(MaxRendererBoundsSize);
+        rendererBounds.min = Vector3.Max(rendererBounds.min, maximumBounds.min);
+        rendererBounds.max = Vector3.Min(rendererBounds.max, maximumBounds.max);
 
         renderers = [.. renderersList];
         lights = [.. lightsList];

@@ -11,9 +11,6 @@ namespace CullFactory.Data;
 
 public static class DungeonCullingInfo
 {
-    internal const float OutsideTileRadius = 20f;
-    internal const float SqrOutsideTileRadius = OutsideTileRadius * OutsideTileRadius;
-
     private const int RendererIntrusionTileDepth = 2;
     private const float RendererIntrusionDistance = 0.01f;
 
@@ -127,8 +124,8 @@ public static class DungeonCullingInfo
             TileContentsForTile[tile] = tileContents;
             lightsInDungeon.AddRange(tileContents.lights);
 
-            dungeonMin = Vector3.Min(dungeonMin, tileContents.bounds.min);
-            dungeonMax = Vector3.Max(dungeonMax, tileContents.bounds.max);
+            dungeonMin = Vector3.Min(dungeonMin, tileContents.rendererBounds.min);
+            dungeonMax = Vector3.Max(dungeonMax, tileContents.rendererBounds.max);
         }
 
         // Make an array of all TileContents instances, and create portals for all tiles, which will refer
@@ -261,24 +258,20 @@ public static class DungeonCullingInfo
 
     public static TileContents GetTileContents(this Vector3 point)
     {
-        var sqrClosestTileDistance = SqrOutsideTileRadius;
-        TileContents closestTileContents = null;
+        TileContents fallbackTileContents = null;
 
         foreach (var tileContents in AllTileContents)
         {
             if (tileContents.bounds.Contains(point))
                 return tileContents;
 
-            var sqrTileDistance = tileContents.bounds.SqrDistance(point);
-
-            if (sqrTileDistance > sqrClosestTileDistance)
+            if (!tileContents.rendererBounds.Contains(point))
                 continue;
 
-            sqrClosestTileDistance = sqrTileDistance;
-            closestTileContents = tileContents;
+            fallbackTileContents = tileContents;
         }
 
-        return closestTileContents;
+        return fallbackTileContents;
     }
 
     public static void CollectAllTilesWithinCameraFrustum(Camera camera, List<TileContents> intoList)

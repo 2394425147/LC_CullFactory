@@ -116,11 +116,7 @@ public sealed class GrabbableObjectContents
 
     public bool IsWithin(TileContents tile)
     {
-        if (!HasBounds)
-            return false;
-        if (bounds.Intersects(tile.bounds))
-            return true;
-        return bounds.SqrDistance(bounds.center) < DungeonCullingInfo.SqrOutsideTileRadius;
+        return IsWithin(tile.rendererBounds);
     }
 
     public bool IsWithin(IEnumerable<TileContents> tiles)

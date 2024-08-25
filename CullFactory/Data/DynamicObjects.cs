@@ -42,7 +42,7 @@ public static class DynamicObjects
     {
         if (DungeonCullingInfo.AllTileContents == null)
             return false;
-        if (DungeonCullingInfo.DungeonBounds.SqrDistance(position) <= DungeonCullingInfo.SqrOutsideTileRadius)
+        if (DungeonCullingInfo.DungeonBounds.Contains(position))
             return true;
         return false;
     }

@@ -21,7 +21,7 @@ namespace CullFactory.Services
 
         public static bool Affects(this Light light, TileContents tile)
         {
-            return light.Affects(tile.bounds);
+            return light.Affects(tile.rendererBounds);
         }
 
         public static bool Affects(this Light light, IEnumerable<TileContents> tiles)
