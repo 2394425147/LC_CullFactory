@@ -14,7 +14,7 @@ namespace CullFactory.Data;
 /// </summary>
 public sealed class TileContents
 {
-    private const float MaxRendererBoundsSize = 20f;
+    private const float MaxRendererBoundsSizeIncreaseOverTileBounds = 40f;
 
     public readonly Tile tile;
     public readonly Bounds bounds;
@@ -73,7 +73,7 @@ public sealed class TileContents
         foreach (var renderer in renderersList)
             rendererBounds.Encapsulate(renderer.bounds);
         var maximumBounds = bounds;
-        maximumBounds.Expand(MaxRendererBoundsSize);
+        maximumBounds.Expand(MaxRendererBoundsSizeIncreaseOverTileBounds);
         rendererBounds.min = Vector3.Max(rendererBounds.min, maximumBounds.min);
         rendererBounds.max = Vector3.Min(rendererBounds.max, maximumBounds.max);
 
