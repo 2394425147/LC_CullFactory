@@ -1,3 +1,9 @@
+# 1.3.2
+
+## Fixed
+
+- The interior disappearing in the mineshaft's entry tile when standing near the "normal" entrance position
+
 # 1.3.1
 
 ## Fixed
