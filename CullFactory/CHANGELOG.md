@@ -1,3 +1,9 @@
+# 1.3.4
+
+## Fixed
+
+- Non-functional null checks causing errors when loading some levels
+
 # 1.3.3
 
 ## Fixed
