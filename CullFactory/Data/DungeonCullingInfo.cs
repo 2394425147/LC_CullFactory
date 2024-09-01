@@ -103,7 +103,10 @@ public static class DungeonCullingInfo
         if (!Config.DisableShadowDistanceFading.Value)
             return false;
 
-        return ShouldShadowFadingBeDisabledForLight(light.GetComponent<HDAdditionalLightData>());
+        if (light.GetComponent<HDAdditionalLightData>() is var hdLight)
+            return ShouldShadowFadingBeDisabledForLight(hdLight);
+
+        return false;
     }
 
     private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
