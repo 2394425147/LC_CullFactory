@@ -1,3 +1,9 @@
+# 1.3.3
+
+## Fixed
+
+- A NullReferenceException that would occur on the Mental Hospital interior due to lights lacking HDRP properties
+
 # 1.3.2
 
 ## Fixed
