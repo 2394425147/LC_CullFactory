@@ -49,11 +49,17 @@ public static class Config
                                                   "\"Level1Flow, Level2Flow\"" +
                                                   DungeonFlowListDescription);
 
+        string flowsDescription;
+        if (DefaultFlowsToBlockCulling.Length == 0)
+            flowsDescription = "This will have no effect as the internal blacklist is empty.";
+        else
+            flowsDescription = "This can be used to override the internal blacklist containing " + DefaultFlowsToBlockCulling.HumanReadableList() + ".";
+
         InteriorsToForceCulling = configFile.Bind("General",
                                                   "Force enable culling for interiors",
                                                   "",
-                                                  "A list of dungeon flows to have culling force-enabled if they are blacklisted internally:\n" +
-                                                  DefaultFlowsToBlockCulling.JoinByComma() +
+                                                  "A list of dungeon flows to have culling force-enabled. " +
+                                                  flowsDescription + 
                                                   DungeonFlowListDescription);
 
         UpdateFrequency = configFile.Bind("General",

@@ -17,4 +17,34 @@ public static class StringUtility
     {
         return string.Join(", ", input);
     }
+
+    public static string HumanReadableList(this IEnumerable<string> input)
+    {
+        var enumerator = input.GetEnumerator();
+        if (!enumerator.MoveNext())
+            return "";
+
+        var builder = new StringBuilder(enumerator.Current);
+        if (!enumerator.MoveNext())
+            return builder.ToString();
+
+        while (true)
+        {
+            var current = enumerator.Current;
+
+            if (enumerator.MoveNext())
+            {
+                builder.Append(", ");
+                builder.Append(current);
+            }
+            else
+            {
+                builder.Append(", and ");
+                builder.Append(current);
+                break;
+            }
+        }
+
+        return builder.ToString();
+    }
 }
