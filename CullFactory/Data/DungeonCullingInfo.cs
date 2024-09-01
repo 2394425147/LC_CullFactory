@@ -103,7 +103,7 @@ public static class DungeonCullingInfo
         if (!Config.DisableShadowDistanceFading.Value)
             return false;
 
-        if (light.GetComponent<HDAdditionalLightData>() is var hdLight)
+        if (light.GetComponent<HDAdditionalLightData>() is { } hdLight)
             return ShouldShadowFadingBeDisabledForLight(hdLight);
 
         return false;

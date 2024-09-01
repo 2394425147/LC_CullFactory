@@ -95,7 +95,7 @@ public static class DynamicObjects
             {
                 // GrabbableObject.isInFactory is not reliable for items that are in the ship
                 // at the start of the game.
-                if (item.GetComponentInChildren<ScanNodeProperties>() is var scanNode)
+                if (item.GetComponentInChildren<ScanNodeProperties>() is { } scanNode)
                     isInInterior = IsInInterior(scanNode.transform.position);
                 else
                     isInInterior = IsInInterior(item.transform.position);
