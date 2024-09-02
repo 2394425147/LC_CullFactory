@@ -1,3 +1,9 @@
+# 1.3.6
+
+## Fixed
+
+- Breakage of LethalCompanyVR due to missing Burst-compiled methods, these errors will now be silently ignored with functionality unaffected
+
 # 1.3.5
 
 ## Fixed
