@@ -7,7 +7,7 @@ namespace CullFactory.Extenders;
 public static class LevelGenerationExtender
 {
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.waitForMainEntranceTeleportToSpawn))]
+    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SetLevelObjectVariables))]
     private static void OnLevelGenerated()
     {
         DungeonCullingInfo.OnLevelGenerated();
