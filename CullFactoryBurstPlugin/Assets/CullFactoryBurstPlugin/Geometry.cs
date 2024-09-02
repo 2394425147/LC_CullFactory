@@ -82,6 +82,7 @@ namespace CullFactoryBurst
             }
         }
 
+        [BurstCompile(FloatMode = FloatMode.Fast)]
         private static void ComputeBoundsHeightInterval(in Bounds bounds, in Cone cone, out float minHeight, out float maxHeight)
         {
             float3 center = bounds.center;
