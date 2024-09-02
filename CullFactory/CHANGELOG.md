@@ -1,3 +1,9 @@
+# 1.3.5
+
+## Fixed
+
+- Culling never activating alongside some unidentified mod(s) due to a BepInEx bug
+
 # 1.3.4
 
 ## Fixed
