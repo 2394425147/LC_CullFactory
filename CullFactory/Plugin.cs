@@ -26,15 +26,36 @@ public class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(TeleportExtender));
         harmony.PatchAll(typeof(MapSeedOverride));
         harmony.PatchAll(typeof(GrabbableObjectExtender));
+        harmony.PatchAll(typeof(BurstErrorPrevention));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
 
-        var workingDirectory = new FileInfo(Info.Location).DirectoryName;
-        var burstLibrary = Path.Combine(workingDirectory, "lib_burst_generated.data");
-        if (File.Exists(burstLibrary) && BurstRuntime.LoadAdditionalLibrary(burstLibrary))
-            LogAlways("Loaded CullFactory's Burst assembly.");
+        LoadBurstAssembly();
 
         Log($"Plugin {Name} is loaded!");
+    }
+
+    private void LoadBurstAssembly()
+    {
+        const string burstLibFilename = "lib_burst_generated.data";
+        const string errorMessage = "culling may be slower than normal.";
+
+        var workingDirectory = new FileInfo(Info.Location).DirectoryName;
+        var burstLibrary = Path.Combine(workingDirectory, burstLibFilename);
+
+        if (!File.Exists(burstLibrary))
+        {
+            LogError($"{Name}'s Burst assembly '{burstLibFilename}' was not found, {errorMessage}");
+            return;
+        }
+
+        if (!BurstRuntime.LoadAdditionalLibrary(burstLibrary))
+        {
+            LogError($"{Name}'s Burst assembly failed to load, {errorMessage}");
+            return;
+        }
+
+        LogAlways($"Loaded {Name}'s Burst assembly.");
     }
 
     public static void LogAlways(string s)
