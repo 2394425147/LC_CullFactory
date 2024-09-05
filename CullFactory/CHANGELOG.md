@@ -1,3 +1,13 @@
+# 1.3.7
+
+## Changed
+
+- Reduced the size of the mod by removing the Burst assembly's pdb and all referenced packages within it except for the Unity.Burst plugin
+
+## Fixed
+
+- Burst assembly code being unused due to applying the patch to ignore failure to resolve Burst-compiled methods too early
+
 # 1.3.6
 
 ## Fixed
