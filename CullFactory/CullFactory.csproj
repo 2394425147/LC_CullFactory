@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
@@ -60,9 +60,6 @@
 
     <ItemGroup>
         <Content Include="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Plugins\x86_64\lib_burst_generated.dll" Link="lib_burst_generated.data">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="..\CullFactoryBurstPlugin\Build\CullFactoryBurstPlugin_Data\Plugins\x86_64\lib_burst_generated.pdb">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
