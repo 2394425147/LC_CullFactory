@@ -16,17 +16,17 @@ public class Plugin : BaseUnityPlugin
     public const string Version = "1.3.6";
     public static Plugin Instance { get; private set; }
 
+    private Harmony _harmony = new Harmony(Guid);
+
     private void Awake()
     {
         Instance = this;
         CullFactory.Config.Initialize(Config);
 
-        var harmony = new Harmony(Guid);
-        harmony.PatchAll(typeof(LevelGenerationExtender));
-        harmony.PatchAll(typeof(TeleportExtender));
-        harmony.PatchAll(typeof(MapSeedOverride));
-        harmony.PatchAll(typeof(GrabbableObjectExtender));
-        harmony.PatchAll(typeof(BurstErrorPrevention));
+        _harmony.PatchAll(typeof(LevelGenerationExtender));
+        _harmony.PatchAll(typeof(TeleportExtender));
+        _harmony.PatchAll(typeof(MapSeedOverride));
+        _harmony.PatchAll(typeof(GrabbableObjectExtender));
 
         QualitySettings.shadowResolution = ShadowResolution.Low;
 
@@ -56,6 +56,11 @@ public class Plugin : BaseUnityPlugin
         }
 
         LogAlways($"Loaded {Name}'s Burst assembly.");
+
+        // This patch must run after the Burst assembly is loaded, or BurstCompilerHelper.IsBurstGenerated
+        // is evaluated before its IsBurstEnabled() method can be resolved to the native version, meaning
+        // its value will remain false and no Burst methods will be resolved.
+        _harmony.PatchAll(typeof(BurstErrorPrevention));
     }
 
     public static void LogAlways(string s)
