@@ -55,6 +55,12 @@ public class Plugin : BaseUnityPlugin
             return;
         }
 
+        if (!CullFactoryBurst.Plugin.IsRunningBurstLibrary())
+        {
+            LogError($"{Name}'s Burst plugin is not running its Burst-compiled code, {errorMessage}");
+            return;
+        }
+
         LogAlways($"Loaded {Name}'s Burst assembly.");
 
         // This patch must run after the Burst assembly is loaded, or BurstCompilerHelper.IsBurstGenerated
