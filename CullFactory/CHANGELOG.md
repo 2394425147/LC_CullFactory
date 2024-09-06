@@ -1,3 +1,9 @@
+# 1.3.8
+
+## Fixed
+
+- An error preventing LAN players to join games
+
 # 1.3.7
 
 ## Changed
