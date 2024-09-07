@@ -1,7 +1,7 @@
 {
   "name": "CullFactory",
   "author": "fumiko",
-  "version_number": "1.3.8",
+  "version_number": "1.3.9",
   "website_url": "https://github.com/2394425147/LC_CullFactory",
   "description": "Stops rendering interior rooms that aren't visible - Helps with performance without affecting visuals.",
   "dependencies": [

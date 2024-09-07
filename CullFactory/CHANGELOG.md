@@ -1,3 +1,9 @@
+# 1.3.9
+
+## Fixed
+
+- Items being invisible when dropped from a belt bag inside the interior
+
 # 1.3.8
 
 ## Fixed
