@@ -95,7 +95,12 @@ public static class DynamicObjects
             {
                 // GrabbableObject.isInFactory is not reliable for items that are in the ship
                 // at the start of the game.
-                isInInterior = IsInInterior(item.targetFloorPosition);
+                // targetFloorPosition affects an item's localPosition, so we have to transform it
+                // to world space.
+                if (item.transform.parent is { } parent)
+                    isInInterior = IsInInterior(parent.TransformPoint(item.targetFloorPosition));
+                else
+                    isInInterior = IsInInterior(item.targetFloorPosition);
             }
             else
             {
