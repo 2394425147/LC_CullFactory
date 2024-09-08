@@ -13,7 +13,7 @@ public class Plugin : BaseUnityPlugin
 {
     public const string Guid = "com.fumiko.CullFactory";
     public const string Name = "CullFactory";
-    public const string Version = "1.3.9";
+    public const string Version = "1.3.10";
     public static Plugin Instance { get; private set; }
 
     private Harmony _harmony = new Harmony(Guid);

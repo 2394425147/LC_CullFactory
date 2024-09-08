@@ -1,3 +1,9 @@
+# 1.3.10
+
+## Fixed
+
+- The apparatus and other forcibly-spawned items in interiors being invisible
+
 # 1.3.9
 
 ## Fixed
