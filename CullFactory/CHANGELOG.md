@@ -1,3 +1,9 @@
+# 1.3.11
+
+## Fixed
+
+- Items being invisible for some clients after another client teleported in/out of the interior and dropped them
+
 # 1.3.10
 
 ## Fixed
