@@ -160,6 +160,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void LateUpdate()
     {
+        DynamicObjects.RefreshGrabbableObjects();
         DynamicObjects.UpdateAllUnpredictableLights();
     }
 

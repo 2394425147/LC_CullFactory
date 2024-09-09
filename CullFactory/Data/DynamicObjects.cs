@@ -22,6 +22,8 @@ public static class DynamicObjects
 
     private static Light[][] allPlayerLights;
 
+    private static HashSet<GrabbableObjectContents> GrabbableObjectsToRefresh = [];
+
     internal static void CollectAllPlayerLights()
     {
         var players = StartOfRound.Instance.allPlayerScripts;
@@ -52,7 +54,7 @@ public static class DynamicObjects
         return IsInInterior(player.transform.position);
     }
 
-    internal static void RefreshGrabbableObject(GrabbableObject item)
+    internal static void MarkGrabbableObjectDirty(GrabbableObject item)
     {
         // If mods flag an item with DontSave, we won't find it in FindObjectsByType(),
         // so don't include it here to avoid ever culling it.
@@ -78,6 +80,21 @@ public static class DynamicObjects
             contents = new GrabbableObjectContents(item);
             GrabbableObjectToContents[item] = contents;
         }
+
+        GrabbableObjectsToRefresh.Add(contents);
+    }
+
+    internal static void RefreshGrabbableObjects()
+    {
+        foreach (var contents in GrabbableObjectsToRefresh)
+            RefreshGrabbableObject(contents);
+
+        GrabbableObjectsToRefresh.Clear();
+    }
+
+    internal static void RefreshGrabbableObject(GrabbableObjectContents contents)
+    {
+        var item = contents.item;
 
         bool isInInterior;
         if (item.parentObject != null && item.parentObject.transform.TryGetComponentInParent(out EnemyAI enemy))
@@ -163,7 +180,7 @@ public static class DynamicObjects
             if (item == null)
                 continue;
 
-            RefreshGrabbableObject(item);
+            MarkGrabbableObjectDirty(item);
         }
     }
 
@@ -175,7 +192,7 @@ public static class DynamicObjects
         {
             if (item.item == null)
                 continue;
-            RefreshGrabbableObject(item.item);
+            MarkGrabbableObjectDirty(item.item);
         }
     }
 
@@ -244,7 +261,7 @@ public static class DynamicObjects
             OnPlayerTeleported(player);
 
         foreach (var item in UnityEngine.Object.FindObjectsByType<GrabbableObject>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            RefreshGrabbableObject(item);
+            MarkGrabbableObjectDirty(item);
 
         CullingMethod.Instance?.OnDynamicLightsCollected();
     }
