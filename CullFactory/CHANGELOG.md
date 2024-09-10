@@ -1,3 +1,9 @@
+# 1.3.12
+
+## Fixed
+
+- Errors that would spam in the console if an item was destroyed while it needed to be checked for changes
+
 # 1.3.11
 
 ## Fixed
