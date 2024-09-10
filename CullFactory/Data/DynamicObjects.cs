@@ -96,6 +96,9 @@ public static class DynamicObjects
     {
         var item = contents.item;
 
+        if (item == null)
+            return;
+
         bool isInInterior;
         if (item.parentObject != null && item.parentObject.transform.TryGetComponentInParent(out EnemyAI enemy))
         {
