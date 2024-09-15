@@ -1,3 +1,9 @@
+# 1.3.14
+
+## Fixed
+
+- Items being invisible after being removed from the Capsule Hoi-Poi item in the AddonFusion mod
+
 # 1.3.13
 
 ## Fixed
