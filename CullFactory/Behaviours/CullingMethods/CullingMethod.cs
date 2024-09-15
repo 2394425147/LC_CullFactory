@@ -44,6 +44,8 @@ public abstract class CullingMethod : MonoBehaviour
     private float _updateInterval;
     private float _lastUpdateTime;
 
+    private bool _renderedThisFrame = false;
+
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
 
@@ -160,8 +162,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void LateUpdate()
     {
-        DynamicObjects.RefreshGrabbableObjects();
-        DynamicObjects.UpdateAllUnpredictableLights();
+        _renderedThisFrame = false;
     }
 
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
@@ -217,6 +218,13 @@ public abstract class CullingMethod : MonoBehaviour
 
         if (Time.time - _lastUpdateTime < _updateInterval)
             return;
+
+        if (!_renderedThisFrame)
+        {
+            DynamicObjects.RefreshGrabbableObjects();
+            DynamicObjects.UpdateAllUnpredictableLights();
+            _renderedThisFrame = true;
+        }
 
         var startTime = Time.realtimeSinceStartupAsDouble;
 
