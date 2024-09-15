@@ -20,7 +20,6 @@ public sealed class GrabbableObjectContents
     public GrabbableObjectContents(GrabbableObject item)
     {
         this.item = item;
-        CollectContents();
     }
 
     public void CollectContents()

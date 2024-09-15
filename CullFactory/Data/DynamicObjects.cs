@@ -68,11 +68,8 @@ public static class DynamicObjects
 
         if (GrabbableObjectToContents.TryGetValue(item, out var contents))
         {
-            Plugin.Log($"Refreshing contents of {item.name}");
             AllLightsOutside.ExceptWith(contents.lights);
             AllLightsInInterior.ExceptWith(contents.lights);
-
-            contents.CollectContents();
         }
         else
         {
@@ -98,6 +95,9 @@ public static class DynamicObjects
 
         if (item == null)
             return;
+
+        Plugin.Log($"Refreshing contents of {item.name} @ {item.transform.position}");
+        contents.CollectContents();
 
         bool isInInterior = IsInInterior(item.transform.position);
 
