@@ -10,9 +10,9 @@ public sealed class GrabbableObjectContents
     public static readonly Vector3 Vector3NaN = new Vector3(float.NaN, float.NaN, float.NaN);
 
     public readonly GrabbableObject item;
-    public Renderer[] renderers;
-    public Light[] lights;
-    public Vector3[] boundingVertices;
+    public Renderer[] renderers = [];
+    public Light[] lights = [];
+    public Vector3[] boundingVertices = [];
     public Bounds bounds;
 
     public EnemyAI heldByEnemy;
