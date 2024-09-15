@@ -1,3 +1,9 @@
+# 1.3.13
+
+## Fixed
+
+- An issue where items that are held by a non-player non-enemy could be invisible after teleporting
+
 # 1.3.12
 
 ## Fixed
