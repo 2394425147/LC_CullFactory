@@ -99,41 +99,20 @@ public static class DynamicObjects
         if (item == null)
             return;
 
-        bool isInInterior;
+        bool isInInterior = IsInInterior(item.transform.position);
+
         if (item.parentObject != null && item.parentObject.transform.TryGetComponentInParent(out EnemyAI enemy))
         {
-            isInInterior = !enemy.isOutside;
-
             contents.heldByEnemy = enemy;
             if (!ItemsHeldByEnemies.TryGetValue(enemy, out var heldItems))
                 ItemsHeldByEnemies.Add(enemy, heldItems = []);
             heldItems.Add(contents);
         }
-        else
+        else if (contents.heldByEnemy is not null)
         {
-            if (item.playerHeldBy is null)
-            {
-                // GrabbableObject.isInFactory is not reliable for items that are in the ship
-                // at the start of the game.
-                // targetFloorPosition affects an item's localPosition, so we have to transform it
-                // to world space.
-                if (item.transform.parent is { } parent)
-                    isInInterior = IsInInterior(parent.TransformPoint(item.targetFloorPosition));
-                else
-                    isInInterior = IsInInterior(item.targetFloorPosition);
-            }
-            else
-            {
-                // Items may be within the bounds of the dungeon when held by a player.
-                isInInterior = PlayerIsInInterior(item.playerHeldBy);
-            }
-
-            if (contents.heldByEnemy is not null)
-            {
-                if (ItemsHeldByEnemies.TryGetValue(contents.heldByEnemy, out var heldItems))
-                    heldItems.Remove(contents);
-                contents.heldByEnemy = null;
-            }
+            if (ItemsHeldByEnemies.TryGetValue(contents.heldByEnemy, out var heldItems))
+                heldItems.Remove(contents);
+            contents.heldByEnemy = null;
         }
 
         if (isInInterior)
