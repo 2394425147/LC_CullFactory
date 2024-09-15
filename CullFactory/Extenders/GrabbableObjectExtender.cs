@@ -1,4 +1,4 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using HarmonyLib;
 
 namespace CullFactory.Extenders;
@@ -9,6 +9,13 @@ internal static class GrabbableObjectExtender
     [HarmonyPostfix]
     [HarmonyPatch(nameof(GrabbableObject.Start))]
     private static void GrabbableObjectStarted(GrabbableObject __instance)
+    {
+        DynamicObjects.MarkGrabbableObjectDirty(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(GrabbableObject.FallToGround))]
+    private static void GrabbableObjectFalling(GrabbableObject __instance)
     {
         DynamicObjects.MarkGrabbableObjectDirty(__instance);
     }
