@@ -1,3 +1,9 @@
+# 1.3.15
+
+## Fixed
+
+- Item interactions being permanently broken on 1.3.14
+
 # 1.3.14
 
 ## Fixed
