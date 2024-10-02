@@ -5,22 +5,17 @@ using UnityEngine;
 
 namespace CullFactory.Data;
 
-public sealed class GrabbableObjectContents
+public sealed class GrabbableObjectContents(GrabbableObject item)
 {
     public static readonly Vector3 Vector3NaN = new Vector3(float.NaN, float.NaN, float.NaN);
 
-    public readonly GrabbableObject item;
+    public readonly GrabbableObject item = item;
     public Renderer[] renderers = [];
     public Light[] lights = [];
     public Vector3[] boundingVertices = [];
     public Bounds bounds;
 
     public EnemyAI heldByEnemy;
-
-    public GrabbableObjectContents(GrabbableObject item)
-    {
-        this.item = item;
-    }
 
     public void CollectContents()
     {
