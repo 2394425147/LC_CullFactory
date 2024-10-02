@@ -46,6 +46,9 @@ namespace CullFactory.Services
 
         public static void SetVisible(this Light light, bool visible)
         {
+            if (light == null)
+                return;
+
             if (light.cullingMask != -1 && light.cullingMask != 0)
                 Plugin.LogWarning($"Light {light.name}'s culling mask was an unexpected value of {light.cullingMask}.");
 
@@ -55,11 +58,7 @@ namespace CullFactory.Services
         public static void SetVisible(this IEnumerable<Light> lights, bool visible)
         {
             foreach (var light in lights)
-            {
-                if (light == null)
-                    continue;
                 light.SetVisible(visible);
-            }
         }
     }
 }

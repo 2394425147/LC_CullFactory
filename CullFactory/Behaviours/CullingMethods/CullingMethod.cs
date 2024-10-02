@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BepInEx;
+using CullFactory.Behaviours.API;
 using CullFactory.Data;
 using CullFactory.Services;
 using CullFactoryBurst;
@@ -45,6 +46,8 @@ public abstract class CullingMethod : MonoBehaviour
     private float _lastUpdateTime;
 
     private bool _renderedThisFrame = false;
+
+    private List<Camera> _camerasToCullThisPass = [];
 
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
@@ -199,9 +202,20 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
+    protected void AddAllObjects(VisibilitySets visibility)
+    {
+        visibility.directTiles.UnionWith(DungeonCullingInfo.AllTileContents);
+        visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsInInterior);
+        visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsOutside);
+        visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsInInterior);
+        visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
+    }
+
     private void DoCulling(ScriptableRenderContext context, List<Camera> cameras)
     {
-        bool needsCulling = false;
+        _camerasToCullThisPass.Clear();
+        bool anyCameraDisablesCulling = false;
+
         foreach (var camera in cameras)
         {
             if (ReferenceEquals(camera, _hudCamera))
@@ -211,9 +225,19 @@ public abstract class CullingMethod : MonoBehaviour
                 continue;
             if (camera.name == "SceneCamera")
                 continue;
-            needsCulling = true;
+            var options = camera.GetComponent<CameraCullingOptions>();
+            if (options != null)
+            {
+                if (options.skipCulling)
+                    continue;
+                if (options.disableCulling)
+                    anyCameraDisablesCulling = true;
+            }
+
+            _camerasToCullThisPass.Add(camera);
         }
-        if (!needsCulling)
+
+        if (_camerasToCullThisPass.Count == 0)
             return;
 
         if (Time.time - _lastUpdateTime < _updateInterval)
@@ -233,7 +257,10 @@ public abstract class CullingMethod : MonoBehaviour
         _visibility.ClearAll();
         _debugTile = null;
 
-        AddVisibleObjects(cameras, _visibility);
+        if (anyCameraDisablesCulling)
+            AddAllObjects(_visibility);
+        else
+            AddVisibleObjects(_camerasToCullThisPass, _visibility);
 
         // Update culling for tiles.
         bool removedAnyTile = false;
