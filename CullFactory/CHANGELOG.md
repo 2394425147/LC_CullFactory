@@ -1,3 +1,13 @@
+# 1.4.0
+
+## Added
+
+- An API to allow disabling culling per-camera via a CameraCullingOptions component
+
+## Fixed
+
+- An issue where some items would be visible off-screen after spawning
+
 # 1.3.15
 
 ## Fixed
