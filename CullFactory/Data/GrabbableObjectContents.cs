@@ -1,11 +1,12 @@
 using CullFactory.Services;
 using CullFactoryBurst;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CullFactory.Data;
 
-public sealed class GrabbableObjectContents(GrabbableObject item)
+public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<GrabbableObjectContents>
 {
     public static readonly Vector3 Vector3NaN = new Vector3(float.NaN, float.NaN, float.NaN);
 
@@ -145,10 +146,15 @@ public sealed class GrabbableObjectContents(GrabbableObject item)
         return item.GetHashCode();
     }
 
-    public override bool Equals(object obj)
+    public bool Equals(GrabbableObjectContents other)
     {
-        if (obj is GrabbableObjectContents contents)
-            return item.Equals(contents.item);
+        return ReferenceEquals(item, other.item);
+    }
+
+    public override bool Equals(object other)
+    {
+        if (other is GrabbableObjectContents otherContents)
+            return Equals(otherContents);
         return false;
     }
 }

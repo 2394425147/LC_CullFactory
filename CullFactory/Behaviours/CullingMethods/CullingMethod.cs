@@ -17,7 +17,7 @@ public abstract class CullingMethod : MonoBehaviour
     {
         public readonly HashSet<TileContents> directTiles = new(IdentityEqualityComparer<TileContents>.Instance);
         public readonly HashSet<TileContents> indirectTiles = new(IdentityEqualityComparer<TileContents>.Instance);
-        public readonly HashSet<GrabbableObjectContents> items = new(IdentityEqualityComparer<GrabbableObjectContents>.Instance);
+        public readonly HashSet<GrabbableObjectContents> items = new(EqualityComparer<GrabbableObjectContents>.Default);
         public readonly HashSet<Light> dynamicLights = new(IdentityEqualityComparer<Light>.Instance);
 
         public VisibilitySets()
