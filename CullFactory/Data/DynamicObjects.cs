@@ -97,7 +97,9 @@ public static class DynamicObjects
             return;
 
         Plugin.Log($"Refreshing contents of {item.name} @ {item.transform.position}");
+        contents.SetVisible(true);
         contents.CollectContents();
+        CullingMethod.Instance?.OnItemCreatedOrChanged(contents);
 
         bool isInInterior = IsInInterior(item.transform.position);
 
