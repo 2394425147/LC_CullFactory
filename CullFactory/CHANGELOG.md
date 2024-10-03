@@ -1,3 +1,9 @@
+# 1.4.1
+
+## Fixed
+
+- Items being initially invisible until their visibility changes
+
 # 1.4.0
 
 ## Added
