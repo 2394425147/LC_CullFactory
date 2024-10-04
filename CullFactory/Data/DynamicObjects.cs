@@ -101,7 +101,10 @@ public static class DynamicObjects
         contents.CollectContents();
         CullingMethod.Instance?.OnItemCreatedOrChanged(contents);
 
-        bool isInInterior = IsInInterior(item.transform.position);
+        var position = item.transform.position;
+
+        if (item.parentObject != null)
+            position = item.parentObject.position;
 
         if (item.parentObject != null && item.parentObject.transform.TryGetComponentInParent(out EnemyAI enemy))
         {
@@ -117,7 +120,7 @@ public static class DynamicObjects
             contents.heldByEnemy = null;
         }
 
-        if (isInInterior)
+        if (IsInInterior(position))
         {
             AllLightsOutside.ExceptWith(contents.lights);
             AllLightsInInterior.UnionWith(contents.lights);
