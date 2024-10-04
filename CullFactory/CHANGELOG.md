@@ -1,3 +1,9 @@
+# 1.4.2
+
+## Fixed
+
+- Items being invisible when the player holds them while wearing a model replacement via ModelReplacementAPI
+
 # 1.4.1
 
 ## Fixed
