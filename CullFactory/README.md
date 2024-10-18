@@ -21,13 +21,15 @@ This is a more naive method that will make tiles visible that are separated from
 
 ## Developer Information
 
-### Dungeons
+### Rooms are invisible in my interior!
 
 The `Doorway.Socket.Size` field is used to determine the bounds of every doorway in the interior. If the size does not encompass the entirety of the possible visible portions of any tiles that can connect to the socket, then those tiles may visibly disappear.
 
 To determine which tile the camera is within, the tiles are searched in the order they were created until a tile with bounds intersecting the camera is found. If the camera is not within any tile bounds, then the closest tile within a certain radius of the camera is used instead. This radius is very lenient, but please try to ensure that your tile bounds are accurate, as inaccurate tile bounds can also lead to players getting stuck in walls.
 
-### Items
+**Important note:** DunGen gets very confused about the bounds of a `Tile` when the object it resides on is scaled. It is best to always keep the scale of your tile objects set to identity (1, 1, 1). If your models need to be scaled, place them into a child object and scale that rather than the tile.
+
+### Items are invisible after I move them in or out of the interior!
 
 Item/dynamic light culling places each `GrabbableObject` into one of two pools, interior or exterior. To avoid unnecessary work, items are only moved between pools when they are:
 
