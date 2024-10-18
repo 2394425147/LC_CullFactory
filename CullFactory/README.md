@@ -31,13 +31,15 @@ To determine which tile the camera is within, the tiles are searched in the orde
 
 ### Items are invisible after I move them in or out of the interior!
 
-Item/dynamic light culling places each `GrabbableObject` into one of two pools, interior or exterior. To avoid unnecessary work, items are only moved between pools when they are:
+If items are invisible after your code has teleported them in or out of the interior, you may want to call `GrabbableObject.EnableItemMeshes()` to fix the issue.
 
-- Held by a teleporting player
-- Held by a teleporting enemy
+Item/dynamic light culling places each `GrabbableObject` into one of two pools, interior or exterior. If an item is in a pool that is not currently visible to any cameras, it will be invisible. To avoid unnecessary work, items are only moved between pools when they are:
+
 - Spawned
 - Dropped
 - Shown or hidden, i.e. when changing inventory slots
 - Grabbed by an enemy
+- Held by a player teleporting via an `EntranceTeleport` or `ShipTeleporter`
+- Held by an enemy whose state was changed via `EnemyAI.SetEnemyOutside()`
 
 If you are teleporting any item in or out of the dungeon and it is not covered by the above cases, a call to `GrabbableObject.EnableItemMeshes()` will cause CullFactory to move the item to the appropriate pool before the current frame is rendered.
