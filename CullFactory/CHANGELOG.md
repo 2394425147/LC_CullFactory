@@ -1,3 +1,9 @@
+# 1.4.3
+
+## Fixed
+
+- Culling issues on UT99 CIDOM Metro, which will now use the fallback portals by default
+
 # 1.4.2
 
 ## Fixed
