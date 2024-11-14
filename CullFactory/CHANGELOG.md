@@ -1,3 +1,9 @@
+# 1.5.0
+
+## Added
+
+- An API method to update a light that has moved in or out of the interior
+
 # 1.4.3
 
 ## Fixed
