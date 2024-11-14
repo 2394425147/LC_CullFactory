@@ -211,21 +211,25 @@ public static class DynamicObjects
     internal static void UpdateAllUnpredictableLights()
     {
         foreach (var light in AllUnpredictableLights)
+            RefreshSpecificLight(light);
+    }
+
+    internal static void RefreshSpecificLight(Light light)
+    {
+        if (light == null || !light.isActiveAndEnabled)
         {
-            if (light == null)
-                continue;
-            if (!light.isActiveAndEnabled)
-                continue;
-            if (IsInInterior(light.transform.position))
-            {
-                AllLightsOutside.Remove(light);
-                AllLightsInInterior.Add(light);
-            }
-            else
-            {
-                AllLightsInInterior.Remove(light);
-                AllLightsOutside.Add(light);
-            }
+            AllLightsOutside.Remove(light);
+            AllLightsInInterior.Remove(light);
+        }
+        else if (IsInInterior(light.transform.position))
+        {
+            AllLightsOutside.Remove(light);
+            AllLightsInInterior.Add(light);
+        }
+        else
+        {
+            AllLightsInInterior.Remove(light);
+            AllLightsOutside.Add(light);
         }
     }
 
