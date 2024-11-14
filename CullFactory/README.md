@@ -29,7 +29,7 @@ This is a more naive method that will make tiles visible that are separated from
 
 **Important note:** DunGen gets very confused about the bounds of a `Tile` when the object it resides on is scaled. It is best to always keep the scale of your tile objects set to identity (1, 1, 1). If your models need to be scaled, place them into a child object and scale that rather than the tile.
 
-### Items are invisible after I move them in or out of the interior!
+### Items or lights are invisible after I move them in or out of the interior!
 
 If items are invisible after your code has teleported them in or out of the interior, you may want to call `GrabbableObject.EnableItemMeshes()` to fix the issue.
 
@@ -43,3 +43,30 @@ Item/dynamic light culling places each `GrabbableObject` into one of two pools, 
 - Held by an enemy whose state was changed via `EnemyAI.SetEnemyOutside()`
 
 If you are teleporting any item in or out of the dungeon and it is not covered by the above cases, a call to `GrabbableObject.EnableItemMeshes()` will cause CullFactory to move the item to the appropriate pool before the current frame is rendered.
+
+In cases where a light becomes invisible when moving in or out of the interior, the following code can be used to implement a soft dependency to update the light positions whenever necessary:
+
+```cs
+internal static class CullFactorySoftCompat
+{
+    private static readonly bool CullFactoryDynamicObjectsAPIExists = Chainloader.PluginInfos.TryGetValue("com.fumiko.CullFactory", out var info) && info.Metadata.Version >= new Version(1, 5, 0);
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void RefreshGrabbableObjectPosition(GrabbableObject item)
+    {
+        if (CullFactoryDynamicObjectsAPIExists)
+            DynamicObjectsAPI.RefreshGrabbableObjectPosition(item);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void RefreshLightPosition(Light light)
+    {
+        if (CullFactoryDynamicObjectsAPIExists)
+            DynamicObjectsAPI.RefreshLightPosition(light);
+    }
+}
+```
+
+Calling the `RefreshLightPosition()` method will make CullFactory check whether the light is inside or outside and move it to the appropriate pool so that it can be visible again.
+
+The `RefreshGrabbableObjectPosition()` can also be called as an alternative to `GrabbableObject.EnableItemMeshes()` to avoid the overhead of finding the renderer components and switching their visibility unnecessarily.
