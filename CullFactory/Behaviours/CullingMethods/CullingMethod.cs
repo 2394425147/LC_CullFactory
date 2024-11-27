@@ -228,9 +228,9 @@ public abstract class CullingMethod : MonoBehaviour
             var options = camera.GetComponent<CameraCullingOptions>();
             if (options != null)
             {
-                if (options.skipCulling)
+                if (options.SkipCulling)
                     continue;
-                if (options.disableCulling)
+                if (options.DisableCulling)
                     anyCameraDisablesCulling = true;
             }
 
