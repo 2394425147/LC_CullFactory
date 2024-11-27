@@ -181,7 +181,7 @@ public static class DungeonCullingInfo
             // If we don't force the shadow fade distance to match the light fade distance, lights will
             // always be able to shine through walls if there is a long enough line of sight to a place
             // the light shines onto.
-            var lightPassesThroughWalls = ShouldShadowFadingBeDisabledForLight(light) || light.PassesThroughOccluders();
+            var lightPassesThroughWalls = !ShouldShadowFadingBeDisabledForLight(light) || light.PassesThroughOccluders();
 
             if (lightPassesThroughWalls)
             {
