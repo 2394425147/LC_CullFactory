@@ -106,7 +106,7 @@ public static class DungeonCullingInfo
         if (light.GetComponent<HDAdditionalLightData>() is { } hdLight)
             return ShouldShadowFadingBeDisabledForLight(hdLight);
 
-        return false;
+        return true;
     }
 
     private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
