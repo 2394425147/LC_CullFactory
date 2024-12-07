@@ -111,19 +111,31 @@ public static class DungeonCullingInfo
 
     private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
     {
-        // Create TileContents instances for each tile, calculating the total dungeon
-        // bounding box, as well as collecting all lights within the dungeon.
+        FillTileContentsCollections();
+
+        CreateAndAssignPortals(derivePortalBoundsFromTile);
+
+        AddIntrudingRenderersToTileContents();
+
+        AddLightInfluencesToTileContents();
+    }
+
+    private static void FillTileContentsCollections()
+    {
         var tiles = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles;
-        TileContentsForTile = new Dictionary<Tile, TileContents>(tiles.Count);
+        AllTileContents = new TileContents[tiles.Count];
+        TileContentsForTile = new Dictionary<Tile, TileContents>(AllTileContents.Length);
 
         var lightsInDungeon = new List<Light>();
 
         var dungeonMin = Vector3.positiveInfinity;
         var dungeonMax = Vector3.negativeInfinity;
 
+        var i = 0;
         foreach (var tile in tiles)
         {
             var tileContents = new TileContents(tile);
+            AllTileContents[i++] = tileContents;
             TileContentsForTile[tile] = tileContents;
             lightsInDungeon.AddRange(tileContents.lights);
 
@@ -131,10 +143,13 @@ public static class DungeonCullingInfo
             dungeonMax = Vector3.Max(dungeonMax, tileContents.rendererBounds.max);
         }
 
-        // Make an array of all TileContents instances, and create portals for all tiles, which will refer
-        // to the TileContents instance that is accessible through them.
-        AllTileContents = new TileContents[TileContentsForTile.Count];
-        var i = 0;
+        AllLightsInDungeon = [.. lightsInDungeon];
+        DungeonBounds.min = dungeonMin;
+        DungeonBounds.max = dungeonMax;
+    }
+
+    private static void CreateAndAssignPortals(bool derivePortalBoundsFromTile)
+    {
         foreach (var tileContents in TileContentsForTile.Values)
         {
             var doorways = tileContents.tile.UsedDoorways;
@@ -148,27 +163,32 @@ public static class DungeonCullingInfo
                 portals.Add(new Portal(doorway, derivePortalBoundsFromTile, TileContentsForTile[doorway.ConnectedDoorway.Tile]));
             }
             tileContents.portals = [.. portals];
-
-            AllTileContents[i++] = tileContents;
         }
+    }
 
-        AllLightsInDungeon = [.. lightsInDungeon];
-        DungeonBounds.min = dungeonMin;
-        DungeonBounds.max = dungeonMax;
-
-        // Get objects in neighboring tiles that overlap with this tile. Doors often overlap,
-        // but floor decals in the factory interior can as well.
-        var tileExternalRenderers = new HashSet<Renderer>[AllTileContents.Length];
-        for (i = 0; i < AllTileContents.Length; i++)
-            tileExternalRenderers[i] = GetIntrudingRenderers(AllTileContents[i]);
-
-        for (i = 0; i < AllTileContents.Length; i++)
+    private static void AddIntrudingRenderersToTileContents()
+    {
+        for (var i = 0; i < AllTileContents.Length; i++)
         {
             var tile = AllTileContents[i];
-            tile.renderers = [.. tile.renderers, .. tileExternalRenderers[i]];
+            tile.renderers = [.. tile.renderers, .. GetIntrudingRenderers(AllTileContents[i])];
         }
+    }
 
-        // Collect all external lights that may influence the tiles that we know of:
+    private readonly struct LightInfluenceCollections(TileContents tileContents)
+    {
+        internal readonly HashSet<Renderer> _externalRenderers = new(tileContents.externalRenderers);
+        internal readonly List<Light> _externalLights = new(tileContents.externalLights);
+        internal readonly List<Plane[]> _externalLightLinesOfSight = new(tileContents.externalLightLinesOfSight);
+    }
+
+    private static void AddLightInfluencesToTileContents()
+    {
+        var lightInfluenceCollectionLookup = new Dictionary<TileContents, LightInfluenceCollections>(AllTileContents.Length);
+
+        foreach (var tile in AllTileContents)
+            lightInfluenceCollectionLookup[tile] = new(tile);
+
         foreach (var (tile, light) in
                  AllTileContents.SelectMany(tile => tile.lights.Select(light => (tile, light))))
         {
@@ -190,16 +210,18 @@ public static class DungeonCullingInfo
                     if (!light.Affects(otherTile))
                         continue;
 
+                    var otherTileInfluences = lightInfluenceCollectionLookup[otherTile];
+
                     // If the light has no shadows or if the shadows don't fully occlude light,
                     // it can pass through walls. Add it to the list of external lights affecting
                     // all tiles in its range.
-                    otherTile.externalLights = [.. otherTile.externalLights, light];
+                    otherTileInfluences._externalLights.Add(light);
 
                     // If we're adding the light to external lights above but it has shadows,
                     // we need to occlude its light fully so that it only shines through its
                     // portals, or it will shine through walls brightly.
                     if (hasShadows)
-                        otherTile.externalRenderers = [.. otherTile.externalRenderers.Union(tile.renderers)];
+                        otherTileInfluences._externalRenderers.UnionWith(tile.renderers);
                 }
             }
 
@@ -240,7 +262,8 @@ public static class DungeonCullingInfo
                     }
                 }
 
-                currentTile.externalRenderers = [.. currentTile.externalRenderers.Union(lightOccluders)];
+                var currentTileInfluences = lightInfluenceCollectionLookup[currentTile];
+                currentTileInfluences._externalRenderers.UnionWith(lightOccluders);
 
                 if (!influencesARenderer)
                     return;
@@ -249,13 +272,21 @@ public static class DungeonCullingInfo
                 for (var i = 1; i <= index; i++)
                     lineOfSight.AddRange(frustums[i]);
                 lineOfSight.AddRange(currentTile.bounds.GetFarthestPlanes(lightOrigin));
-                currentTile.externalLightLinesOfSight = [.. currentTile.externalLightLinesOfSight, [.. lineOfSight]];
+                currentTileInfluences._externalLightLinesOfSight.Add([.. lineOfSight]);
 
                 // If the light can't pass through walls, then it hasn't been added to the
                 // list of external lights affecting this tile yet. Add it now.
                 if (!lightPassesThroughWalls)
-                    currentTile.externalLights = [.. currentTile.externalLights, light];
+                    currentTileInfluences._externalLights.Add(light);
             });
+        }
+
+        foreach (var tile in AllTileContents)
+        {
+            var influences = lightInfluenceCollectionLookup[tile];
+            tile.externalRenderers = [.. influences._externalRenderers];
+            tile.externalLights = [.. influences._externalLights];
+            tile.externalLightLinesOfSight = [.. influences._externalLightLinesOfSight];
         }
     }
 
