@@ -3,6 +3,7 @@ using DunGen;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Data;
 
@@ -23,10 +24,12 @@ public sealed class TileContents
     public readonly Bounds rendererBounds;
     public Renderer[] renderers;
     public readonly Light[] lights;
+    public HDAdditionalLightData[] lightsWithOnDemandShadows;
 
     public Renderer[] externalRenderers = [];
     public Light[] externalLights = [];
     public Plane[][] externalLightLinesOfSight = [];
+    public HDAdditionalLightData[] externalLightsWithOnDemandShadows;
 
     private static bool _warnedNullObject = false;
 
