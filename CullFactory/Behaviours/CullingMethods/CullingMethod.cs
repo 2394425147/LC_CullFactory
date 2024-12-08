@@ -283,8 +283,18 @@ public abstract class CullingMethod : MonoBehaviour
         // Collect the lights with on-demand shadow maps for this frame.
         foreach (var visibleTile in _visibility.directTiles)
         {
-            _visibility.onDemandShadowedLights.UnionWith(visibleTile.lightsWithOnDemandShadows);
-            _visibility.onDemandShadowedLights.UnionWith(visibleTile.externalLightsWithOnDemandShadows);
+            foreach (var light in visibleTile.lightsWithOnDemandShadows)
+            {
+                if (!light.isActiveAndEnabled)
+                    continue;
+                _visibility.onDemandShadowedLights.Add(light);
+            }
+            foreach (var light in visibleTile.externalLightsWithOnDemandShadows)
+            {
+                if (!light.isActiveAndEnabled)
+                    continue;
+                _visibility.onDemandShadowedLights.Add(light);
+            }
         }
 
         // Reset the light culling masks for any lights we already rendered on-demand shadow maps for,
