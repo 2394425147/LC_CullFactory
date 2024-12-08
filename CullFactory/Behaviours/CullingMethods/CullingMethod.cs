@@ -13,12 +13,13 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public abstract class CullingMethod : MonoBehaviour
 {
-    public struct VisibilitySets
+    public readonly struct VisibilitySets
     {
         public readonly HashSet<TileContents> directTiles = new(IdentityEqualityComparer<TileContents>.Instance);
         public readonly HashSet<TileContents> indirectTiles = new(IdentityEqualityComparer<TileContents>.Instance);
         public readonly HashSet<GrabbableObjectContents> items = new(EqualityComparer<GrabbableObjectContents>.Default);
         public readonly HashSet<Light> dynamicLights = new(IdentityEqualityComparer<Light>.Instance);
+        public readonly HashSet<HDAdditionalLightData> onDemandShadowedLights = new(IdentityEqualityComparer<HDAdditionalLightData>.Instance);
 
         public VisibilitySets()
         {
@@ -30,6 +31,7 @@ public abstract class CullingMethod : MonoBehaviour
             indirectTiles.Clear();
             items.Clear();
             dynamicLights.Clear();
+            onDemandShadowedLights.Clear();
         }
     }
 
@@ -38,6 +40,7 @@ public abstract class CullingMethod : MonoBehaviour
     public static CullingMethod Instance { get; private set; }
 
     protected Camera _hudCamera;
+    protected LayerMask _onDemandShadowMapCullingMask = LayerMask.GetMask("Room", "MiscLevelGeometry", "Terrain");
 
     protected bool _benchmarking = false;
     protected long _totalCalls = 0;
@@ -277,6 +280,26 @@ public abstract class CullingMethod : MonoBehaviour
         else
             AddVisibleObjects(_camerasToCullThisPass, _visibility);
 
+        // Collect the lights with on-demand shadow maps for this frame.
+        foreach (var visibleTile in _visibility.directTiles)
+        {
+            _visibility.onDemandShadowedLights.UnionWith(visibleTile.lightsWithOnDemandShadows);
+            _visibility.onDemandShadowedLights.UnionWith(visibleTile.externalLightsWithOnDemandShadows);
+        }
+
+        // Reset the light culling masks for any lights we already rendered on-demand shadow maps for,
+        // then clear the maps that we are no longer using.
+        foreach (var light in _visibility.onDemandShadowedLights)
+        {
+            if (light != null && _visibilityLastCall.onDemandShadowedLights.Contains(light))
+                ResetCullingMask(light);
+        }
+        foreach (var light in _visibilityLastCall.onDemandShadowedLights)
+        {
+            if (light != null && !_visibility.onDemandShadowedLights.Contains(light))
+                EvictOnDemandShadowMap(light);
+        }
+
         // Update culling for tiles.
         bool removedAnyTile = false;
 
@@ -336,6 +359,13 @@ public abstract class CullingMethod : MonoBehaviour
                 light.SetVisible(true);
         }
 
+        // Set up any new lights with on-demand shadow maps to be rendered this frame.
+        foreach (var light in _visibility.onDemandShadowedLights)
+        {
+            if (light != null && !_visibilityLastCall.onDemandShadowedLights.Contains(light))
+                SetCullingMaskAndRenderOnDemandShadowMap(light);
+        }
+
         (_visibilityLastCall, _visibility) = (_visibility, _visibilityLastCall);
 
         if (_benchmarking)
@@ -345,8 +375,31 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
+    private void ResetCullingMask(HDAdditionalLightData light)
+    {
+        light.SetCullingMask(-1);
+    }
+
+    private void SetCullingMaskAndRenderOnDemandShadowMap(HDAdditionalLightData light)
+    {
+        light.SetCullingMask(_onDemandShadowMapCullingMask);
+        light.RequestShadowMapRendering();
+    }
+
+    private void EvictOnDemandShadowMap(HDAdditionalLightData light)
+    {
+        // Lights that are having their shadow maps evicted are invisible.
+        // They will not have their mask set by ResetCullingMask, so reset it here.
+        light.SetCullingMask(0);
+
+        HDCachedShadowManager.instance.ForceEvictLight(light);
+    }
+
     private void OnDisable()
     {
+        foreach (var light in _visibilityLastCall.onDemandShadowedLights)
+            EvictOnDemandShadowMap(light);
+
         DungeonCullingInfo.AllTileContents.SetSelfVisible(true);
         DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(true);
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(true);

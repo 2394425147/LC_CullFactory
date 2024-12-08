@@ -287,6 +287,30 @@ public static class DungeonCullingInfo
             tile.externalRenderers = [.. influences._externalRenderers];
             tile.externalLights = [.. influences._externalLights];
             tile.externalLightLinesOfSight = [.. influences._externalLightLinesOfSight];
+
+            static HDAdditionalLightData[] GetOnDemandLights(Light[] lights)
+            {
+                var list = new List<HDAdditionalLightData>();
+                foreach (var light in lights)
+                {
+                    if (!light.TryGetComponent<HDAdditionalLightData>(out var hdLight))
+                        continue;
+                    if (hdLight.shadowUpdateMode != ShadowUpdateMode.OnDemand)
+                        continue;
+                    if (hdLight.updateUponLightMovement)
+                        continue;
+                    if (hdLight.alwaysDrawDynamicShadows)
+                        continue;
+                    list.Add(hdLight);
+                }
+                return [.. list];
+            }
+
+            tile.lightsWithOnDemandShadows = GetOnDemandLights(tile.lights);
+            tile.externalLightsWithOnDemandShadows = GetOnDemandLights(tile.externalLights);
+
+            foreach (var light in tile.lightsWithOnDemandShadows)
+                light.onDemandShadowRenderOnPlacement = false;
         }
     }
 
