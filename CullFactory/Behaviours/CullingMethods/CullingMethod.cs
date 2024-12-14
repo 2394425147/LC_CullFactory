@@ -40,7 +40,7 @@ public abstract class CullingMethod : MonoBehaviour
     public static CullingMethod Instance { get; private set; }
 
     protected Camera _hudCamera;
-    protected LayerMask _onDemandShadowMapCullingMask = LayerMask.GetMask("Room", "MiscLevelGeometry", "Terrain");
+    protected Lazy<LayerMask> _onDemandShadowMapCullingMask = new(() => LayerMask.GetMask("Room", "MiscLevelGeometry", "Terrain"));
 
     protected bool _benchmarking = false;
     protected long _totalCalls = 0;
@@ -392,7 +392,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void SetCullingMaskAndRenderOnDemandShadowMap(HDAdditionalLightData light)
     {
-        light.SetCullingMask(_onDemandShadowMapCullingMask);
+        light.SetCullingMask(_onDemandShadowMapCullingMask.Value);
         light.RequestShadowMapRendering();
     }
 
