@@ -1,3 +1,15 @@
+# 1.6.0
+
+## Changed
+
+- Added uppercased properties to the CameraCullingOptions API, deprecated the lowercase variants
+- Debug symbols are now embedded
+
+## Fixed
+
+- A bug that would cause some rooms to be unnecessarily visible through walls
+- Items remaining invisible if they were initially hiding their meshes
+
 # 1.5.0
 
 ## Added
