@@ -97,8 +97,23 @@ public static class DynamicObjects
             return;
 
         Plugin.Log($"Refreshing contents of {item.name} @ {item.transform.position}");
+
+        // Set the item visible and remove it from the sets of outside/inside items.
         contents.SetVisible(true);
+
+        AllLightsOutside.ExceptWith(contents.lights);
+        AllLightsInInterior.ExceptWith(contents.lights);
+
+        // GrabbableObjectContents is hashed based on the underlying GrabbableObject,
+        // so if we don't remove from both sets here, we will end up with stale data
+        // in these sets.
+        AllGrabbableObjectContentsOutside.Remove(contents);
+        AllGrabbableObjectContentsInInterior.Remove(contents);
+
         contents.CollectContents();
+
+        // Notify the culling method that it must make the item invisible again if
+        // it was before.
         CullingMethod.Instance?.OnItemCreatedOrChanged(contents);
 
         var position = item.transform.position;
@@ -122,19 +137,13 @@ public static class DynamicObjects
 
         if (IsInInterior(position))
         {
-            AllLightsOutside.ExceptWith(contents.lights);
             AllLightsInInterior.UnionWith(contents.lights);
-
-            AllGrabbableObjectContentsOutside.Remove(contents);
             AllGrabbableObjectContentsInInterior.Add(contents);
         }
         else
         {
             AllLightsOutside.UnionWith(contents.lights);
-            AllLightsInInterior.ExceptWith(contents.lights);
-
             AllGrabbableObjectContentsOutside.Add(contents);
-            AllGrabbableObjectContentsInInterior.Remove(contents);
         }
     }
 
