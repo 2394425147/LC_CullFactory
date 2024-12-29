@@ -123,7 +123,8 @@ public abstract class CullingMethod : MonoBehaviour
         DisableShadowDistanceFading();
         DisableInteriorLODCulling();
 
-        RenderPipelineManager.beginContextRendering += DoCulling;
+        RenderPipelineManager.beginContextRendering += DoCullingScriptableRenderPipeline;
+        Camera.onPreCull += DoCullingInStandardRenderPipeline;
     }
 
     internal void OnDynamicLightsCollected()
@@ -211,7 +212,21 @@ public abstract class CullingMethod : MonoBehaviour
         visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsOutside);
     }
 
-    private void DoCulling(ScriptableRenderContext context, List<Camera> cameras)
+    private static readonly List<Camera> _singleCamera = [];
+
+    private void DoCullingInStandardRenderPipeline(Camera camera)
+    {
+        _singleCamera.Clear();
+        _singleCamera.Add(camera);
+        DoCulling(_singleCamera);
+    }
+
+    private void DoCullingScriptableRenderPipeline(ScriptableRenderContext context, List<Camera> cameras)
+    {
+        DoCulling(cameras);
+    }
+
+    private void DoCulling(List<Camera> cameras)
     {
         _camerasToCullThisPass.Clear();
         bool anyCameraDisablesCulling = false;
@@ -343,7 +358,8 @@ public abstract class CullingMethod : MonoBehaviour
         RestoreShadowDistanceFading();
         RestoreInteriorLODCulling();
 
-        RenderPipelineManager.beginContextRendering -= DoCulling;
+        RenderPipelineManager.beginContextRendering -= DoCullingScriptableRenderPipeline;
+        Camera.onPreCull -= DoCullingInStandardRenderPipeline;
     }
 
     private void OnDestroy()
