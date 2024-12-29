@@ -125,7 +125,10 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (dynamicLight == null)
                 continue;
             if (!dynamicLight.isActiveAndEnabled)
+            {
+                visibility.dynamicLights.Add(dynamicLight);
                 continue;
+            }
             if (!dynamicLight.Affects(visibility.directTiles))
                 continue;
 
