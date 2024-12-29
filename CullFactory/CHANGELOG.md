@@ -1,3 +1,9 @@
+# 1.6.1
+
+## Fixed
+
+- Particle lights emitted from items being invisible in the interior
+
 # 1.6.0
 
 ## Changed
