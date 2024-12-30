@@ -1,3 +1,10 @@
+# 1.6.2
+
+## Fixed
+
+- Disabled culling on the Hadal Laboratories interior, since tiles are visible through walls
+- The interior being invisible when rendering the game with the standard render pipeline (i.e. with DOSCOMPANY)
+
 # 1.6.1
 
 ## Fixed
