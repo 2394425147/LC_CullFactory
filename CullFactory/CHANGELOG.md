@@ -1,3 +1,9 @@
+# 1.6.3
+
+## Fixed
+
+- Disabled culling on Zeranos to prevent culling issues
+
 # 1.6.2
 
 ## Fixed
