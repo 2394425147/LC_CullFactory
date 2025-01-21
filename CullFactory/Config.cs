@@ -42,6 +42,7 @@ public static class Config
                                  "\"PortalOcclusionCulling\": Hides all the rooms that aren't visible to the camera (Recommended)\n" +
                                  "\"DepthCulling\": Hides rooms that aren't adjacent to the player's current room");
 
+
         InteriorsToBlockCulling = configFile.Bind("General",
                                                   "Disable culling for interiors",
                                                   "",
@@ -49,13 +50,13 @@ public static class Config
                                                   "\"Level1Flow, Level2Flow\"" +
                                                   DungeonFlowListDescription);
 
-
         InteriorsToForceCulling = configFile.Bind("General",
                                                   "Force enable culling for interiors",
                                                   "",
                                                   "A list of dungeon flows to have culling force-enabled. " +
                                                   GetBuiltinBlacklistText(DefaultFlowsToBlockCulling) +
                                                   DungeonFlowListDescription);
+
 
         UpdateFrequency = configFile.Bind("General",
                                           "Update frequency",
@@ -65,21 +66,21 @@ public static class Config
                                           "Update interval: 1 / value (seconds)");
 
         DisableShadowDistanceFading = configFile.Bind("General",
-                                          "Disable shadow distance fading",
-                                          true,
-                                          "Prevents lights' shadows from being hidden before the light itself becomes invisible.\n" +
-                                          "Fixes issues that are common in Mansion where some lights will be visible through walls, " +
-                                          "and allows more lights/tiles to be culled within the interior.\n" +
-                                          "Disabling may have a negative impact on performance.");
+                                                      "Disable shadow distance fading",
+                                                      true,
+                                                      "Prevents lights' shadows from being hidden before the light itself becomes invisible.\n" +
+                                                      "Fixes issues that are common in Mansion where some lights will be visible through walls, " +
+                                                      "and allows more lights/tiles to be culled within the interior.\n" +
+                                                      "Disabling may have a negative impact on performance.");
 
         DisableLODCulling = configFile.Bind("General",
-                                             "Disable LOD culling",
-                                             true,
-                                             "Forces the last LOD to stay visible for all static objects in the interior. This will " +
-                                             "prevent the stairs on the factory interior from disappearing at a distance, and should " +
-                                             "also prevent any other similar disappearing objects.\n" +
-                                             "Objects that have LOD groups will instead be culled based on visibility, so this has a " +
-                                             "minimal effect on performance.");
+                                            "Disable LOD culling",
+                                            true,
+                                            "Forces the last LOD to stay visible for all static objects in the interior. This will " +
+                                            "prevent the stairs on the factory interior from disappearing at a distance, and should " +
+                                            "also prevent any other similar disappearing objects.\n" +
+                                            "Objects that have LOD groups will instead be culled based on visibility, so this has a " +
+                                            "minimal effect on performance.");
 
         #endregion
 
