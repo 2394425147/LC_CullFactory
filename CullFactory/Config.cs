@@ -49,17 +49,12 @@ public static class Config
                                                   "\"Level1Flow, Level2Flow\"" +
                                                   DungeonFlowListDescription);
 
-        string flowsDescription;
-        if (DefaultFlowsToBlockCulling.Length == 0)
-            flowsDescription = "This will have no effect as the internal blacklist is empty.";
-        else
-            flowsDescription = "This can be used to override the internal blacklist containing " + DefaultFlowsToBlockCulling.HumanReadableList() + ".";
 
         InteriorsToForceCulling = configFile.Bind("General",
                                                   "Force enable culling for interiors",
                                                   "",
                                                   "A list of dungeon flows to have culling force-enabled. " +
-                                                  flowsDescription + 
+                                                  GetBuiltinBlacklistText(DefaultFlowsToBlockCulling) +
                                                   DungeonFlowListDescription);
 
         UpdateFrequency = configFile.Bind("General",
@@ -201,6 +196,13 @@ public static class Config
 
         UpdateInteriorsWithDisabledCulling();
         UpdateInteriorsWithFallbackPortals();
+    }
+
+    private static string GetBuiltinBlacklistText(string[] blacklist)
+    {
+        if (blacklist.Length == 0)
+            return "This will have no effect as the internal blacklist is empty.";
+        return "This can be used to override the internal blacklist containing " + blacklist.HumanReadableList() + ".";
     }
 
     private static void MigrateSettings()
