@@ -70,11 +70,11 @@ public abstract class CullingMethod : MonoBehaviour
         if (RoundManager.Instance == null || RoundManager.Instance.dungeonGenerator == null)
             return;
 
-        var generator = RoundManager.Instance.dungeonGenerator.Generator;
-        var dungeon = generator.CurrentDungeon.gameObject;
+        var runtimeDungeon = RoundManager.Instance.dungeonGenerator;
+        var dungeon = runtimeDungeon.Generator.CurrentDungeon.gameObject;
         CullingMethod instance = null;
 
-        switch (Config.GetCullingType(generator.DungeonFlow))
+        switch (Config.GetCullingType(runtimeDungeon))
         {
             case CullingType.PortalOcclusionCulling:
                 instance = dungeon.AddComponent<PortalOcclusionCuller>();
