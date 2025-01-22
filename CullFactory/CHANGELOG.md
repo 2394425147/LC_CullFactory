@@ -1,3 +1,14 @@
+# 1.7.0
+
+## Added
+
+- A blacklist to block culling on certain moons
+
+## Fixed
+
+- Disabled culling on the Zeranos moon to prevent visual artifacts if a modded interior spawns first
+- Disabled culling on Prominence due to issues with the tilted dungeon
+
 # 1.6.3
 
 ## Fixed
