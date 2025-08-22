@@ -1,5 +1,6 @@
 using System;
 using Unity.Burst;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -41,26 +42,18 @@ namespace CullFactoryBurst
             return true;
         }
 
-        public static bool TestPlanesAABB(in Plane[] planes, in Bounds bounds)
+        public static unsafe bool TestPlanesAABB(in Plane[] planes, in Bounds bounds)
         {
-            unsafe
-            {
-                fixed (Plane* planePtr = planes)
-                {
-                    return TestPlanesAABB(planePtr, planes.Length, bounds);
-                }
-            }
+            if (planes.Length == 0)
+                return true;
+            return TestPlanesAABB((Plane*)UnsafeUtility.AddressOf(ref planes[0]), planes.Length, bounds);
         }
 
-        public static bool TestPlanesAABB(in Span<Plane> planes, in Bounds bounds)
+        public static unsafe bool TestPlanesAABB(in Span<Plane> planes, in Bounds bounds)
         {
-            unsafe
-            {
-                fixed (Plane* planePtr = planes)
-                {
-                    return TestPlanesAABB(planePtr, planes.Length, bounds);
-                }
-            }
+            if (planes.Length == 0)
+                return true;
+            return TestPlanesAABB((Plane*)UnsafeUtility.AddressOf(ref planes[0]), planes.Length, bounds);
         }
 
         #region Intersection of box and cone
