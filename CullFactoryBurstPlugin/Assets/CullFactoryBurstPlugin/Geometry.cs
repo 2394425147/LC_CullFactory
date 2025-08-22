@@ -31,8 +31,8 @@ namespace CullFactoryBurst
             {
                 var plane = planes[i];
 
-                var centerDistance = (plane.normal.x * bounds.center.x) + (plane.normal.y * bounds.center.y) + (plane.normal.z * bounds.center.z);
-                var extentsDistance = (math.abs(plane.normal.x) * bounds.extents.x) + (math.abs(plane.normal.y) * bounds.extents.y) + (math.abs(plane.normal.z) * bounds.extents.z);
+                var centerDistance = math.dot(plane.normal, bounds.center);
+                var extentsDistance = math.dot(math.abs(plane.normal), bounds.extents);
                 var result = centerDistance + extentsDistance + plane.distance;
 
                 if (result <= 0)
