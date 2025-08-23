@@ -255,8 +255,10 @@ public abstract class CullingMethod : MonoBehaviour
         if (_camerasToCullThisPass.Count == 0)
             return;
 
-        if (Time.time - _lastUpdateTime < _updateInterval)
+        var updateTime = Time.time;
+        if (updateTime - _lastUpdateTime < _updateInterval)
             return;
+        _lastUpdateTime = updateTime;
 
         if (!_renderedThisFrame)
         {
@@ -266,8 +268,6 @@ public abstract class CullingMethod : MonoBehaviour
         }
 
         var startTime = Time.realtimeSinceStartupAsDouble;
-
-        _lastUpdateTime = Time.time;
 
         _visibility.ClearAll();
         _debugTile = null;
