@@ -66,44 +66,18 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
         bounds = GeometryUtility.CalculateBounds(boundingVertices, item.transform.localToWorldMatrix);
     }
 
-    public bool HasBounds
-    {
-        get
-        {
-            if (float.IsNaN(bounds.center.x))
-                return false;
-            if (float.IsNaN(bounds.center.y))
-                return false;
-            if (float.IsNaN(bounds.center.z))
-                return false;
-            if (float.IsNaN(bounds.extents.x))
-                return false;
-            if (float.IsNaN(bounds.extents.y))
-                return false;
-            if (float.IsNaN(bounds.extents.z))
-                return false;
-            return true;
-        }
-    }
-
     public bool IsVisible(Plane[] planes)
     {
-        if (!HasBounds)
-            return false;
         return Geometry.TestPlanesAABB(in planes, in bounds);
     }
 
     public bool IsVisible(in NativeSlice<Plane> planes)
     {
-        if (!HasBounds)
-            return false;
         return Geometry.TestPlanesAABB(in planes, in bounds);
     }
 
     public bool IsWithin(Bounds bounds)
     {
-        if (!HasBounds)
-            return false;
         return this.bounds.Intersects(bounds);
     }
 
