@@ -254,7 +254,16 @@ public static class DungeonCullingInfo
                         if (!light.Affects(occluderBounds))
                             continue;
 
-                        if (!occluderBounds.IntersectsFrustums(frustums, previousTileIndex))
+                        var intersects = true;
+                        for (var i = 0; i <= previousTileIndex; i++)
+                        {
+                            if (!Geometry.TestPlanesAABB(in frustums[i], in occluderBounds))
+                            {
+                                intersects = false;
+                                break;
+                            }
+                        }
+                        if (!intersects)
                             continue;
 
                         influencesARenderer = true;
@@ -310,11 +319,11 @@ public static class DungeonCullingInfo
 
     public static void CollectAllTilesWithinCameraFrustum(Camera camera, List<TileContents> intoList)
     {
-        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+        var frustum = camera.GetTempFrustum();
 
         foreach (var tileContents in AllTileContents)
         {
-            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
+            if (Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
                 intoList.Add(tileContents);
         }
     }

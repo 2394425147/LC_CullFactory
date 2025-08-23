@@ -36,11 +36,11 @@ public static class ObjectContentsUtility
 
     public static void AddContentsWithinCameraFrustum(this ICollection<TileContents> result, Camera camera)
     {
-        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+        var frustum = camera.GetTempFrustum();
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
-            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
+            if (Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
                 result.Add(tileContents);
         }
     }

@@ -2,6 +2,7 @@ using CullFactory.Services;
 using CullFactoryBurst;
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 namespace CullFactory.Data;
@@ -89,17 +90,14 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
     {
         if (!HasBounds)
             return false;
-        return Geometry.TestPlanesAABB(planes, bounds);
+        return Geometry.TestPlanesAABB(in planes, in bounds);
     }
 
-    public bool IsVisible(Plane[][] planes, int lastIndex)
+    public bool IsVisible(in NativeSlice<Plane> planes)
     {
-        for (var i = 0; i <= lastIndex; i++)
-        {
-            if (!IsVisible(planes[i]))
-                return false;
-        }
-        return true;
+        if (!HasBounds)
+            return false;
+        return Geometry.TestPlanesAABB(in planes, in bounds);
     }
 
     public bool IsWithin(Bounds bounds)
