@@ -57,7 +57,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     protected TileContents _debugTile = null;
 
-    private double _cullingTime = 0;
+    private float _cullingTime = 0;
 
     public static void Initialize()
     {
@@ -226,6 +226,13 @@ public abstract class CullingMethod : MonoBehaviour
         DoCulling(cameras);
     }
 
+    protected float GetProfileTime()
+    {
+        if (!_benchmarking)
+            return 0;
+        return Time.realtimeSinceStartup;
+    }
+
     private void DoCulling(List<Camera> cameras)
     {
         _camerasToCullThisPass.Clear();
@@ -267,7 +274,7 @@ public abstract class CullingMethod : MonoBehaviour
             _renderedThisFrame = true;
         }
 
-        var startTime = Time.realtimeSinceStartupAsDouble;
+        var startTime = GetProfileTime();
 
         _visibility.ClearAll();
         _debugTile = null;
@@ -341,7 +348,7 @@ public abstract class CullingMethod : MonoBehaviour
         if (_benchmarking)
         {
             _totalCalls++;
-            _cullingTime += Time.realtimeSinceStartupAsDouble - startTime;
+            _cullingTime += GetProfileTime() - startTime;
         }
     }
 
