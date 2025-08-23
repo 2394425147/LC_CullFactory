@@ -7,12 +7,12 @@ namespace CullFactory.Behaviours.CullingMethods;
 
 public sealed class PortalOcclusionCuller : CullingMethod
 {
-    private double _camerasTime = 0;
-    private double _visibilityTime = 0;
-    private double _itemBoundsTime = 0;
-    private double _itemShadowsTime = 0;
-    private double _dynamicLightsLineOfSightTime = 0;
-    private double _dynamicLightsTime = 0;
+    private float _camerasTime = 0;
+    private float _visibilityTime = 0;
+    private float _itemBoundsTime = 0;
+    private float _itemShadowsTime = 0;
+    private float _dynamicLightsLineOfSightTime = 0;
+    private float _dynamicLightsTime = 0;
 
     private readonly HashSet<TileContents> _dynamicLightOccludingTiles = [];
 
@@ -69,13 +69,13 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
     protected override void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility)
     {
-        var camerasStart = Time.realtimeSinceStartupAsDouble;
+        var camerasStart = GetProfileTime();
 
         var interiorIsVisible = false;
         var exteriorIsVisible = false;
 
-        var getCameraPositionTime = 0d;
-        var visibilityTime = 0d;
+        var getCameraPositionTime = 0f;
+        var visibilityTime = 0f;
 
         foreach (var camera in cameras)
         {
@@ -85,9 +85,9 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 continue;
             }
 
-            var getCameraPositionStart = Time.realtimeSinceStartupAsDouble;
+            var getCameraPositionStart = GetProfileTime();
             var cameraPosition = camera.transform.position;
-            getCameraPositionTime += Time.realtimeSinceStartupAsDouble - getCameraPositionStart;
+            getCameraPositionTime += GetProfileTime() - getCameraPositionStart;
             var cameraTile = cameraPosition.GetTileContents();
 
             if (cameraTile != null)
@@ -95,12 +95,12 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 interiorIsVisible = true;
                 _debugTile ??= cameraTile;
 
-                var visibilityStart = Time.realtimeSinceStartupAsDouble;
+                var visibilityStart = GetProfileTime();
                 VisibilityTesting.CallForEachLineOfSight(camera, cameraTile, (tiles, frustums, index) =>
                 {
                     visibility.directTiles.Add(tiles[index]);
                 });
-                visibilityTime += Time.realtimeSinceStartupAsDouble - visibilityStart;
+                visibilityTime += GetProfileTime() - visibilityStart;
             }
             else if (!exteriorIsVisible)
             {
@@ -110,14 +110,13 @@ public sealed class PortalOcclusionCuller : CullingMethod
             }
         }
 
-        if (_benchmarking)
-            _camerasTime += (Time.realtimeSinceStartupAsDouble - camerasStart) - getCameraPositionTime;
+        _camerasTime += GetProfileTime() - camerasStart - getCameraPositionTime;
 
         if (!interiorIsVisible)
             return;
 
-        var dynamicLightsStart = Time.realtimeSinceStartupAsDouble;
-        var dynamicLightsLineOfSightTime = 0d;
+        var dynamicLightsStart = GetProfileTime();
+        var dynamicLightsLineOfSightTime = 0f;
 
         // Make tiles visible that occlude light from any dynamic lights that shine into the directly visible tiles.
         foreach (var dynamicLight in DynamicObjects.AllLightsInInterior)
@@ -143,7 +142,7 @@ public sealed class PortalOcclusionCuller : CullingMethod
             if (lightTileContents == null)
                 continue;
 
-            var dynamicLightsLineOfSightStart = Time.realtimeSinceStartupAsDouble;
+            var dynamicLightsLineOfSightStart = GetProfileTime();
             _dynamicLightOccludingTiles.Clear();
             var reachesAVisibleTile =
                 VisibilityTesting.CallForEachLineOfSightTowardTiles(dynamicLightPosition, lightTileContents, visibility.directTiles, (tiles, frustums, lastIndex) =>
@@ -159,26 +158,26 @@ public sealed class PortalOcclusionCuller : CullingMethod
                 visibility.dynamicLights.Add(dynamicLight);
             }
 
-            dynamicLightsLineOfSightTime += Time.realtimeSinceStartupAsDouble - dynamicLightsLineOfSightStart;
+            dynamicLightsLineOfSightTime += GetProfileTime() - dynamicLightsLineOfSightStart;
         }
 
-        var dynamicLightsTime = Time.realtimeSinceStartupAsDouble - dynamicLightsStart;
+        var dynamicLightsTime = GetProfileTime() - dynamicLightsStart;
 
-        var itemBoundsTime = 0d;
-        var itemShadowsStart = Time.realtimeSinceStartupAsDouble;
+        var itemBoundsTime = 0f;
+        var itemShadowsStart = GetProfileTime();
 
         // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
-            var itemBoundsStart = Time.realtimeSinceStartupAsDouble;
+            var itemBoundsStart = GetProfileTime();
             itemContents.CalculateBounds();
-            itemBoundsTime += Time.realtimeSinceStartupAsDouble - itemBoundsStart;
+            itemBoundsTime += GetProfileTime() - itemBoundsStart;
 
             if (ItemIsVisible(itemContents, visibility))
                 visibility.items.Add(itemContents);
         }
 
-        var itemShadowsTime = Time.realtimeSinceStartupAsDouble - itemShadowsStart;
+        var itemShadowsTime = GetProfileTime() - itemShadowsStart;
 
         if (_benchmarking)
         {
