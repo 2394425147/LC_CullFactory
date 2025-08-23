@@ -236,9 +236,10 @@ public abstract class CullingMethod : MonoBehaviour
             if (ReferenceEquals(camera, _hudCamera))
                 continue;
             // Skip the Unity editor's scene view and UnityExplorer's freecam to allow inspecting the current culling from third person.
-            if (camera.name == "UE_Freecam")
+            var cameraName = camera.name;
+            if (cameraName == "UE_Freecam")
                 continue;
-            if (camera.name == "SceneCamera")
+            if (cameraName == "SceneCamera")
                 continue;
             if (camera.TryGetComponent(out CameraCullingOptions options))
             {
