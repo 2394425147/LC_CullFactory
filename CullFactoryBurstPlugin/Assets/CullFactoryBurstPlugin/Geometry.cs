@@ -1,5 +1,6 @@
 using System;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
@@ -20,6 +21,26 @@ namespace CullFactoryBurst
                 Debug.LogWarning("Methods intended to be Burst-compiled in CullFactoryBurstPlugin are not using Burst.");
                 WarnedCallWasNotBurstCompiled = true;
             }
+        }
+
+        [BurstCompile(FloatMode = FloatMode.Fast)]
+        private static void NormalizePlane(in float4 plane, out float4 result)
+        {
+            result = plane / math.length(plane.xyz);
+        }
+
+        [BurstCompile(FloatMode = FloatMode.Fast)]
+        public static unsafe void ExtractPlanes(in Matrix4x4 matrix, Plane* planes)
+        {
+            var planesRaw = (float4*)planes;
+
+            var lastRow = matrix.GetRow(3);
+            NormalizePlane(lastRow + matrix.GetRow(0), out planesRaw[0]);
+            NormalizePlane(lastRow - matrix.GetRow(0), out planesRaw[1]);
+            NormalizePlane(lastRow - matrix.GetRow(1), out planesRaw[2]);
+            NormalizePlane(lastRow + matrix.GetRow(1), out planesRaw[3]);
+            NormalizePlane(lastRow + matrix.GetRow(2), out planesRaw[4]);
+            NormalizePlane(lastRow - matrix.GetRow(2), out planesRaw[5]);
         }
 
         [BurstCompile(FloatMode = FloatMode.Fast)]
@@ -54,6 +75,16 @@ namespace CullFactoryBurst
             if (planes.Length == 0)
                 return true;
             return TestPlanesAABB((Plane*)UnsafeUtility.AddressOf(ref planes[0]), planes.Length, bounds);
+        }
+
+        public static unsafe bool TestPlanesAABB(in NativeArray<Plane> planes, in Bounds bounds)
+        {
+            return TestPlanesAABB((Plane*)planes.GetUnsafePtr(), planes.Length, in bounds);
+        }
+
+        public static unsafe bool TestPlanesAABB(in NativeSlice<Plane> planes, in Bounds bounds)
+        {
+            return TestPlanesAABB((Plane*)planes.GetUnsafePtr(), planes.Length, in bounds);
         }
 
         #region Intersection of box and cone

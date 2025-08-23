@@ -173,7 +173,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
     {
-        var frustum = GeometryUtility.CalculateFrustumPlanes(camera);
+        var frustum = camera.GetTempFrustum();
 
         foreach (var tileContents in DungeonCullingInfo.AllTileContents)
         {
