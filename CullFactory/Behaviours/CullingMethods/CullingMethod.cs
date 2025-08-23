@@ -240,8 +240,7 @@ public abstract class CullingMethod : MonoBehaviour
                 continue;
             if (camera.name == "SceneCamera")
                 continue;
-            var options = camera.GetComponent<CameraCullingOptions>();
-            if (options != null)
+            if (camera.TryGetComponent(out CameraCullingOptions options))
             {
                 if (options.SkipCulling)
                     continue;
