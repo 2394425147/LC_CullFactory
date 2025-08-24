@@ -26,7 +26,7 @@ public static class Config
     private static readonly string VersionFile =
         Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "version");
 
-    private static readonly string[] DefaultMoonScenesToBlockCulling = ["LevelZeranos", "ProminenceScene"];
+    private static readonly string[] DefaultMoonScenesToBlockCulling = ["LevelZeranos", "ProminenceScene", "NotezLevel3Outfall"];
 
     private static readonly string[] DefaultFlowsToBlockCulling = ["HadalFlow"];
 
