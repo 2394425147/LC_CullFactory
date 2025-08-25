@@ -40,20 +40,6 @@ public static class DynamicObjects
         }
     }
 
-    internal static bool IsInInterior(Vector3 position)
-    {
-        if (DungeonCullingInfo.AllTileContents == null)
-            return false;
-        if (DungeonCullingInfo.DungeonBounds.Contains(position))
-            return true;
-        return false;
-    }
-
-    internal static bool PlayerIsInInterior(PlayerControllerB player)
-    {
-        return IsInInterior(player.transform.position);
-    }
-
     internal static void MarkGrabbableObjectDirty(GrabbableObject item)
     {
         // If mods flag an item with DontSave, we won't find it in FindObjectsByType(),
@@ -135,7 +121,7 @@ public static class DynamicObjects
             contents.heldByEnemy = null;
         }
 
-        if (IsInInterior(position))
+        if (DungeonCullingInfo.PointIsInAnyInterior(position))
         {
             AllLightsInInterior.UnionWith(contents.lights);
             AllGrabbableObjectContentsInInterior.Add(contents);
@@ -145,6 +131,11 @@ public static class DynamicObjects
             AllLightsOutside.UnionWith(contents.lights);
             AllGrabbableObjectContentsOutside.Add(contents);
         }
+    }
+
+    internal static bool PlayerIsInAnyInterior(PlayerControllerB player)
+    {
+        return DungeonCullingInfo.PointIsInAnyInterior(player.transform.position);
     }
 
     internal static void OnPlayerTeleported(PlayerControllerB player)
@@ -160,7 +151,7 @@ public static class DynamicObjects
         var playerLights = allPlayerLights[playerIndex];
         // PlayerControllerB.isInsideFactory may not be accurate if an error occurs while
         // teleporting, so let's just check their position instead.
-        if (PlayerIsInInterior(player))
+        if (PlayerIsInAnyInterior(player))
         {
             AllLightsOutside.ExceptWith(playerLights);
             AllLightsInInterior.UnionWith(playerLights);
@@ -192,13 +183,47 @@ public static class DynamicObjects
         }
     }
 
+    private static IEnumerable<Light> FilterOutStaticLights(Light[] lights)
+    {
+        var result = lights.AsEnumerable();
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
+        {
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+            result = result.Except(dungeonData.AllLightsInDungeon);
+        }
+        return result;
+    }
+
+    private static void FillInteriorLights(IEnumerable<Light> lights, HashSet<Light> into)
+    {
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
+        {
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+            foreach (var light in lights)
+            {
+                var lightPosition = light.transform.position;
+                if (!dungeonData.Bounds.Contains(lightPosition))
+                    continue;
+                foreach (var tile in dungeonData.AllTileContents)
+                {
+                    if (!tile.bounds.Contains(lightPosition))
+                        continue;
+                    into.Add(light);
+                }
+            }
+        }
+    }
+
     internal static void CollectAllLightsInWorld()
     {
-        var allLights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).AsEnumerable();
-        if (DungeonCullingInfo.AllLightsInDungeon != null)
-            allLights = allLights.Except(DungeonCullingInfo.AllLightsInDungeon);
-        AllLightsOutside.UnionWith(allLights.Where(light => !DungeonCullingInfo.DungeonBounds.Contains(light.transform.position)));
-        AllLightsInInterior.UnionWith(allLights.Except(AllLightsOutside));
+        var allLights = FilterOutStaticLights(UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+
+        FillInteriorLights(allLights, AllLightsInInterior);
+        AllLightsOutside.UnionWith(allLights.Except(AllLightsInInterior));
     }
 
     internal static void CollectAllUnpredictableLights()
@@ -230,7 +255,7 @@ public static class DynamicObjects
             AllLightsOutside.Remove(light);
             AllLightsInInterior.Remove(light);
         }
-        else if (IsInInterior(light.transform.position))
+        else if (DungeonCullingInfo.PointIsInAnyInterior(light.transform.position))
         {
             AllLightsOutside.Remove(light);
             AllLightsInInterior.Add(light);

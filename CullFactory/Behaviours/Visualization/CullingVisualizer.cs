@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Data;
 using DunGen;
 using UnityEngine;
@@ -14,6 +15,15 @@ namespace CullFactory.Behaviours.Visualization
 
         private GameObject _portalVisualizersRoot;
         private GameObject _tileBoundsVisualizersRoot;
+
+        public static void Initialize()
+        {
+            if (!CullingMethod.GetContainer(out var container))
+                return;
+
+            DestroyImmediate(container.GetComponent<CullingVisualizer>());
+            container.AddComponent<CullingVisualizer>();
+        }
 
         private void OnEnable()
         {
@@ -43,10 +53,17 @@ namespace CullFactory.Behaviours.Visualization
 
             var portalPrefab = CreatePortalVisualizer();
 
-            foreach (var doorwayConnection in RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.Connections)
+            for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
             {
-                SpawnPortalVisualizer(portalPrefab, doorwayConnection.A);
-                SpawnPortalVisualizer(portalPrefab, doorwayConnection.B);
+                ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+                if (!dungeonData.DungeonRef.TryGetTarget(out var dungeon))
+                    continue;
+
+                foreach (var doorwayConnection in dungeon.Connections)
+                {
+                    SpawnPortalVisualizer(portalPrefab, doorwayConnection.A);
+                    SpawnPortalVisualizer(portalPrefab, doorwayConnection.B);
+                }
             }
 
             Destroy(portalPrefab.gameObject);
@@ -63,13 +80,19 @@ namespace CullFactory.Behaviours.Visualization
 
             var insetVector = new Vector3(TileBoundsInset, TileBoundsInset, TileBoundsInset);
 
-            for (var i = 0; i < DungeonCullingInfo.AllTileContents.Length; i++)
+            var colorIndex = 0;
+            for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
             {
-                var tile = DungeonCullingInfo.AllTileContents[i];
-                var tileBoundsVisualizer = Instantiate(tileBoundsPrefab, _tileBoundsVisualizersRoot.transform);
-                tileBoundsVisualizer.transform.position = tile.bounds.center;
-                tileBoundsVisualizer.transform.localScale = tile.bounds.size - insetVector;
-                tileBoundsVisualizer.material.color = ColorRotation[i % ColorRotation.Length];
+                ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+
+                foreach (var tile in dungeonData.AllTileContents)
+                {
+                    var tileBoundsVisualizer = Instantiate(tileBoundsPrefab, _tileBoundsVisualizersRoot.transform);
+                    tileBoundsVisualizer.transform.position = tile.bounds.center;
+                    tileBoundsVisualizer.transform.localScale = tile.bounds.size - insetVector;
+                    tileBoundsVisualizer.material.color = ColorRotation[colorIndex % ColorRotation.Length];
+                    colorIndex++;
+                }
             }
 
             Destroy(tileBoundsPrefab.gameObject);

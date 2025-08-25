@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CullFactory.Behaviours.CullingMethods;
 using CullFactory.Services;
 using CullFactoryBurst;
 using DunGen;
@@ -9,47 +10,74 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace CullFactory.Data;
 
-public static class DungeonCullingInfo
+internal static class DungeonCullingInfo
 {
     private const int RendererIntrusionTileDepth = 2;
     private const float RendererIntrusionDistance = 0.01f;
 
-    public static TileContents[] AllTileContents { get; private set; }
-    public static Dictionary<Tile, TileContents> TileContentsForTile { get; private set; }
-
-    public static Light[] AllLightsInDungeon { get; private set; }
-
-    public static Bounds DungeonBounds;
-
-    public static void OnLevelGenerated()
+    internal struct DungeonData(Dungeon dungeon)
     {
-        var interiorName = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name;
-        Plugin.LogAlways($"{interiorName} has finished generating with seed {StartOfRound.Instance.randomMapSeed}.");
+        public WeakReference<Dungeon> DungeonRef = new(dungeon);
+        public readonly bool IsValid => DungeonRef.TryGetTarget(out var dungeon) && dungeon != null;
+
+        public Bounds Bounds;
+
+        public TileContents[] AllTileContents { get; internal set; }
+        public Dictionary<Tile, TileContents> TileContentsForTile { get; internal set; }
+
+        public Light[] AllLightsInDungeon { get; internal set; }
+    }
+
+    public static DungeonData[] AllDungeonData = [];
+
+    public static void OnDungeonGenerated(Dungeon dungeon)
+    {
+        var dungeonData = new DungeonData(dungeon);
+
+        var flow = dungeon.DungeonFlow;
+        if (flow == null)
+        {
+            Plugin.LogError($"Dungeon flow for {dungeon} was null!");
+            return;
+        }
+        var interiorName = flow.name;
+        if (interiorName != null && !Config.ShouldEnableCullingForInterior(interiorName))
+            return;
 
         var derivePortalBoundsFromTile = Array.IndexOf(Config.InteriorsWithFallbackPortals, interiorName) != -1;
         if (derivePortalBoundsFromTile)
             Plugin.LogAlways($"Using tile bounds to determine the size of portals for {interiorName}.");
 
-        var startTime = Time.realtimeSinceStartupAsDouble;
-        CollectAllTileContents(derivePortalBoundsFromTile);
-        Plugin.Log($"Preparing tile information for the dungeon took {(Time.realtimeSinceStartupAsDouble - startTime) * 1000:0.###}ms");
-    }
+        var startTime = Time.realtimeSinceStartup;
+        CollectAllTileContents(dungeon, derivePortalBoundsFromTile, ref dungeonData);
+        Plugin.Log($"Preparing tile information for {interiorName} took {(Time.realtimeSinceStartup - startTime) * 1000:0.###}ms");
 
-    public static void ClearAll()
-    {
-        if (AllTileContents == null)
-            return;
+        AllDungeonData = [.. AllDungeonData, dungeonData];
 
-        AllTileContents = null;
-        TileContentsForTile.Clear();
-        AllLightsInDungeon = null;
-        DungeonBounds = default;
+        CullingMethod.Initialize();
     }
 
     public static void RefreshCullingInfo()
     {
-        if (AllTileContents != null)
-            OnLevelGenerated();
+        Plugin.LogAlways($"Refreshing culling info");
+        AllDungeonData = [];
+
+        foreach (var dungeon in UnityEngine.Object.FindObjectsOfType<Dungeon>())
+        {
+            Plugin.LogAlways($"Dungeon found: {dungeon}");
+            OnDungeonGenerated(dungeon);
+        }
+    }
+
+    public static void CleanUpDestroyedDungeons()
+    {
+        var newDungeonData = new List<DungeonData>(AllDungeonData);
+        for (var i = AllDungeonData.Length - 1; i >= 0; i--)
+        {
+            if (!AllDungeonData[i].IsValid)
+                newDungeonData.RemoveAt(i);
+        }
+        AllDungeonData = [.. newDungeonData];
     }
 
     private static void AddIntersectingRenderers(Bounds bounds, HashSet<Renderer> toCollection, HashSet<TileContents> visitedTiles, TileContents currentTile, int tilesLeft)
@@ -109,22 +137,22 @@ public static class DungeonCullingInfo
         return true;
     }
 
-    private static void CollectAllTileContents(bool derivePortalBoundsFromTile)
+    private static void CollectAllTileContents(Dungeon dungeon, bool derivePortalBoundsFromTile, ref DungeonData data)
     {
-        FillTileContentsCollections();
+        FillTileContentsCollections(dungeon, ref data);
 
-        CreateAndAssignPortals(derivePortalBoundsFromTile);
+        CreateAndAssignPortals(derivePortalBoundsFromTile, ref data);
 
-        AddIntrudingRenderersToTileContents();
+        AddIntrudingRenderersToTileContents(ref data);
 
-        AddLightInfluencesToTileContents();
+        AddLightInfluencesToTileContents(ref data);
     }
 
-    private static void FillTileContentsCollections()
+    private static void FillTileContentsCollections(Dungeon dungeon, ref DungeonData data)
     {
-        var tiles = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.AllTiles;
-        AllTileContents = new TileContents[tiles.Count];
-        TileContentsForTile = new Dictionary<Tile, TileContents>(AllTileContents.Length);
+        var tiles = dungeon.AllTiles;
+        data.AllTileContents = new TileContents[tiles.Count];
+        data.TileContentsForTile = new Dictionary<Tile, TileContents>(data.AllTileContents.Length);
 
         var lightsInDungeon = new List<Light>();
 
@@ -135,22 +163,22 @@ public static class DungeonCullingInfo
         foreach (var tile in tiles)
         {
             var tileContents = new TileContents(tile);
-            AllTileContents[i++] = tileContents;
-            TileContentsForTile[tile] = tileContents;
+            data.AllTileContents[i++] = tileContents;
+            data.TileContentsForTile[tile] = tileContents;
             lightsInDungeon.AddRange(tileContents.lights);
 
             dungeonMin = Vector3.Min(dungeonMin, tileContents.rendererBounds.min);
             dungeonMax = Vector3.Max(dungeonMax, tileContents.rendererBounds.max);
         }
 
-        AllLightsInDungeon = [.. lightsInDungeon];
-        DungeonBounds.min = dungeonMin;
-        DungeonBounds.max = dungeonMax;
+        data.AllLightsInDungeon = [.. lightsInDungeon];
+        data.Bounds.min = dungeonMin;
+        data.Bounds.max = dungeonMax;
     }
 
-    private static void CreateAndAssignPortals(bool derivePortalBoundsFromTile)
+    private static void CreateAndAssignPortals(bool derivePortalBoundsFromTile, ref DungeonData data)
     {
-        foreach (var tileContents in TileContentsForTile.Values)
+        foreach (var tileContents in data.TileContentsForTile.Values)
         {
             var doorways = tileContents.tile.UsedDoorways;
             var doorwayCount = doorways.Count;
@@ -160,18 +188,18 @@ public static class DungeonCullingInfo
                 var doorway = doorways[j];
                 if (doorway.ConnectedDoorway == null)
                     continue;
-                portals.Add(new Portal(doorway, derivePortalBoundsFromTile, TileContentsForTile[doorway.ConnectedDoorway.Tile]));
+                portals.Add(new Portal(doorway, derivePortalBoundsFromTile, data.TileContentsForTile[doorway.ConnectedDoorway.Tile]));
             }
             tileContents.portals = [.. portals];
         }
     }
 
-    private static void AddIntrudingRenderersToTileContents()
+    private static void AddIntrudingRenderersToTileContents(ref DungeonData data)
     {
-        for (var i = 0; i < AllTileContents.Length; i++)
+        for (var i = 0; i < data.AllTileContents.Length; i++)
         {
-            var tile = AllTileContents[i];
-            tile.renderers = [.. tile.renderers, .. GetIntrudingRenderers(AllTileContents[i])];
+            var tile = data.AllTileContents[i];
+            tile.renderers = [.. tile.renderers, .. GetIntrudingRenderers(data.AllTileContents[i])];
         }
     }
 
@@ -182,15 +210,15 @@ public static class DungeonCullingInfo
         internal readonly List<Plane[]> _externalLightLinesOfSight = new(tileContents.externalLightLinesOfSight);
     }
 
-    private static void AddLightInfluencesToTileContents()
+    private static void AddLightInfluencesToTileContents(ref DungeonData data)
     {
-        var lightInfluenceCollectionLookup = new Dictionary<TileContents, LightInfluenceCollections>(AllTileContents.Length);
+        var lightInfluenceCollectionLookup = new Dictionary<TileContents, LightInfluenceCollections>(data.AllTileContents.Length);
 
-        foreach (var tile in AllTileContents)
+        foreach (var tile in data.AllTileContents)
             lightInfluenceCollectionLookup[tile] = new(tile);
 
         foreach (var (tile, light) in
-                 AllTileContents.SelectMany(tile => tile.lights.Select(light => (tile, light))))
+                 data.AllTileContents.SelectMany(tile => tile.lights.Select(light => (tile, light))))
         {
             // Check activeInHierarchy, because isActiveAndEnabled is always false after generation.
             if (!light.gameObject.activeInHierarchy)
@@ -205,7 +233,7 @@ public static class DungeonCullingInfo
 
             if (lightPassesThroughWalls)
             {
-                foreach (var otherTile in AllTileContents)
+                foreach (var otherTile in data.AllTileContents)
                 {
                     if (!light.Affects(otherTile))
                         continue;
@@ -290,7 +318,7 @@ public static class DungeonCullingInfo
             });
         }
 
-        foreach (var tile in AllTileContents)
+        foreach (var tile in data.AllTileContents)
         {
             var influences = lightInfluenceCollectionLookup[tile];
             tile.externalRenderers = [.. influences._externalRenderers];
@@ -299,19 +327,48 @@ public static class DungeonCullingInfo
         }
     }
 
+    public static bool PointIsInAnyInterior(Vector3 point)
+    {
+        for (var i = 0; i < AllDungeonData.Length; i++)
+        {
+            ref var dungeonData = ref AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+            if (!dungeonData.Bounds.Contains(point))
+                continue;
+
+            foreach (var tileContents in dungeonData.AllTileContents)
+            {
+                if (tileContents.rendererBounds.Contains(point))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public static TileContents GetTileContents(this Vector3 point)
     {
         TileContents fallbackTileContents = null;
 
-        foreach (var tileContents in AllTileContents)
+        for (var i = 0; i < AllDungeonData.Length; i++)
         {
-            if (tileContents.bounds.Contains(point))
-                return tileContents;
-
-            if (!tileContents.rendererBounds.Contains(point))
+            ref var dungeonData = ref AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+            if (!dungeonData.Bounds.Contains(point))
                 continue;
 
-            fallbackTileContents = tileContents;
+            foreach (var tileContents in dungeonData.AllTileContents)
+            {
+                if (tileContents.bounds.Contains(point))
+                    return tileContents;
+
+                if (!tileContents.rendererBounds.Contains(point))
+                    continue;
+
+                fallbackTileContents = tileContents;
+            }
         }
 
         return fallbackTileContents;
@@ -321,10 +378,39 @@ public static class DungeonCullingInfo
     {
         var frustum = camera.GetTempFrustum();
 
-        foreach (var tileContents in AllTileContents)
+        for (var i = 0; i < AllDungeonData.Length; i++)
         {
-            if (Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
-                intoList.Add(tileContents);
+            ref var dungeonData = ref AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+
+            foreach (var tileContents in dungeonData.AllTileContents)
+            {
+                if (Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
+                    intoList.Add(tileContents);
+            }
         }
+    }
+
+    public static bool TryGetTileContentsForTile(Tile tile, out TileContents tileContents)
+    {
+        for (var i = 0; i < AllDungeonData.Length; i++)
+        {
+            ref var dungeonData = ref AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+
+            if (dungeonData.TileContentsForTile.TryGetValue(tile, out tileContents))
+                return true;
+        }
+
+        tileContents = null;
+        return false;
+    }
+
+    public static void SetAllTileContentsVisible(bool visible)
+    {
+        for (var i = 0; i < AllDungeonData.Length; i++)
+            AllDungeonData[i].AllTileContents.SetSelfVisible(visible);
     }
 }

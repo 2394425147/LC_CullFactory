@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using BepInEx.Configuration;
 using CullFactory.Behaviours.CullingMethods;
+using CullFactory.Behaviours.Visualization;
 using CullFactory.Data;
 using CullFactory.Extenders;
 using CullFactory.Services;
@@ -210,9 +211,9 @@ public static class Config
         CullDistance.SettingChanged += (_, _) => TeleportExtender.SetInitialFarClipPlane();
         SurfaceCullDistance.SettingChanged += (_, _) => TeleportExtender.SetInitialFarClipPlane();
 
-        VisualizePortals.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
-        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
-        VisualizeTileBounds.SettingChanged += (_, _) => Plugin.CreateCullingVisualizers();
+        VisualizePortals.SettingChanged += (_, _) => CullingVisualizer.Initialize();
+        VisualizedPortalOutsetDistance.SettingChanged += (_, _) => CullingVisualizer.Initialize();
+        VisualizeTileBounds.SettingChanged += (_, _) => CullingVisualizer.Initialize();
 
         UpdateMoonScenesWithDisabledCulling();
         UpdateInteriorsWithDisabledCulling();
@@ -262,12 +263,18 @@ public static class Config
         CullingMethod.Initialize();
     }
 
-    public static CullingType GetCullingType(RuntimeDungeon runtimeDungeon)
+    public static bool ShouldEnableCullingForScene(string sceneName)
     {
-        if (InteriorsWithDisabledCulling.Contains(runtimeDungeon.Generator.DungeonFlow.name))
-            return CullingType.None;
-        if (MoonScenesWithDisabledCulling.Contains(runtimeDungeon.gameObject.scene.name))
-            return CullingType.None;
+        return !MoonScenesWithDisabledCulling.Contains(sceneName);
+    }
+
+    public static bool ShouldEnableCullingForInterior(string dungeonFlowName)
+    {
+        return !InteriorsWithDisabledCulling.Contains(dungeonFlowName);
+    }
+
+    public static CullingType GetCullingType()
+    {
         return Culler.Value;
     }
 

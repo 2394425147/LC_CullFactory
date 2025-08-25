@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using CullFactory.Behaviours.API;
+using CullFactory.Behaviours.Visualization;
 using CullFactory.Data;
 using CullFactory.Services;
 using CullFactoryBurst;
+using DunGen;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -35,6 +37,8 @@ public abstract class CullingMethod : MonoBehaviour
 
     public const float ExtraShadowFadeDistance = 1 / 0.9f;
 
+    private static GameObject CullingObject;
+
     public static CullingMethod Instance { get; private set; }
 
     protected Camera _hudCamera;
@@ -52,41 +56,50 @@ public abstract class CullingMethod : MonoBehaviour
     private VisibilitySets _visibility = new();
     private VisibilitySets _visibilityLastCall = new();
 
-    private float[] _lightShadowFadeDistances;
-    private Dictionary<LODGroup, float> _lastLODScreenHeights;
+    private ConditionalWeakTable<Dungeon, float[]> _lightShadowFadeDistances = [];
+    private Dictionary<LODGroup, float> _lastLODScreenHeights = [];
 
     protected TileContents _debugTile = null;
 
     private float _cullingTime = 0;
 
+    public static bool GetContainer(out GameObject containerObject)
+    {
+        containerObject = CullingObject;
+        if (containerObject != null)
+            return true;
+
+        if (StartOfRound.Instance == null)
+            return false;
+        var parent = StartOfRound.Instance.transform.parent;
+
+        var obj = new GameObject("Culling");
+        obj.transform.SetParent(parent, false);
+        CullingObject = containerObject = obj;
+        return true;
+    }
+
     public static void Initialize()
     {
+        if (!GetContainer(out var container))
+            return;
+
         if (Instance != null)
         {
             DestroyImmediate(Instance);
             Instance = null;
         }
 
-        if (RoundManager.Instance == null || RoundManager.Instance.dungeonGenerator == null)
+        var level = StartOfRound.Instance.currentLevel;
+        if (level == null || !Config.ShouldEnableCullingForScene(level.sceneName))
             return;
 
-        var runtimeDungeon = RoundManager.Instance.dungeonGenerator;
-        var dungeon = runtimeDungeon.Generator.CurrentDungeon.gameObject;
-        CullingMethod instance = null;
-
-        switch (Config.GetCullingType(runtimeDungeon))
+        var instance = Config.GetCullingType() switch
         {
-            case CullingType.PortalOcclusionCulling:
-                instance = dungeon.AddComponent<PortalOcclusionCuller>();
-                break;
-            case CullingType.DepthCulling:
-                instance = dungeon.AddComponent<DepthCuller>();
-                break;
-            case CullingType.None:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            CullingType.PortalOcclusionCulling => container.AddComponent<PortalOcclusionCuller>(),
+            CullingType.DepthCulling => container.AddComponent<DepthCuller>(),
+            _ => (CullingMethod)null
+        };
 
         if (instance == null)
             return;
@@ -95,12 +108,14 @@ public abstract class CullingMethod : MonoBehaviour
             instance._updateInterval = 1 / Config.UpdateFrequency.Value;
         else
             instance._updateInterval = 0;
+
+        Instance = instance;
+
+        CullingVisualizer.Initialize();
     }
 
     private void Awake()
     {
-        Instance = this;
-
         // Get the camera for the HUD/UI via an object referenced by HUDManager so that
         // if the UICamera's hierarchy is modified (i.e. by LethalCompanyVR), we can still
         // find the camera.
@@ -114,7 +129,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnEnable()
     {
-        DungeonCullingInfo.AllTileContents.SetSelfVisible(false);
+        DungeonCullingInfo.SetAllTileContentsVisible(false);
         DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(false);
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(false);
         DynamicObjects.AllLightsOutside.SetVisible(false);
@@ -175,10 +190,14 @@ public abstract class CullingMethod : MonoBehaviour
     {
         var frustum = camera.GetTempFrustum();
 
-        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
-                visibility.directTiles.Add(tileContents);
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            foreach (var tileContents in dungeonData.AllTileContents)
+            {
+                if (Geometry.TestPlanesAABB(frustum, tileContents.bounds))
+                    visibility.directTiles.Add(tileContents);
+            }
         }
 
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
@@ -205,7 +224,8 @@ public abstract class CullingMethod : MonoBehaviour
 
     protected void AddAllObjects(VisibilitySets visibility)
     {
-        visibility.directTiles.UnionWith(DungeonCullingInfo.AllTileContents);
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
+            visibility.directTiles.UnionWith(DungeonCullingInfo.AllDungeonData[i].AllTileContents);
         visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsInInterior);
         visibility.items.UnionWith(DynamicObjects.AllGrabbableObjectContentsOutside);
         visibility.dynamicLights.UnionWith(DynamicObjects.AllLightsInInterior);
@@ -354,7 +374,7 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void OnDisable()
     {
-        DungeonCullingInfo.AllTileContents.SetSelfVisible(true);
+        DungeonCullingInfo.SetAllTileContentsVisible(true);
         DynamicObjects.AllGrabbableObjectContentsOutside.SetVisible(true);
         DynamicObjects.AllGrabbableObjectContentsInInterior.SetVisible(true);
         DynamicObjects.AllLightsOutside.SetVisible(true);
@@ -376,24 +396,35 @@ public abstract class CullingMethod : MonoBehaviour
 
     private void DisableShadowDistanceFading()
     {
+        RestoreShadowDistanceFading();
+
         if (!Config.DisableShadowDistanceFading.Value)
             return;
 
-        _lightShadowFadeDistances = new float[DungeonCullingInfo.AllLightsInDungeon.Length];
-        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            var light = DungeonCullingInfo.AllLightsInDungeon[i];
-            if (light == null)
-                continue;
-            var hdLight = light.GetComponent<HDAdditionalLightData>();
-            if (hdLight == null)
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            if (!dungeonData.DungeonRef.TryGetTarget(out var dungeon))
                 continue;
 
-            _lightShadowFadeDistances[i] = hdLight.shadowFadeDistance;
+            var distances = new float[dungeonData.AllLightsInDungeon.Length];
+            _lightShadowFadeDistances.Add(dungeon, distances);
 
-            if (!DungeonCullingInfo.ShouldShadowFadingBeDisabledForLight(hdLight))
-                continue;
-            hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
+            for (var j = 0; j < distances.Length; j++)
+            {
+                var light = dungeonData.AllLightsInDungeon[j];
+                if (light == null)
+                    continue;
+                var hdLight = light.GetComponent<HDAdditionalLightData>();
+                if (hdLight == null)
+                    continue;
+
+                distances[j] = hdLight.shadowFadeDistance;
+
+                if (!DungeonCullingInfo.ShouldShadowFadingBeDisabledForLight(hdLight))
+                    continue;
+                hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
+            }
         }
     }
 
@@ -402,36 +433,52 @@ public abstract class CullingMethod : MonoBehaviour
         if (_lightShadowFadeDistances == null)
             return;
 
-        for (var i = 0; i < _lightShadowFadeDistances.Length; i++)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            var light = DungeonCullingInfo.AllLightsInDungeon[i];
-            if (light == null)
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            if (!dungeonData.DungeonRef.TryGetTarget(out var dungeon))
                 continue;
-            var hdLight = light.GetComponent<HDAdditionalLightData>();
-            if (hdLight == null)
+            if (!_lightShadowFadeDistances.TryGetValue(dungeon, out var distances))
                 continue;
 
-            hdLight.shadowFadeDistance = _lightShadowFadeDistances[i];
+            for (var j = 0; j < distances.Length; j++)
+            {
+                var light = dungeonData.AllLightsInDungeon[j];
+                if (light == null)
+                    continue;
+                var hdLight = light.GetComponent<HDAdditionalLightData>();
+                if (hdLight == null)
+                    continue;
+
+                hdLight.shadowFadeDistance = distances[j];
+            }
         }
 
-        _lightShadowFadeDistances = null;
+        _lightShadowFadeDistances.Clear();
     }
 
     private void DisableInteriorLODCulling()
     {
+        RestoreInteriorLODCulling();
+
         if (!Config.DisableLODCulling.Value)
             return;
 
-        _lastLODScreenHeights = [];
-
-        foreach (var tile in DungeonCullingInfo.AllTileContents)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            foreach (var lodGroup in tile.tile.GetComponentsInChildren<LODGroup>())
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+
+            foreach (var tileContents in dungeonData.AllTileContents)
             {
-                var lods = lodGroup.GetLODs();
-                _lastLODScreenHeights[lodGroup] = lods[^1].screenRelativeTransitionHeight;
-                lods[^1].screenRelativeTransitionHeight = 0;
-                lodGroup.SetLODs(lods);
+                if (tileContents.tile == null)
+                    continue;
+                foreach (var lodGroup in tileContents.tile.GetComponentsInChildren<LODGroup>())
+                {
+                    var lods = lodGroup.GetLODs();
+                    _lastLODScreenHeights[lodGroup] = lods[^1].screenRelativeTransitionHeight;
+                    lods[^1].screenRelativeTransitionHeight = 0;
+                    lodGroup.SetLODs(lods);
+                }
             }
         }
     }
@@ -441,19 +488,26 @@ public abstract class CullingMethod : MonoBehaviour
         if (_lastLODScreenHeights == null)
             return;
 
-        foreach (var tile in DungeonCullingInfo.AllTileContents)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            foreach (var lodGroup in tile.tile.GetComponentsInChildren<LODGroup>())
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+
+            foreach (var tileContents in dungeonData.AllTileContents)
             {
-                if (!_lastLODScreenHeights.TryGetValue(lodGroup, out var screenRelativeTransitionHeight))
+                if (tileContents.tile == null)
                     continue;
-                var lods = lodGroup.GetLODs();
-                lods[^1].screenRelativeTransitionHeight = screenRelativeTransitionHeight;
-                lodGroup.SetLODs(lods);
+                foreach (var lodGroup in tileContents.tile.GetComponentsInChildren<LODGroup>())
+                {
+                    if (!_lastLODScreenHeights.TryGetValue(lodGroup, out var screenRelativeTransitionHeight))
+                        continue;
+                    var lods = lodGroup.GetLODs();
+                    lods[^1].screenRelativeTransitionHeight = screenRelativeTransitionHeight;
+                    lodGroup.SetLODs(lods);
+                }
             }
         }
 
-        _lastLODScreenHeights = null;
+        _lastLODScreenHeights.Clear();
     }
 
     private void OnDrawGizmos()

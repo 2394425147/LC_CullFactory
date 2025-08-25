@@ -1,5 +1,4 @@
 using BepInEx;
-using CullFactory.Behaviours.Visualization;
 using CullFactory.Extenders;
 using HarmonyLib;
 using System.IO;
@@ -31,6 +30,8 @@ public class Plugin : BaseUnityPlugin
         QualitySettings.shadowResolution = ShadowResolution.Low;
 
         LoadBurstAssembly();
+
+        SceneLoadingExtender.Init();
 
         Log($"Plugin {Name} is loaded!");
     }
@@ -90,17 +91,5 @@ public class Plugin : BaseUnityPlugin
     public static void LogError(string s)
     {
         Instance.Logger.LogError(s);
-    }
-
-    public static void CreateCullingVisualizers()
-    {
-        if (RoundManager.Instance.dungeonGenerator == null)
-            return;
-
-        var dungeonObject = RoundManager.Instance.dungeonGenerator.Generator.CurrentDungeon.gameObject;
-
-        DestroyImmediate(dungeonObject.GetComponent<CullingVisualizer>());
-        var newVisualizer = dungeonObject.AddComponent<CullingVisualizer>();
-        newVisualizer.RefreshVisualizers();
     }
 }

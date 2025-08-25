@@ -66,8 +66,9 @@ public sealed class DepthCuller : CullingMethod
             //       [B3]  <<- Not traversed because B sees (A2) as done and will halt early
             // [A1]  [A2]  [A3]
             //       [B1]
-            visibleTiles.Add(DungeonCullingInfo.TileContentsForTile[tileFrame.tile]);
             traversedTiles.Add(tileFrame.tile);
+            if (DungeonCullingInfo.TryGetTileContentsForTile(tileFrame.tile, out var tileContents))
+                visibleTiles.Add(tileContents);
 
             if (tileFrame.iteration == depthTarget)
                 continue;

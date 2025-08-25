@@ -38,10 +38,20 @@ public static class ObjectContentsUtility
     {
         var frustum = camera.GetTempFrustum();
 
-        foreach (var tileContents in DungeonCullingInfo.AllTileContents)
+        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
         {
-            if (Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
+            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
+            if (!dungeonData.IsValid)
+                continue;
+            if (!Geometry.TestPlanesAABB(in frustum, in dungeonData.Bounds))
+                continue;
+
+            foreach (var tileContents in dungeonData.AllTileContents)
+            {
+                if (!Geometry.TestPlanesAABB(in frustum, in tileContents.bounds))
+                    continue;
                 result.Add(tileContents);
+            }
         }
     }
 }

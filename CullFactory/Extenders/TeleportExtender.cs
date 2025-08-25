@@ -82,7 +82,7 @@ public static class TeleportExtender
         if (!Config.CullDistanceEnabled.Value)
             return;
 
-        player.gameplayCamera.farClipPlane = DynamicObjects.PlayerIsInInterior(player)
+        player.gameplayCamera.farClipPlane = DynamicObjects.PlayerIsInAnyInterior(player)
                                                  ? Config.CullDistance.Value
                                                  : Config.SurfaceCullDistance.Value;
 

@@ -180,6 +180,6 @@ public static class VisibilityTesting
 
     public static bool CallForEachLineOfSightTowardTiles(Vector3 origin, TileContents originTile, HashSet<TileContents> goalTiles, LineOfSightCallback callback)
     {
-        return CallForEachLineOfSightTowardTiles(origin, originTile, [], goalTiles, callback);
+        return CallForEachLineOfSightTowardTiles(origin, originTile, default, goalTiles, callback);
     }
 }
