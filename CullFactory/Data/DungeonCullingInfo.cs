@@ -32,6 +32,22 @@ internal static class DungeonCullingInfo
 
     public static void OnDungeonGenerated(Dungeon dungeon)
     {
+        CollectDungeonData(dungeon);
+        CullingMethod.Initialize();
+    }
+
+    public static void RefreshCullingInfo()
+    {
+        AllDungeonData = [];
+
+        foreach (var dungeon in UnityEngine.Object.FindObjectsOfType<Dungeon>())
+            CollectDungeonData(dungeon);
+
+        CullingMethod.Initialize();
+    }
+
+    private static void CollectDungeonData(Dungeon dungeon)
+    {
         var dungeonData = new DungeonData(dungeon);
 
         var flow = dungeon.DungeonFlow;
@@ -53,20 +69,6 @@ internal static class DungeonCullingInfo
         Plugin.Log($"Preparing tile information for {interiorName} took {(Time.realtimeSinceStartup - startTime) * 1000:0.###}ms");
 
         AllDungeonData = [.. AllDungeonData, dungeonData];
-
-        CullingMethod.Initialize();
-    }
-
-    public static void RefreshCullingInfo()
-    {
-        Plugin.LogAlways($"Refreshing culling info");
-        AllDungeonData = [];
-
-        foreach (var dungeon in UnityEngine.Object.FindObjectsOfType<Dungeon>())
-        {
-            Plugin.LogAlways($"Dungeon found: {dungeon}");
-            OnDungeonGenerated(dungeon);
-        }
     }
 
     public static void CleanUpDestroyedDungeons()
