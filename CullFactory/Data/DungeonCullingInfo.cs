@@ -224,6 +224,42 @@ internal static class DungeonCullingInfo
             if (!light.gameObject.activeInHierarchy)
                 continue;
 
+            // If the light is not within its tile, we can't assume that it only passes through portals.
+            // Throw out all optimization and just make the light and all occluders along its path visible.
+            var lightOrigin = light.transform.position;
+            if (!tile.bounds.Contains(lightOrigin))
+            {
+                foreach (var otherTile in data.AllTileContents)
+                {
+                    if (light.Affects(otherTile))
+                    {
+                        var otherTileInfluences = lightInfluenceCollectionLookup[otherTile];
+                        otherTileInfluences._externalLights.Add(light);
+
+                        if (!light.HasShadows())
+                            continue;
+                        var frustumToLight = otherTile.bounds.GetFrustumFromPoint(lightOrigin);
+
+                        foreach (var occluderTile in data.AllTileContents)
+                        {
+                            if (occluderTile == otherTile)
+                                continue;
+                            if (!light.Affects(occluderTile))
+                                continue;
+                            foreach (var occluderRenderer in occluderTile.renderers)
+                            {
+                                if (!light.Affects(occluderRenderer.bounds))
+                                    continue;
+                                if (!Geometry.TestPlanesAABB(in frustumToLight, occluderRenderer.bounds))
+                                    continue;
+                                otherTileInfluences._externalRenderers.Add(occluderRenderer);
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+
             var hasShadows = light.HasShadows();
 
             // If we don't force the shadow fade distance to match the light fade distance, lights will
@@ -257,7 +293,6 @@ internal static class DungeonCullingInfo
             if (!hasShadows)
                 continue;
 
-            var lightOrigin = light.transform.position;
             VisibilityTesting.CallForEachLineOfSight(lightOrigin, tile, (tiles, frustums, index) =>
             {
                 if (index < 1)
@@ -308,7 +343,7 @@ internal static class DungeonCullingInfo
                 var lineOfSight = new List<Plane>();
                 for (var i = 1; i <= index; i++)
                     lineOfSight.AddRange(frustums[i]);
-                lineOfSight.AddRange(currentTile.bounds.GetFarthestPlanes(lightOrigin));
+                lineOfSight.AddRange(currentTile.bounds.GetInsidePlanesFacingPoint(lightOrigin));
                 currentTileInfluences._externalLightLinesOfSight.Add([.. lineOfSight]);
 
                 // If the light can't pass through walls, then it hasn't been added to the
