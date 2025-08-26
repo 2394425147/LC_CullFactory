@@ -84,6 +84,8 @@ public abstract class CullingMethod : MonoBehaviour
         if (!GetContainer(out var container))
             return;
 
+        CullingVisualizer.Initialize();
+
         if (Instance != null)
         {
             DestroyImmediate(Instance);
@@ -111,7 +113,6 @@ public abstract class CullingMethod : MonoBehaviour
 
         Instance = instance;
 
-        CullingVisualizer.Initialize();
     }
 
     private void Awake()
