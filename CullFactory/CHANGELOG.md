@@ -1,3 +1,18 @@
+# 2.0.0 Beta 0
+
+## Added
+
+- Handling for multiple dungeons being spawned simultaneously
+
+## Fixed
+
+- Lights flickering visibly when they exist outside their parent tile (e.g. the window room in mansion)
+- Disabled culling on Outfall to prevent culling issues when landing
+
+## Changed
+
+- Optimized culling algorithms slightly
+
 # 1.7.0
 
 ## Added
@@ -20,7 +35,7 @@
 ## Fixed
 
 - Disabled culling on the Hadal Laboratories interior, since tiles are visible through walls
-- The interior being invisible when rendering the game with the standard render pipeline (i.e. with DOSCOMPANY)
+- The interior being invisible when rendering the game with the standard render pipeline (e.g. with DOSCOMPANY)
 
 # 1.6.1
 
