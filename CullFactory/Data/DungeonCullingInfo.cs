@@ -448,6 +448,10 @@ internal static class DungeonCullingInfo
     public static void SetAllTileContentsVisible(bool visible)
     {
         for (var i = 0; i < AllDungeonData.Length; i++)
+        {
+            if (!AllDungeonData[i].IsValid)
+                continue;
             AllDungeonData[i].AllTileContents.SetSelfVisible(visible);
+        }
     }
 }
