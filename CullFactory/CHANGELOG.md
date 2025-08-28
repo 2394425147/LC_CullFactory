@@ -1,3 +1,9 @@
+# 2.0.0 Beta 1
+
+## Fixed
+
+- Error spam when exiting to the menu
+
 # 2.0.0 Beta 0
 
 ## Added
