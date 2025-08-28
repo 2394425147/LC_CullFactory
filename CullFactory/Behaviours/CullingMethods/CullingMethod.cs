@@ -388,6 +388,8 @@ public abstract class CullingMethod : MonoBehaviour
 
         RenderPipelineManager.beginContextRendering -= DoCullingScriptableRenderPipeline;
         Camera.onPreCull -= DoCullingInStandardRenderPipeline;
+
+        DungeonCullingInfo.CleanUpDestroyedDungeons();
     }
 
     private void OnDestroy()
