@@ -1,3 +1,9 @@
+# 2.0.0 Beta 2
+
+## Fixed
+
+- Incorrect tile bounds on SleepsDungeon, caused by a bad calculation of world bounds for tiles with overridden bounds
+
 # 2.0.0 Beta 1
 
 ## Fixed
