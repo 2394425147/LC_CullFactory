@@ -34,22 +34,9 @@ public sealed class TileContents
     {
         this.tile = tile;
         // Tile.Bounds is correct until the tile is scaled, so we have to work around some issues here.
-        if (tile.OverrideAutomaticTileBounds)
-        {
-            // For overridden tile bounds, the sides that are set by the author will set in such a way
-            // that they must have the local scale of the tile applied to be correct.
-            // However, any sides that have doors will be pre-scaled, so by applying the scale we are
-            // pushing them away from the origin. Therefore, we must re-condense them the same way
-            // DunGen does initially.
-            bounds = UnityUtil.CondenseBounds(tile.Bounds, tile.GetComponentsInChildren<Doorway>());
-        }
-        else
-        {
-            // For automatic tile bounds, all sides of the bounding box are already in pre-scaled,
-            // so we just want to apply the parent transform to the bounds that have been transformed
-            // into the dungeon's local space.
-            bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
-        }
+        // All sides of the bounding box are already in pre-scaled, so we just want to apply the parent
+        // transform to the bounds that have been transformed into the dungeon's local space.
+        bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
 
         var renderersList = new List<Renderer>(tile.GetComponentsInChildren<Renderer>(includeInactive: true));
         var lightsList = new List<Light>(tile.GetComponentsInChildren<Light>(includeInactive: true));
