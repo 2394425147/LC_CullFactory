@@ -29,7 +29,7 @@ public static class Config
 
     private static readonly string[] DefaultMoonScenesToBlockCulling = ["LevelZeranos", "ProminenceScene", "NotezLevel3Outfall"];
 
-    private static readonly string[] DefaultFlowsToBlockCulling = ["HadalFlow"];
+    private static readonly string[] DefaultFlowsToBlockCulling = ["HadalFlow", "deepmines"];
 
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = ["BunkerFlow", "School", "CIDOMFlow"];
 
