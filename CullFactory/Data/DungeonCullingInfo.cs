@@ -66,7 +66,7 @@ internal static class DungeonCullingInfo
 
         var startTime = Time.realtimeSinceStartup;
         CollectAllTileContents(dungeon, derivePortalBoundsFromTile, ref dungeonData);
-        Plugin.Log($"Preparing tile information for {interiorName} took {(Time.realtimeSinceStartup - startTime) * 1000:0.###}ms");
+        Plugin.LogAlways($"Preparing tile information for {interiorName} took {(Time.realtimeSinceStartup - startTime) * 1000:0.###}ms");
 
         AllDungeonData = [.. AllDungeonData, dungeonData];
     }
