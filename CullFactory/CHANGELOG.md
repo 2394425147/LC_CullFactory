@@ -1,3 +1,9 @@
+# 2.0.0 Beta 4
+
+## Fixed
+
+- Disabled culling on the Deepcore Mines interior, due to non-axis-aligned doorways
+
 # 2.0.0 Beta 3
 
 ## Fixed
