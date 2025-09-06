@@ -1,3 +1,9 @@
+# 2.0.0 Beta 3
+
+## Fixed
+
+- An exception in the far clip plane override code when a second lobby is started with a different player count
+
 # 2.0.0 Beta 2
 
 ## Fixed
