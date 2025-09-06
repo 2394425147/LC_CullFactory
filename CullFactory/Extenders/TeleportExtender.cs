@@ -16,7 +16,7 @@ public static class TeleportExtender
 
         var allPlayers = StartOfRound.Instance.allPlayerScripts;
 
-        if (_initialPlayerCameraFarPlanes == null)
+        if (_initialPlayerCameraFarPlanes == null || _initialPlayerCameraFarPlanes.Length != allPlayers.Length)
         {
             _initialPlayerCameraFarPlanes = new float[allPlayers.Length];
             for (var i = 0; i < allPlayers.Length; i++)
