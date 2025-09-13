@@ -1,28 +1,4 @@
-# 2.0.0 Beta 4
-
-## Fixed
-
-- Disabled culling on the Deepcore Mines interior, due to non-axis-aligned doorways
-
-# 2.0.0 Beta 3
-
-## Fixed
-
-- An exception in the far clip plane override code when a second lobby is started with a different player count
-
-# 2.0.0 Beta 2
-
-## Fixed
-
-- Incorrect tile bounds on SleepsDungeon, caused by a bad calculation of world bounds for tiles with overridden bounds
-
-# 2.0.0 Beta 1
-
-## Fixed
-
-- Error spam when exiting to the menu
-
-# 2.0.0 Beta 0
+# 2.0.0
 
 ## Added
 
@@ -31,7 +7,9 @@
 ## Fixed
 
 - Lights flickering visibly when they exist outside their parent tile (e.g. the window room in mansion)
+- Incorrect tile bounds on SleepsDungeon, caused by a bad calculation of world bounds for tiles with overridden bounds
 - Disabled culling on Outfall to prevent culling issues when landing
+- An exception in the far clip plane override code when a second lobby is started with a different player count
 
 ## Changed
 
