@@ -1,4 +1,4 @@
-﻿using CullFactory.Data;
+using CullFactory.Data;
 using CullFactoryBurst;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -54,7 +54,7 @@ public static class VisibilityTesting
         stackIndex++;
         if (stackIndex >= MaxStackCapacity)
         {
-            DropTopStackFrame(ref stackIndex, ref frustumPlanesCount);
+            stackIndex--;
             if (!warnedThatStackWasExceeded)
             {
                 Plugin.LogWarning($"Exceeded the maximum portal occlusion culling depth of {MaxStackCapacity}.");
