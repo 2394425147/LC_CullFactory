@@ -1,3 +1,9 @@
+# 2.0.1
+
+## Fixed
+
+- A rare exception that would occur on some seeds with long sightlines through many tiles
+
 # 2.0.0
 
 ## Added
