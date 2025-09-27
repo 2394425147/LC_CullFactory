@@ -9,7 +9,7 @@ namespace CullFactory.Services;
 
 public static class VisibilityTesting
 {
-    private const int MaxStackCapacity = 16;
+    private const int MaxStackCapacity = 32;
     private static readonly TileContents[] TileStack = new TileContents[MaxStackCapacity];
     private static readonly int[] IndexStack = new int[MaxStackCapacity];
     private static readonly NativeSlice<Plane>[] Frustums = new NativeSlice<Plane>[MaxStackCapacity];
