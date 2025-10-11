@@ -1,3 +1,9 @@
+# 2.0.2
+
+## Fixed
+
+- An exception that would occur on v73 when landing on certain seeds
+
 # 2.0.1
 
 ## Fixed
