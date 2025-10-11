@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using CullFactory.Data;
 using DunGen;
 using HarmonyLib;
-using Unity.Netcode;
 
 namespace CullFactory.Extenders;
 
@@ -9,16 +11,31 @@ public static class LevelGenerationExtender
 {
     private static bool PauseCullingUpdates = false;
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewLevelClientRpc))]
-    private static void OnLevelBeginGenerating(RoundManager __instance)
+    private static void OnLevelBeginGenerating()
     {
-        if (__instance.NetworkManager == null || !__instance.NetworkManager.IsListening)
-            return;
-        if (__instance.__rpc_exec_stage != NetworkBehaviour.__RpcExecStage.Client)
-            return;
-
         PauseCullingUpdates = true;
+    }
+
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewLevelClientRpc))]
+    private static IEnumerable<CodeInstruction> GenerateNewLevelClientRpcTranspiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var matcher = new CodeMatcher(instructions)
+            .MatchForward(false, [
+                new CodeMatch(OpCodes.Ldarg_0),
+                new CodeMatch(OpCodes.Call, typeof(RoundManager).GetMethod(nameof(RoundManager.GenerateNewFloor), [])),
+            ]);
+        if (matcher.IsInvalid)
+        {
+            Plugin.LogError("Failed to find the call to begin dungeon generation in RoundManager");
+            return instructions;
+        }
+
+        return matcher
+            .Insert([
+                new CodeInstruction(OpCodes.Call, typeof(LevelGenerationExtender).GetMethod(nameof(OnLevelBeginGenerating), BindingFlags.NonPublic | BindingFlags.Static)),
+            ])
+            .Instructions();
     }
 
     [HarmonyPostfix]
