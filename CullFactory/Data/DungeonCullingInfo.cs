@@ -32,14 +32,16 @@ internal static class DungeonCullingInfo
 
     public static void OnDungeonGenerated(Dungeon dungeon)
     {
+        CullingMethod.DestroyInstance();
         CollectDungeonData(dungeon);
         CullingMethod.Initialize();
     }
 
     public static void RefreshCullingInfo()
     {
-        AllDungeonData = [];
+        CullingMethod.DestroyInstance();
 
+        AllDungeonData = [];
         foreach (var dungeon in UnityEngine.Object.FindObjectsOfType<Dungeon>())
             CollectDungeonData(dungeon);
 

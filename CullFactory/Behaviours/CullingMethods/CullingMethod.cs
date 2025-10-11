@@ -79,6 +79,15 @@ public abstract class CullingMethod : MonoBehaviour
         return true;
     }
 
+    public static void DestroyInstance()
+    {
+        if (Instance != null)
+        {
+            DestroyImmediate(Instance);
+            Instance = null;
+        }
+    }
+
     public static void Initialize()
     {
         if (!GetContainer(out var container))
@@ -86,11 +95,7 @@ public abstract class CullingMethod : MonoBehaviour
 
         CullingVisualizer.Initialize();
 
-        if (Instance != null)
-        {
-            DestroyImmediate(Instance);
-            Instance = null;
-        }
+        DestroyInstance();
 
         var level = StartOfRound.Instance.currentLevel;
         if (level == null || !Config.ShouldEnableCullingForScene(level.sceneName))
