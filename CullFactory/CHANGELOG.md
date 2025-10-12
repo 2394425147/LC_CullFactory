@@ -1,3 +1,9 @@
+# 2.0.3
+
+## Fixed
+
+- "Failed to find the call to begin dungeon generation in RoundManager" when LethalLevelLoader is installed
+
 # 2.0.2
 
 ## Fixed
