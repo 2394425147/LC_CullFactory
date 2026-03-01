@@ -33,10 +33,20 @@ public sealed class TileContents
     public TileContents(Tile tile)
     {
         this.tile = tile;
-        // Tile.Bounds is correct until the tile is scaled, so we have to work around some issues here.
-        // All sides of the bounding box are already in pre-scaled, so we just want to apply the parent
-        // transform to the bounds that have been transformed into the dungeon's local space.
-        bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
+        // The calculation of overridden tile bounds is incorrect in the version of DunGen that Lethal
+        // Company ships. Calculate the tile bounds based on how the visualization in editor treats the
+        // override bounds to ensure consistency with what the author intended.
+        // FIXME: This appears to be fixed in future versions of DunGen. The overridden bounds case
+        //        can be removed after Lethal Company updates to use the requisite version.
+        if (tile.OverrideAutomaticTileBounds)
+        {
+            bounds = tile.transform.TransformBounds(tile.TileBoundsOverride);
+            bounds = UnityUtil.CondenseBounds(bounds, tile.GetComponentsInChildren<Doorway>());
+        }
+        else
+        {
+            bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
+        }
 
         var renderersList = new List<Renderer>(tile.GetComponentsInChildren<Renderer>(includeInactive: true));
         var lightsList = new List<Light>(tile.GetComponentsInChildren<Light>(includeInactive: true));

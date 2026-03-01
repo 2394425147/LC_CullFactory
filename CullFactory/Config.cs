@@ -35,11 +35,11 @@ public static class Config
 
     private static readonly string[] DefaultFlowsToBlockCulling = [
         "HadalFlow",
+        "School",
     ];
 
     private static readonly string[] BaseSetOfInteriorsToUseFallbackPortals = [
         "BunkerFlow",
-        "School",
         "CIDOMFlow",
     ];
 
