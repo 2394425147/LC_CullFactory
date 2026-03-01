@@ -1,3 +1,9 @@
+# 2.0.4
+
+## Fixed
+
+- Occasional culling issues in the sloped tile in the mineshaft interior
+
 # 2.0.3
 
 ## Fixed
