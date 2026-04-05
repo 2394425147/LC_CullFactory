@@ -225,7 +225,7 @@ internal static class DungeonCullingInfo
                  data.AllTileContents.SelectMany(tile => tile.lights.Select(light => (tile, light))))
         {
             // Check activeInHierarchy, because isActiveAndEnabled is always false after generation.
-            if (!light.gameObject.activeInHierarchy)
+            if (!light.transform.parent.gameObject.activeInHierarchy)
                 continue;
 
             // If the light is not within its tile, we can't assume that it only passes through portals.
