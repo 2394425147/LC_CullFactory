@@ -169,6 +169,9 @@ public static class DynamicObjects
 
             MarkGrabbableObjectDirty(item);
         }
+
+        if (player.ItemOnlySlot != null)
+            MarkGrabbableObjectDirty(player.ItemOnlySlot);
     }
 
     internal static void OnEnemyTeleported(EnemyAI enemy)
