@@ -5,11 +5,11 @@ namespace CullFactory.Services;
 
 public static class TransformUtility
 {
-    public static string GetPath(this Transform obj)
+    public static string GetPath(this Transform obj, Transform stopAt = null)
     {
         var builder = new StringBuilder(obj.name);
         var parent = obj.parent;
-        while (parent != null)
+        while (parent != stopAt)
         {
             builder.Insert(0, "/");
             builder.Insert(0, parent.name);
