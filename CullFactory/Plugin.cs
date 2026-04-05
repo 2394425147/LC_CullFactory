@@ -22,6 +22,7 @@ public class Plugin : BaseUnityPlugin
         Instance = this;
         CullFactory.Config.Initialize(Config);
 
+        _harmony.PatchAll(typeof(DisableVanillaCulling));
         _harmony.PatchAll(typeof(LevelGenerationExtender));
         _harmony.PatchAll(typeof(TeleportExtender));
         _harmony.PatchAll(typeof(MapSeedOverride));
