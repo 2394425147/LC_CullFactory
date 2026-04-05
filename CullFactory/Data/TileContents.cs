@@ -33,20 +33,6 @@ public sealed class TileContents
     public TileContents(Tile tile)
     {
         this.tile = tile;
-        // The calculation of overridden tile bounds is incorrect in the version of DunGen that Lethal
-        // Company ships. Calculate the tile bounds based on how the visualization in editor treats the
-        // override bounds to ensure consistency with what the author intended.
-        // FIXME: This appears to be fixed in future versions of DunGen. The overridden bounds case
-        //        can be removed after Lethal Company updates to use the requisite version.
-        if (tile.OverrideAutomaticTileBounds)
-        {
-            bounds = tile.transform.TransformBounds(tile.TileBoundsOverride);
-            bounds = UnityUtil.CondenseBounds(bounds, tile.GetComponentsInChildren<Doorway>());
-        }
-        else
-        {
-            bounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
-        }
 
         var renderersList = new List<Renderer>(tile.GetComponentsInChildren<Renderer>(includeInactive: true));
         var lightsList = new List<Light>(tile.GetComponentsInChildren<Light>(includeInactive: true));
@@ -66,9 +52,29 @@ public sealed class TileContents
         // wider accessible area than the tile bounds indicate, including the vanilla mineshaft.
         // We have an upper limit on the size of these to prevent stray renderers from causing the
         // any part of the exterior from being considered part of the interior.
-        rendererBounds = bounds;
+        rendererBounds = new();
         foreach (var renderer in renderersList)
-            rendererBounds.Encapsulate(renderer.bounds);
+        {
+            if (rendererBounds.extents.Equals(Vector3.zero))
+                rendererBounds = renderer.bounds;
+            else
+                rendererBounds.Encapsulate(renderer.bounds);
+        }
+
+        // The calculation of overridden tile bounds was incorrect in the version of DunGen that Lethal
+        // Company shipped prior to v80. As a heuristic to choose the right way of calculating the exact
+        // bounds, select the candidate that has the least volume when encapsulating the renderer bounds.
+        Bounds mostRecentBounds = tile.transform.TransformBounds(tile.Placement.LocalBounds);
+        Bounds slightlyMoreRecentBounds = tile.transform.parent.TransformBounds(tile.Placement.Bounds);
+        bounds = SelectBestBounds(mostRecentBounds, slightlyMoreRecentBounds, rendererBounds);
+
+        if (tile.OverrideAutomaticTileBounds)
+        {
+            var oldBounds = tile.transform.TransformBounds(tile.TileBoundsOverride);
+            oldBounds = UnityUtil.CondenseBounds(oldBounds, tile.AllDoorways);
+            bounds = SelectBestBounds(bounds, oldBounds, rendererBounds);
+        }
+
         var maximumBounds = bounds;
         maximumBounds.Expand(MaxRendererBoundsSizeIncreaseOverTileBounds);
         rendererBounds.min = Vector3.Max(rendererBounds.min, maximumBounds.min);
@@ -76,6 +82,19 @@ public sealed class TileContents
 
         renderers = [.. renderersList];
         lights = [.. lightsList];
+    }
+
+    private static Bounds SelectBestBounds(Bounds a, Bounds b, Bounds rendererBounds)
+    {
+        return VolumeOfEncapsulation(a, rendererBounds) <= VolumeOfEncapsulation(b, rendererBounds) ? a : b;
+    }
+
+    private static float VolumeOfEncapsulation(Bounds a, Bounds b)
+    {
+        var encapsulation = a;
+        encapsulation.Encapsulate(b);
+        var size = encapsulation.size;
+        return size.x * size.y * size.z;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
