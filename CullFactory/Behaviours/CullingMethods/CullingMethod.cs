@@ -117,7 +117,6 @@ public abstract class CullingMethod : MonoBehaviour
             instance._updateInterval = 0;
 
         Instance = instance;
-
     }
 
     private void Awake()
