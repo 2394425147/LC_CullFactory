@@ -1,4 +1,4 @@
-using CullFactory.Data;
+﻿using CullFactory.Data;
 using CullFactoryBurst;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -112,7 +112,6 @@ public static class VisibilityTesting
 
             callback(TileStack, Frustums, stackIndex);
         }
-        CallForEachLineOfSight(camera.transform.position, originTile, camera.GetTempFrustum(), callback);
     }
 
     public static void CallForEachLineOfSight(Vector3 origin, TileContents originTile, LineOfSightCallback callback)
