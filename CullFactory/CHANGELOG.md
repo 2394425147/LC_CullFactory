@@ -1,3 +1,11 @@
+# 2.0.5
+
+## Fixed
+
+- Compatibility with v80+ (vanilla culling will be disabled)
+- Culling issues on interiors that were created on a different DunGen version due to bounds calculation changing over time
+- Standing in a doorway between tiles causing a room to disappear on rare occasions
+
 # 2.0.4
 
 ## Fixed
