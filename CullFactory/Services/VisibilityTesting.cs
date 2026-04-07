@@ -157,10 +157,28 @@ public static class VisibilityTesting
 
         var reachedGoal = goalTiles.Contains(originTile);
 
+        if (goalTiles.Count == 0)
+            return false;
+
+        var goalBounds = new Bounds();
+        foreach (var goalTile in goalTiles)
+        {
+            if (goalBounds.Equals(default))
+                goalBounds = goalTile.bounds;
+            else
+                goalBounds.Encapsulate(goalTile.bounds);
+        }
+
         while (stackIndex >= 0)
         {
             if (!AdvanceToNextTile(origin, ref stackIndex, ref frustumPlanesCount))
                 continue;
+
+            if (!Geometry.TestPlanesAABB(in Frustums[stackIndex], goalBounds))
+            {
+                DropTopStackFrame(ref stackIndex, ref frustumPlanesCount);
+                continue;
+            }
 
             if (!PlanesIntersectAnyTile(Frustums[stackIndex], goalTiles))
             {
@@ -170,7 +188,7 @@ public static class VisibilityTesting
 
             if (goalTiles.Contains(TileStack[stackIndex]))
                 reachedGoal = true;
-            
+
             callback(TileStack, Frustums, stackIndex);
         }
 
