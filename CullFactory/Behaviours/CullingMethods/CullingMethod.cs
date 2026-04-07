@@ -296,6 +296,8 @@ public abstract class CullingMethod : MonoBehaviour
         {
             DynamicObjects.RefreshGrabbableObjects();
             DynamicObjects.UpdateAllUnpredictableLights();
+            foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
+                item.CalculateBounds();
             _renderedThisFrame = true;
         }
 

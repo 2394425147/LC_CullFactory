@@ -33,7 +33,6 @@ public sealed class DepthCuller : CullingMethod
 
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
             {
-                item.CalculateBounds();
                 if (item.IsWithin(visibility.directTiles))
                     visibility.items.Add(item);
             }

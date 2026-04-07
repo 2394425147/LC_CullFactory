@@ -1,4 +1,3 @@
-using CullFactory.Services;
 using CullFactoryBurst;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,6 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
     public readonly GrabbableObject item = item;
     public Renderer[] renderers = [];
     public Light[] lights = [];
-    public Vector3[] boundingVertices = [];
     public Bounds bounds;
 
     public EnemyAI heldByEnemy;
@@ -23,14 +21,17 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
     {
         renderers = item.GetComponentsInChildren<Renderer>();
         lights = item.GetComponentsInChildren<Light>();
-        CalculateLocalBounds();
     }
 
-    private void CalculateLocalBounds()
+    public void CalculateBounds()
     {
-        var min = Vector3.positiveInfinity;
-        var max = Vector3.negativeInfinity;
+        if (!item.gameObject.activeInHierarchy || renderers.Length == 0)
+        {
+            bounds = new Bounds(Vector3NaN, Vector3NaN);
+            return;
+        }
 
+        bounds = default;
         foreach (var renderer in renderers)
         {
             if (renderer == null)
@@ -39,31 +40,11 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
                 continue;
             if (!renderer.gameObject.activeInHierarchy)
                 continue;
-            var rendererBounds = renderer.bounds;
-            min = Vector3.Min(min, rendererBounds.min);
-            max = Vector3.Max(max, rendererBounds.max);
+            if (bounds.Equals(default))
+                bounds = renderer.bounds;
+            else
+                bounds.Encapsulate(renderer.bounds);
         }
-
-        if (min.Equals(Vector3.positiveInfinity) || max.Equals(Vector3.negativeInfinity))
-        {
-            boundingVertices = [];
-            return;
-        }
-
-        boundingVertices = BoundsUtility.GetVertices(min, max);
-        item.transform.InverseTransformPoints(boundingVertices);
-        CalculateBounds();
-    }
-
-    public void CalculateBounds()
-    {
-        if (boundingVertices.Length == 0 || item == null)
-        {
-            bounds = new Bounds(Vector3NaN, Vector3NaN);
-            return;
-        }
-
-        bounds = GeometryUtility.CalculateBounds(boundingVertices, item.transform.localToWorldMatrix);
     }
 
     public bool IsVisible(Plane[] planes)

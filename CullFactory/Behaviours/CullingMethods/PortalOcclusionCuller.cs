@@ -9,7 +9,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
 {
     private float _camerasTime = 0;
     private float _visibilityTime = 0;
-    private float _itemBoundsTime = 0;
     private float _itemShadowsTime = 0;
     private float _dynamicLightsLineOfSightTime = 0;
     private float _dynamicLightsTime = 0;
@@ -22,7 +21,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         var avgCamerasTime = _camerasTime / _totalCalls;
         var avgVisibilityTime = _visibilityTime / _totalCalls;
-        var avgItemBoundsTime = _itemBoundsTime / _totalCalls;
         var avgItemShadowsTime = _itemShadowsTime / _totalCalls;
         var avgDynamicLightsLineOfSightTime = _dynamicLightsLineOfSightTime / _totalCalls;
         var avgDynamicLightsTime = _dynamicLightsTime / _totalCalls;
@@ -30,14 +28,12 @@ public sealed class PortalOcclusionCuller : CullingMethod
         Plugin.Log($"Total portal occlusion culling time {avgTotalTime * 1000000:0.####} microseconds.\n" +
             $"    Cameras took {avgCamerasTime * 1000000:0.####} microseconds.\n" +
             $"    Direct visibility testing took {avgVisibilityTime * 1000000:0.####} microseconds.\n" +
-            $"    Calculating item bounds took {avgItemBoundsTime * 1000000:0.####} microseconds.\n" +
             $"    Dynamic lights line of sight checks took {avgDynamicLightsLineOfSightTime * 1000000:0.####} microseconds.\n" +
             $"    Dynamic light influence checks took {(avgDynamicLightsTime - avgDynamicLightsLineOfSightTime) * 1000000:0.####} microseconds.\n" +
-            $"    Item shadows took {(avgItemShadowsTime - avgItemBoundsTime) * 1000000:0.####} microseconds.");
+            $"    Item shadows took {avgItemShadowsTime * 1000000:0.####} microseconds.");
 
         _camerasTime = 0;
         _visibilityTime = 0;
-        _itemBoundsTime = 0;
         _itemShadowsTime = 0;
         _dynamicLightsLineOfSightTime = 0;
         _dynamicLightsTime = 0;
@@ -163,16 +159,11 @@ public sealed class PortalOcclusionCuller : CullingMethod
 
         var dynamicLightsTime = GetProfileTime() - dynamicLightsStart;
 
-        var itemBoundsTime = 0f;
         var itemShadowsStart = GetProfileTime();
 
         // Make any objects that are directly visible or should occlude light shining into the directly visible tiles visible.
         foreach (var itemContents in DynamicObjects.AllGrabbableObjectContentsInInterior)
         {
-            var itemBoundsStart = GetProfileTime();
-            itemContents.CalculateBounds();
-            itemBoundsTime += GetProfileTime() - itemBoundsStart;
-
             if (ItemIsVisible(itemContents, visibility))
                 visibility.items.Add(itemContents);
         }
@@ -182,7 +173,6 @@ public sealed class PortalOcclusionCuller : CullingMethod
         if (_benchmarking)
         {
             _visibilityTime += visibilityTime;
-            _itemBoundsTime += itemBoundsTime;
             _dynamicLightsLineOfSightTime += dynamicLightsLineOfSightTime;
             _dynamicLightsTime += dynamicLightsTime;
             _itemShadowsTime += itemShadowsTime;
