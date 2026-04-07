@@ -75,6 +75,8 @@ public sealed class TileContents
             bounds = SelectBestBounds(bounds, oldBounds, rendererBounds);
         }
 
+        bounds = UnityUtil.CondenseBounds(bounds, tile.AllDoorways);
+
         var maximumBounds = bounds;
         maximumBounds.Expand(MaxRendererBoundsSizeIncreaseOverTileBounds);
         rendererBounds.min = Vector3.Max(rendererBounds.min, maximumBounds.min);
