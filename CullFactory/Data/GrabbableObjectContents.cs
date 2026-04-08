@@ -8,7 +8,8 @@ namespace CullFactory.Data;
 
 public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<GrabbableObjectContents>
 {
-    public static readonly Vector3 Vector3NaN = new Vector3(float.NaN, float.NaN, float.NaN);
+    public static readonly Vector3 Vector3NaN = new(float.NaN, float.NaN, float.NaN);
+    public static readonly Bounds InvalidBounds = new(Vector3NaN, Vector3NaN);
 
     public readonly GrabbableObject item = item;
     public Renderer[] renderers = [];
@@ -25,13 +26,20 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
 
     public void CalculateBounds()
     {
-        if (!item.gameObject.activeInHierarchy || renderers.Length == 0)
+        if (item == null || !item.gameObject.activeInHierarchy || renderers.Length == 0)
         {
-            bounds = new Bounds(Vector3NaN, Vector3NaN);
+            bounds = new(Vector3NaN, Vector3NaN);
             return;
         }
 
-        bounds = default;
+        bounds = InvalidBounds;
+        if (item == null)
+            return;
+        if (!item.gameObject.activeInHierarchy)
+            return;
+        if (renderers.Length == 0)
+            return;
+
         foreach (var renderer in renderers)
         {
             if (renderer == null)
@@ -40,7 +48,7 @@ public sealed class GrabbableObjectContents(GrabbableObject item) : IEquatable<G
                 continue;
             if (!renderer.gameObject.activeInHierarchy)
                 continue;
-            if (bounds.Equals(default))
+            if (bounds.Equals(InvalidBounds))
                 bounds = renderer.bounds;
             else
                 bounds.Encapsulate(renderer.bounds);
