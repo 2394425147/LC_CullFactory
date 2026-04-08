@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DunGen;
 using HarmonyLib;
 
 namespace CullFactory.Extenders;
@@ -20,13 +22,11 @@ public static class DisableVanillaCulling
         if (culler.currentTile == null)
             culler.currentTile = culler.FindCurrentTile();
         else if (!culler.currentTile.Bounds.Contains(culler.targetTransform.position))
-            culler.SearchForNewCurrentTile();
+            culler.currentTile = culler.SearchForNewCurrentTile();
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(AdjacentRoomCullingModified))]
-    [HarmonyPatch(nameof(AdjacentRoomCullingModified.ClearAllDungeons))]
-    [HarmonyPatch(nameof(AdjacentRoomCullingModified.AddDungeon))]
+    [HarmonyPatch(typeof(AdjacentRoomCullingModified), nameof(AdjacentRoomCullingModified.UpdateRendererLists), [ typeof(List<Tile>), typeof(List<Door>) ])]
     private static bool StopCollectingAndHidingTiles()
     {
         return false;
