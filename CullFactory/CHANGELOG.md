@@ -1,3 +1,13 @@
+# 2.0.6
+
+## Fixed
+
+- Cadaver growths being unable to infect players
+
+## Changed
+
+- Optimized some parts of the portal occlusion culling algorithm
+
 # 2.0.5
 
 ## Fixed
