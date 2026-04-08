@@ -1,3 +1,9 @@
+# 2.0.7
+
+## Fixed
+
+- A NullReferenceException when items are destroyed
+
 # 2.0.6
 
 ## Fixed
