@@ -35,8 +35,6 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
-    public const float ExtraShadowFadeDistance = 1 / 0.9f;
-
     private static GameObject CullingObject;
 
     public static CullingMethod Instance { get; private set; }
@@ -430,9 +428,9 @@ public abstract class CullingMethod : MonoBehaviour
 
                 distances[j] = hdLight.shadowFadeDistance;
 
-                if (!DungeonCullingInfo.ShouldShadowFadingBeDisabledForLight(hdLight))
+                if (!hdLight.ShouldDisableShadowFading())
                     continue;
-                hdLight.shadowFadeDistance = hdLight.fadeDistance * ExtraShadowFadeDistance;
+                hdLight.shadowFadeDistance = LightUtility.GetMinimumShadowFadeDistance(hdLight.fadeDistance);
             }
         }
     }
