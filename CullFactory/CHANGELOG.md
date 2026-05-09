@@ -1,3 +1,9 @@
+# 2.0.8
+
+## Fixed
+
+- Fully-shadowed lights not being culled without "Disable shadow distance fading" enabled
+
 # 2.0.7
 
 ## Fixed
