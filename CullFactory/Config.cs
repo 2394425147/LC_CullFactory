@@ -189,6 +189,11 @@ public static class Config
                                               "Shows a rectangular prism to represent the bounds all tiles. These bounds are used " +
                                               "to determine which tile a camera resides in.");
 
+        VisualizeFrustums = configFile.Bind("Debug",
+                                            "Visualize visible frustums",
+                                            false,
+                                            "Displays a wireframe for each frustum visited during visibility testing.");
+
         OverrideMapSeed = configFile.Bind("Debug",
                                           "Override map seed",
                                           "",
@@ -224,6 +229,7 @@ public static class Config
         VisualizePortals.SettingChanged += (_, _) => CullingVisualizer.Initialize();
         VisualizedPortalOutsetDistance.SettingChanged += (_, _) => CullingVisualizer.Initialize();
         VisualizeTileBounds.SettingChanged += (_, _) => CullingVisualizer.Initialize();
+        VisualizeFrustums.SettingChanged += (_, _) => CullingVisualizer.Initialize();
 
         UpdateMoonScenesWithDisabledCulling();
         UpdateInteriorsWithDisabledCulling();
@@ -351,6 +357,7 @@ public static class Config
     public static ConfigEntry<bool> VisualizePortals { get; private set; }
     public static ConfigEntry<float> VisualizedPortalOutsetDistance { get; private set; }
     public static ConfigEntry<bool> VisualizeTileBounds { get; private set; }
+    public static ConfigEntry<bool> VisualizeFrustums { get; private set; }
 
     public static string[] MoonScenesWithDisabledCulling = [];
 

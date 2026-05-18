@@ -11,7 +11,7 @@ namespace CullFactory.Behaviours.Visualization
     {
         private const float TileBoundsInset = 0.00025f;
 
-        private static readonly Color[] ColorRotation = [Color.red, Color.yellow, Color.green, Color.blue, Color.cyan, Color.grey];
+        internal static readonly Color[] ColorRotation = [Color.red, Color.yellow, Color.green, Color.blue, Color.cyan, Color.grey];
 
         private GameObject _portalVisualizersRoot;
         private GameObject _tileBoundsVisualizersRoot;
@@ -23,6 +23,8 @@ namespace CullFactory.Behaviours.Visualization
 
             DestroyImmediate(container.GetComponent<CullingVisualizer>());
             container.AddComponent<CullingVisualizer>();
+
+            FrustumVisualizer.Initialize();
         }
 
         private void OnEnable()

@@ -47,7 +47,11 @@ public abstract class CullingMethod : MonoBehaviour
     private float _updateInterval;
     private float _lastUpdateTime;
 
-    private bool _renderedThisFrame = false;
+    private int _lastCulledFrame = -1;
+    private List<Camera> _camerasCulledLastFrame = [];
+    private List<Camera> _camerasCulledThisFrame = [];
+
+    public IReadOnlyList<Camera> CamerasCulledLastFrame => _camerasCulledLastFrame;
 
     private List<Camera> _camerasToCullThisPass = [];
 
@@ -182,11 +186,6 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
-    {
-        _renderedThisFrame = false;
-    }
-
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
@@ -290,13 +289,23 @@ public abstract class CullingMethod : MonoBehaviour
             return;
         _lastUpdateTime = updateTime;
 
-        if (!_renderedThisFrame)
+        var currentFrame = Time.frameCount;
+        if (currentFrame != _lastCulledFrame)
         {
+            _lastCulledFrame = currentFrame;
+            (_camerasCulledLastFrame, _camerasCulledThisFrame) = (_camerasCulledThisFrame, _camerasCulledLastFrame);
+            _camerasCulledThisFrame.Clear();
             DynamicObjects.RefreshGrabbableObjects();
             DynamicObjects.UpdateAllUnpredictableLights();
             foreach (var item in DynamicObjects.AllGrabbableObjectContentsInInterior)
                 item.CalculateBounds();
-            _renderedThisFrame = true;
+        }
+
+        for (var i = 0; i < _camerasToCullThisPass.Count; i++)
+        {
+            var camera = _camerasToCullThisPass[i];
+            if (!_camerasCulledThisFrame.Contains(camera))
+                _camerasCulledThisFrame.Add(camera);
         }
 
         var startTime = GetProfileTime();
