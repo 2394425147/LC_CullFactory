@@ -1,3 +1,13 @@
+# 2.0.9
+
+## Added
+
+- A debug option to display a visualization of the visibility testing
+
+## Fixed
+
+- The view through ImmersiveEntrance's portals hiding some rooms
+
 # 2.0.8
 
 ## Fixed
