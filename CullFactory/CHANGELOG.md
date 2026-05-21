@@ -1,3 +1,10 @@
+# 2.0.10
+
+## Fixed
+
+- Items being invisible in the hand when looking at ImmersiveEntrance's portals
+- Potential issues with cameras that spoof their transform position for the culling origin tile
+
 # 2.0.9
 
 ## Added
