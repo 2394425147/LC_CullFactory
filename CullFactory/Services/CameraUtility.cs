@@ -12,26 +12,29 @@ internal static class CameraUtility
     public static unsafe NativeSlice<Plane> GetTempFrustum(this Camera camera)
     {
         if (TempFrustum.Length == 0)
-            TempFrustum = new NativeArray<Plane>(6, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            TempFrustum = new NativeArray<Plane>(5, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
-        camera.ExtractFrustumPlanes(TempFrustum.GetPtr());
-        return TempFrustum;
+        return camera.ExtractFrustumPlanes(TempFrustum);
     }
 
-    public static unsafe void ExtractFrustumPlanes(this Camera camera, NativeArray<Plane> planes)
+    public static unsafe NativeSlice<Plane> ExtractFrustumPlanes(this Camera camera, NativeArray<Plane> planes)
     {
-        if (planes.Length < 6)
+        if (planes.Length < 5)
             throw new IndexOutOfRangeException("ExtractFrustumPlanes would write out of range");
         camera.ExtractFrustumPlanes(planes.GetPtr());
+        return planes.Slice(0, 5);
+    }
+
+    public static unsafe NativeSlice<Plane> ExtractFrustumPlanes(this Camera camera, NativeSlice<Plane> planes)
+    {
+        if (planes.Length < 5)
+            throw new IndexOutOfRangeException("ExtractFrustumPlanes would write out of range");
+        camera.ExtractFrustumPlanes(planes.GetPtr());
+        return planes.Slice(0, 5);
     }
 
     private static unsafe void ExtractFrustumPlanes(this Camera camera, Plane* planes)
     {
         Geometry.ExtractPlanes(camera.projectionMatrix * camera.worldToCameraMatrix, planes);
-
-        // Replace the near plane with the camera origin so that we don't cut off doorway portals
-        // closer to the camera than the actual near plane.
-        var transform = camera.transform;
-        planes[4] = new Plane(transform.forward, transform.position);
     }
 }

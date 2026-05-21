@@ -79,7 +79,7 @@ public static class VisibilityTesting
         frustum.CopyTo(FrustumPlanes);
         Frustums[0] = FrustumPlanes.Slice(0, frustum.Length);
         var stackIndex = 0;
-        var frustumPlanesCount = frustum.Length;
+        var frustumPlanesCount = Frustums[0].Length;
 
         callback(TileStack, Frustums, stackIndex);
 
@@ -96,10 +96,9 @@ public static class VisibilityTesting
     {
         TileStack[0] = originTile;
         IndexStack[0] = 0;
-        Frustums[0] = FrustumPlanes.Slice(0, 6);
-        camera.ExtractFrustumPlanes(FrustumPlanes);
+        Frustums[0] = camera.ExtractFrustumPlanes(FrustumPlanes);
         var stackIndex = 0;
-        var frustumPlanesCount = 6;
+        var frustumPlanesCount = Frustums[0].Length;
 
         callback(TileStack, Frustums, stackIndex);
 
@@ -151,7 +150,7 @@ public static class VisibilityTesting
         frustum.CopyTo(FrustumPlanes);
         Frustums[0] = FrustumPlanes.Slice(0, frustum.Length);
         var stackIndex = 0;
-        var frustumPlanesCount = frustum.Length;
+        var frustumPlanesCount = Frustums[0].Length;
 
         callback(TileStack, Frustums, stackIndex);
 

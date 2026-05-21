@@ -39,8 +39,7 @@ namespace CullFactoryBurst
             NormalizePlane(lastRow - matrix.GetRow(0), out planesRaw[1]);
             NormalizePlane(lastRow - matrix.GetRow(1), out planesRaw[2]);
             NormalizePlane(lastRow + matrix.GetRow(1), out planesRaw[3]);
-            NormalizePlane(lastRow + matrix.GetRow(2), out planesRaw[4]);
-            NormalizePlane(lastRow - matrix.GetRow(2), out planesRaw[5]);
+            NormalizePlane(lastRow - matrix.GetRow(2), out planesRaw[4]);
         }
 
         [BurstCompile(FloatMode = FloatMode.Fast)]
