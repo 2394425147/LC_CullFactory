@@ -47,7 +47,7 @@ public abstract class CullingMethod : MonoBehaviour
     private float _updateInterval;
     private float _lastUpdateTime;
 
-    private int _lastCulledFrame = -1;
+    private bool _renderedThisFrame = false;
     private List<Camera> _camerasCulledLastFrame = [];
     private List<Camera> _camerasCulledThisFrame = [];
 
@@ -186,6 +186,11 @@ public abstract class CullingMethod : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        _renderedThisFrame = false;
+    }
+
     protected abstract void AddVisibleObjects(List<Camera> cameras, VisibilitySets visibility);
 
     protected void AddAllObjectsWithinOrthographicCamera(Camera camera, VisibilitySets visibility)
@@ -289,10 +294,9 @@ public abstract class CullingMethod : MonoBehaviour
             return;
         _lastUpdateTime = updateTime;
 
-        var currentFrame = Time.frameCount;
-        if (currentFrame != _lastCulledFrame)
+        if (!_renderedThisFrame)
         {
-            _lastCulledFrame = currentFrame;
+            _renderedThisFrame = true;
             (_camerasCulledLastFrame, _camerasCulledThisFrame) = (_camerasCulledThisFrame, _camerasCulledLastFrame);
             _camerasCulledThisFrame.Clear();
             DynamicObjects.RefreshGrabbableObjects();
