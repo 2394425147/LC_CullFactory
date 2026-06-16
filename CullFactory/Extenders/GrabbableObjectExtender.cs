@@ -22,7 +22,7 @@ internal static class GrabbableObjectExtender
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(GrabbableObject.EnablePhysics))]
-    private static void GrabbableObjectDropped(GrabbableObject __instance)
+    private static void GrabbableObjectPhysicsToggled(GrabbableObject __instance)
     {
         DynamicObjects.MarkGrabbableObjectDirty(__instance);
     }
