@@ -1,3 +1,9 @@
+# 2.0.11
+
+## Fixed
+
+- Items being invisible after grabbing with the reality shift effect in BrutalCompanyMinus
+
 # 2.0.10
 
 ## Fixed
