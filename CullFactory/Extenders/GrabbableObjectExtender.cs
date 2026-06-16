@@ -35,6 +35,13 @@ internal static class GrabbableObjectExtender
     }
 
     [HarmonyPostfix]
+    [HarmonyPatch(nameof(GrabbableObject.GrabItemOnClient))]
+    private static void GrabbableObjectGrabbedLocally(GrabbableObject __instance)
+    {
+        DynamicObjects.MarkGrabbableObjectDirty(__instance);
+    }
+
+    [HarmonyPostfix]
     [HarmonyPatch(nameof(GrabbableObject.GrabItemFromEnemy))]
     private static void GrabbableObjectPickedUpByEnemy(GrabbableObject __instance)
     {
