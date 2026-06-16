@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace CullFactory.Data;
@@ -40,7 +41,7 @@ public static class DynamicObjects
         }
     }
 
-    internal static void MarkGrabbableObjectDirty(GrabbableObject item)
+    internal static void MarkGrabbableObjectDirty(GrabbableObject item, [CallerMemberName] string caller = "")
     {
         // If mods flag an item with DontSave, we won't find it in FindObjectsByType(),
         // so don't include it here to avoid ever culling it.
@@ -54,12 +55,13 @@ public static class DynamicObjects
 
         if (GrabbableObjectToContents.TryGetValue(item, out var contents))
         {
+            Plugin.Log($"{Time.frameCount}: Refreshing contents of {item.name} from {caller}");
             AllLightsOutside.ExceptWith(contents.lights);
             AllLightsInInterior.ExceptWith(contents.lights);
         }
         else
         {
-            Plugin.Log($"Adding contents of {item.name}");
+            Plugin.Log($"{Time.frameCount}: Adding and refreshing contents of {item.name} from {caller}");
             contents = new GrabbableObjectContents(item);
             GrabbableObjectToContents[item] = contents;
         }
@@ -82,7 +84,7 @@ public static class DynamicObjects
         if (item == null)
             return;
 
-        Plugin.Log($"Refreshing contents of {item.name} @ {item.transform.position}");
+        Plugin.Log($"{Time.frameCount}: Refreshing contents of {item.name} @ {item.transform.position}");
 
         // Set the item visible and remove it from the sets of outside/inside items.
         contents.SetVisible(true);
