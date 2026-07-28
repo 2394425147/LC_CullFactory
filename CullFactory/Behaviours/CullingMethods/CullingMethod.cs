@@ -358,6 +358,14 @@ public abstract class CullingMethod : MonoBehaviour
         }
 
         // Update culling for items.
+        foreach (var item in DynamicObjects.AllGrabbableObjectContentsOutside)
+        {
+            if (item.SetVisible(true))
+            {
+                // This ensures that items held by the player are not culled
+            }
+        }
+
         foreach (var item in _visibilityLastCall.items)
         {
             if (!_visibility.items.Contains(item))
