@@ -1,3 +1,9 @@
+# 2.0.12
+
+## Fixed
+
+- Dynamic lights that are slightly outside tiles being considered part of the moon
+
 # 2.0.11
 
 ## Fixed
