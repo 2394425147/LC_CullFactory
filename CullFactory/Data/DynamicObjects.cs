@@ -203,23 +203,12 @@ public static class DynamicObjects
 
     private static void FillInteriorLights(IEnumerable<Light> lights, HashSet<Light> into)
     {
-        for (var i = 0; i < DungeonCullingInfo.AllDungeonData.Length; i++)
+        foreach (var light in lights)
         {
-            ref var dungeonData = ref DungeonCullingInfo.AllDungeonData[i];
-            if (!dungeonData.IsValid)
+            var lightPosition = light.transform.position;
+            if (!DungeonCullingInfo.PointIsInAnyInterior(lightPosition))
                 continue;
-            foreach (var light in lights)
-            {
-                var lightPosition = light.transform.position;
-                if (!dungeonData.Bounds.Contains(lightPosition))
-                    continue;
-                foreach (var tile in dungeonData.AllTileContents)
-                {
-                    if (!tile.bounds.Contains(lightPosition))
-                        continue;
-                    into.Add(light);
-                }
-            }
+            into.Add(light);
         }
     }
 

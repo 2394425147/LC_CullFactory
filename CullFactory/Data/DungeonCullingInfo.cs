@@ -346,17 +346,19 @@ internal static class DungeonCullingInfo
 
     public static bool PointIsInAnyInterior(Vector3 point)
     {
+        const float sqrRadius = 30f * 30f;
+
         for (var i = 0; i < AllDungeonData.Length; i++)
         {
             ref var dungeonData = ref AllDungeonData[i];
             if (!dungeonData.IsValid)
                 continue;
-            if (!dungeonData.Bounds.Contains(point))
+            if (dungeonData.Bounds.SqrDistance(point) > sqrRadius)
                 continue;
 
             foreach (var tileContents in dungeonData.AllTileContents)
             {
-                if (tileContents.rendererBounds.Contains(point))
+                if (tileContents.rendererBounds.SqrDistance(point) <= sqrRadius)
                     return true;
             }
         }
